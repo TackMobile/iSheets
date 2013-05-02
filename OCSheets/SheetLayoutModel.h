@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "UsefulMacros.h"
 
 extern const CGFloat kCoverOpacity;
 extern const NSUInteger kFirstStackedSheet;
@@ -45,7 +44,9 @@ typedef enum {
 
 @interface SheetLayoutModel : NSObject
 
-DEFINE_SHARED_INSTANCE_METHODS_ON_CLASS(SheetLayoutModel);
++ (SheetLayoutModel *) sharedInstance; \
++ (void) resetSharedInstance; \
+
 
 @property (nonatomic, strong) SheetNavigationController *controller;
 @property (nonatomic, assign) SheetStackState stackState;

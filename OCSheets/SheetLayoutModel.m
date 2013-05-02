@@ -34,10 +34,25 @@ const CGFloat kSheetDefaultStickingEdge     = 175.0;
 
 #define USE_HARD_CODED_WIDTHS YES
 
-SHARED_INSTANCE_ON_CLASS_WITH_INIT_BLOCK(SheetLayoutModel, ^{
-    return [[self alloc] init];
-});
+__strong static SheetLayoutModel *_sharedInstance; 
++ (SheetLayoutModel *) sharedInstance { 
+    if (_sharedInstance == nil) {
+        _sharedInstance = [[self alloc] init];
+        [[NSNotificationCenter defaultCenter] addObserver:self 
+                                                 selector:@selector(resetSharedInstance) 
+                                                     name:@"logout" 
+                                                   object:nil]; 
+    } 
+    return _sharedInstance; 
+}
 
++ (void) resetSharedInstance { 
+    if ([_sharedInstance respondsToSelector:@selector(resetSharedInstance)]) {
+        [_sharedInstance performSelector:@selector(resetSharedInstance)];
+    }
+    _sharedInstance = nil; 
+    [[NSNotificationCenter defaultCenter] removeObserver:self]; 
+}
 
 #pragma mark Width calculations
 
