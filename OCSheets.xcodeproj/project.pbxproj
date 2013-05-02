@@ -12,7 +12,7 @@
 		B5E7634B1732D9A3001BC9A1 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5E7634A1732D9A3001BC9A1 /* CoreGraphics.framework */; };
 		B5E763511732D9A3001BC9A1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B5E7634F1732D9A3001BC9A1 /* InfoPlist.strings */; };
 		B5E763531732D9A3001BC9A1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763521732D9A3001BC9A1 /* main.m */; };
-		B5E763571732D9A3001BC9A1 /* OCAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763561732D9A3001BC9A1 /* OCAppDelegate.m */; };
+		B5E763571732D9A3001BC9A1 /* SheetsSampleAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763561732D9A3001BC9A1 /* SheetsSampleAppDelegate.m */; };
 		B5E763591732D9A3001BC9A1 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = B5E763581732D9A3001BC9A1 /* Default.png */; };
 		B5E7635B1732D9A3001BC9A1 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5E7635A1732D9A3001BC9A1 /* Default@2x.png */; };
 		B5E7635D1732D9A3001BC9A1 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5E7635C1732D9A3001BC9A1 /* Default-568h@2x.png */; };
@@ -55,8 +55,8 @@
 		B5E763501732D9A3001BC9A1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B5E763521732D9A3001BC9A1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B5E763541732D9A3001BC9A1 /* OCSheets-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OCSheets-Prefix.pch"; sourceTree = "<group>"; };
-		B5E763551732D9A3001BC9A1 /* OCAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCAppDelegate.h; sourceTree = "<group>"; };
-		B5E763561732D9A3001BC9A1 /* OCAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCAppDelegate.m; sourceTree = "<group>"; };
+		B5E763551732D9A3001BC9A1 /* SheetsSampleAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SheetsSampleAppDelegate.h; sourceTree = "<group>"; };
+		B5E763561732D9A3001BC9A1 /* SheetsSampleAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SheetsSampleAppDelegate.m; sourceTree = "<group>"; };
 		B5E763581732D9A3001BC9A1 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
 		B5E7635A1732D9A3001BC9A1 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
 		B5E7635C1732D9A3001BC9A1 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -149,8 +149,8 @@
 			children = (
 				B5E763E517330D10001BC9A1 /* Containment */,
 				B5E763E617330D2B001BC9A1 /* Helpers */,
-				B5E763551732D9A3001BC9A1 /* OCAppDelegate.h */,
-				B5E763561732D9A3001BC9A1 /* OCAppDelegate.m */,
+				B5E763551732D9A3001BC9A1 /* SheetsSampleAppDelegate.h */,
+				B5E763561732D9A3001BC9A1 /* SheetsSampleAppDelegate.m */,
 				B5E7635E1732D9A3001BC9A1 /* OCViewController.h */,
 				B5E7635F1732D9A3001BC9A1 /* OCViewController.m */,
 				B5E763611732D9A3001BC9A1 /* OCViewController.xib */,
@@ -340,7 +340,7 @@
 				B5E763E817330DA9001BC9A1 /* UsefulMacros.h in Sources */,
 				B5E763E717330DA4001BC9A1 /* UIView+position.m in Sources */,
 				B5E763531732D9A3001BC9A1 /* main.m in Sources */,
-				B5E763571732D9A3001BC9A1 /* OCAppDelegate.m in Sources */,
+				B5E763571732D9A3001BC9A1 /* SheetsSampleAppDelegate.m in Sources */,
 				B5E763601732D9A3001BC9A1 /* OCViewController.m in Sources */,
 				B5E763911732DDDD001BC9A1 /* BasicSheetViewController.m in Sources */,
 				B5E763921732DDDD001BC9A1 /* SheetController.m in Sources */,
