@@ -32,6 +32,8 @@
 		B5E763971732DDDD001BC9A1 /* SheetPageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5E7638D1732DDDD001BC9A1 /* SheetPageView.xib */; };
 		B5E763981732DDDD001BC9A1 /* SheetPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E7638F1732DDDD001BC9A1 /* SheetPageViewController.m */; };
 		B5E763E317330CB1001BC9A1 /* UIView+position.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763E217330CB1001BC9A1 /* UIView+position.m */; };
+		B5E763E717330DA4001BC9A1 /* UIView+position.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763E217330CB1001BC9A1 /* UIView+position.m */; };
+		B5E763E817330DA9001BC9A1 /* UsefulMacros.h in Sources */ = {isa = PBXBuildFile; fileRef = B5E763E417330CE4001BC9A1 /* UsefulMacros.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -335,6 +337,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5E763E817330DA9001BC9A1 /* UsefulMacros.h in Sources */,
+				B5E763E717330DA4001BC9A1 /* UIView+position.m in Sources */,
 				B5E763531732D9A3001BC9A1 /* main.m in Sources */,
 				B5E763571732D9A3001BC9A1 /* OCAppDelegate.m in Sources */,
 				B5E763601732D9A3001BC9A1 /* OCViewController.m in Sources */,

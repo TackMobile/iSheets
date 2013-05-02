@@ -48,7 +48,7 @@ SHARED_INSTANCE_ON_CLASS_WITH_INIT_BLOCK(SheetLayoutModel, ^{
 - (CGFloat)desiredWidthForContent:(UIViewController *)viewController navItem:(SheetNavigationItem *)navItem {
    
     CGFloat desiredWidth = 0.0;//navItem.width;
-    SheetStackPosition position = nil;
+    SheetStackPosition position = -1;
     switch (navItem.offset) {
         case 1:
             position = kSheetStackTop;
