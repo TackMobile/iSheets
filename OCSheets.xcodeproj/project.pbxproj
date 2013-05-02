@@ -31,6 +31,7 @@
 		B5E763961732DDDD001BC9A1 /* SheetNavigationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E7638C1732DDDD001BC9A1 /* SheetNavigationItem.m */; };
 		B5E763971732DDDD001BC9A1 /* SheetPageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5E7638D1732DDDD001BC9A1 /* SheetPageView.xib */; };
 		B5E763981732DDDD001BC9A1 /* SheetPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E7638F1732DDDD001BC9A1 /* SheetPageViewController.m */; };
+		B5E763E317330CB1001BC9A1 /* UIView+position.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763E217330CB1001BC9A1 /* UIView+position.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -82,6 +83,9 @@
 		B5E7638E1732DDDD001BC9A1 /* SheetPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SheetPageViewController.h; sourceTree = "<group>"; };
 		B5E7638F1732DDDD001BC9A1 /* SheetPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SheetPageViewController.m; sourceTree = "<group>"; };
 		B5E763901732DDDD001BC9A1 /* UIViewController+SheetNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+SheetNavigationController.h"; sourceTree = "<group>"; };
+		B5E763E117330CB1001BC9A1 /* UIView+position.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+position.h"; sourceTree = "<group>"; };
+		B5E763E217330CB1001BC9A1 /* UIView+position.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+position.m"; sourceTree = "<group>"; };
+		B5E763E417330CE4001BC9A1 /* UsefulMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UsefulMacros.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -141,27 +145,18 @@
 		B5E7634C1732D9A3001BC9A1 /* OCSheets */ = {
 			isa = PBXGroup;
 			children = (
-				B5E763811732DDDD001BC9A1 /* BasicSheetViewController.h */,
-				B5E763821732DDDD001BC9A1 /* BasicSheetViewController.m */,
-				B5E763831732DDDD001BC9A1 /* SheetController.h */,
-				B5E763841732DDDD001BC9A1 /* SheetController.m */,
-				B5E763851732DDDD001BC9A1 /* SheetHistoryManager.h */,
-				B5E763861732DDDD001BC9A1 /* SheetHistoryManager.m */,
-				B5E763871732DDDD001BC9A1 /* SheetLayoutModel.h */,
-				B5E763881732DDDD001BC9A1 /* SheetLayoutModel.m */,
-				B5E763891732DDDD001BC9A1 /* SheetNavigationController.h */,
-				B5E7638A1732DDDD001BC9A1 /* SheetNavigationController.m */,
-				B5E7638B1732DDDD001BC9A1 /* SheetNavigationItem.h */,
-				B5E7638C1732DDDD001BC9A1 /* SheetNavigationItem.m */,
-				B5E7638D1732DDDD001BC9A1 /* SheetPageView.xib */,
-				B5E7638E1732DDDD001BC9A1 /* SheetPageViewController.h */,
-				B5E7638F1732DDDD001BC9A1 /* SheetPageViewController.m */,
-				B5E763901732DDDD001BC9A1 /* UIViewController+SheetNavigationController.h */,
+				B5E763E517330D10001BC9A1 /* Containment */,
+				B5E763E617330D2B001BC9A1 /* Helpers */,
 				B5E763551732D9A3001BC9A1 /* OCAppDelegate.h */,
 				B5E763561732D9A3001BC9A1 /* OCAppDelegate.m */,
 				B5E7635E1732D9A3001BC9A1 /* OCViewController.h */,
 				B5E7635F1732D9A3001BC9A1 /* OCViewController.m */,
 				B5E763611732D9A3001BC9A1 /* OCViewController.xib */,
+				B5E763811732DDDD001BC9A1 /* BasicSheetViewController.h */,
+				B5E763821732DDDD001BC9A1 /* BasicSheetViewController.m */,
+				B5E7638D1732DDDD001BC9A1 /* SheetPageView.xib */,
+				B5E7638E1732DDDD001BC9A1 /* SheetPageViewController.h */,
+				B5E7638F1732DDDD001BC9A1 /* SheetPageViewController.m */,
 				B5E7634D1732D9A3001BC9A1 /* Supporting Files */,
 			);
 			path = OCSheets;
@@ -198,6 +193,34 @@
 				B5E763731732D9A4001BC9A1 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		B5E763E517330D10001BC9A1 /* Containment */ = {
+			isa = PBXGroup;
+			children = (
+				B5E763831732DDDD001BC9A1 /* SheetController.h */,
+				B5E763841732DDDD001BC9A1 /* SheetController.m */,
+				B5E763851732DDDD001BC9A1 /* SheetHistoryManager.h */,
+				B5E763861732DDDD001BC9A1 /* SheetHistoryManager.m */,
+				B5E763871732DDDD001BC9A1 /* SheetLayoutModel.h */,
+				B5E763881732DDDD001BC9A1 /* SheetLayoutModel.m */,
+				B5E763891732DDDD001BC9A1 /* SheetNavigationController.h */,
+				B5E7638A1732DDDD001BC9A1 /* SheetNavigationController.m */,
+				B5E7638B1732DDDD001BC9A1 /* SheetNavigationItem.h */,
+				B5E7638C1732DDDD001BC9A1 /* SheetNavigationItem.m */,
+				B5E763901732DDDD001BC9A1 /* UIViewController+SheetNavigationController.h */,
+			);
+			name = Containment;
+			sourceTree = "<group>";
+		};
+		B5E763E617330D2B001BC9A1 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				B5E763E117330CB1001BC9A1 /* UIView+position.h */,
+				B5E763E217330CB1001BC9A1 /* UIView+position.m */,
+				B5E763E417330CE4001BC9A1 /* UsefulMacros.h */,
+			);
+			name = Helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -330,6 +353,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B5E763781732D9A4001BC9A1 /* OCSheetsTests.m in Sources */,
+				B5E763E317330CB1001BC9A1 /* UIView+position.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -502,6 +526,7 @@
 				B5E7637D1732D9A4001BC9A1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		B5E7637E1732D9A4001BC9A1 /* Build configuration list for PBXNativeTarget "OCSheetsTests" */ = {
 			isa = XCConfigurationList;
@@ -510,6 +535,7 @@
 				B5E763801732D9A4001BC9A1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

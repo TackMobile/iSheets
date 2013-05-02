@@ -1,8 +1,8 @@
 Pod::Spec.new do |s|
   s.name     = 'OCSheets'
   s.version  = '0.1'
-  s.license  = ''
-  s.summary  = 'Layered navigation controller for hierarchical iPad apps'
+  s.license  = 'Modified BSD'
+  s.summary  = 'Layered navigation controller for hierarchical iPad apps.'
   s.homepage = 'https://bitbucket.org/tackmobile/sheets'
   s.author   = { 'Ben Pilcher' => 'benpilcher@tackmobile.com' }
   s.source   = { :git => 'https://bitbucket.org/tackmobile/sheets.git', :tag =>  s.version.to_s }
