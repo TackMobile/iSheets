@@ -23,6 +23,14 @@
 		B5E7636D1732D9A4001BC9A1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5E763481732D9A3001BC9A1 /* Foundation.framework */; };
 		B5E763751732D9A4001BC9A1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B5E763731732D9A4001BC9A1 /* InfoPlist.strings */; };
 		B5E763781732D9A4001BC9A1 /* OCSheetsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763771732D9A4001BC9A1 /* OCSheetsTests.m */; };
+		B5E763911732DDDD001BC9A1 /* BasicSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763821732DDDD001BC9A1 /* BasicSheetViewController.m */; };
+		B5E763921732DDDD001BC9A1 /* SheetController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763841732DDDD001BC9A1 /* SheetController.m */; };
+		B5E763931732DDDD001BC9A1 /* SheetHistoryManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763861732DDDD001BC9A1 /* SheetHistoryManager.m */; };
+		B5E763941732DDDD001BC9A1 /* SheetLayoutModel.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763881732DDDD001BC9A1 /* SheetLayoutModel.m */; };
+		B5E763951732DDDD001BC9A1 /* SheetNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E7638A1732DDDD001BC9A1 /* SheetNavigationController.m */; };
+		B5E763961732DDDD001BC9A1 /* SheetNavigationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E7638C1732DDDD001BC9A1 /* SheetNavigationItem.m */; };
+		B5E763971732DDDD001BC9A1 /* SheetPageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5E7638D1732DDDD001BC9A1 /* SheetPageView.xib */; };
+		B5E763981732DDDD001BC9A1 /* SheetPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E7638F1732DDDD001BC9A1 /* SheetPageViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +66,22 @@
 		B5E763741732D9A4001BC9A1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		B5E763761732D9A4001BC9A1 /* OCSheetsTests.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCSheetsTests.h; sourceTree = "<group>"; };
 		B5E763771732D9A4001BC9A1 /* OCSheetsTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCSheetsTests.m; sourceTree = "<group>"; };
+		B5E763811732DDDD001BC9A1 /* BasicSheetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicSheetViewController.h; sourceTree = "<group>"; };
+		B5E763821732DDDD001BC9A1 /* BasicSheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BasicSheetViewController.m; sourceTree = "<group>"; };
+		B5E763831732DDDD001BC9A1 /* SheetController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SheetController.h; sourceTree = "<group>"; };
+		B5E763841732DDDD001BC9A1 /* SheetController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SheetController.m; sourceTree = "<group>"; };
+		B5E763851732DDDD001BC9A1 /* SheetHistoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SheetHistoryManager.h; sourceTree = "<group>"; };
+		B5E763861732DDDD001BC9A1 /* SheetHistoryManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SheetHistoryManager.m; sourceTree = "<group>"; };
+		B5E763871732DDDD001BC9A1 /* SheetLayoutModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SheetLayoutModel.h; sourceTree = "<group>"; };
+		B5E763881732DDDD001BC9A1 /* SheetLayoutModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SheetLayoutModel.m; sourceTree = "<group>"; };
+		B5E763891732DDDD001BC9A1 /* SheetNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SheetNavigationController.h; sourceTree = "<group>"; };
+		B5E7638A1732DDDD001BC9A1 /* SheetNavigationController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SheetNavigationController.m; sourceTree = "<group>"; };
+		B5E7638B1732DDDD001BC9A1 /* SheetNavigationItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SheetNavigationItem.h; sourceTree = "<group>"; };
+		B5E7638C1732DDDD001BC9A1 /* SheetNavigationItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SheetNavigationItem.m; sourceTree = "<group>"; };
+		B5E7638D1732DDDD001BC9A1 /* SheetPageView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SheetPageView.xib; sourceTree = "<group>"; };
+		B5E7638E1732DDDD001BC9A1 /* SheetPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SheetPageViewController.h; sourceTree = "<group>"; };
+		B5E7638F1732DDDD001BC9A1 /* SheetPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SheetPageViewController.m; sourceTree = "<group>"; };
+		B5E763901732DDDD001BC9A1 /* UIViewController+SheetNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+SheetNavigationController.h"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -117,6 +141,22 @@
 		B5E7634C1732D9A3001BC9A1 /* OCSheets */ = {
 			isa = PBXGroup;
 			children = (
+				B5E763811732DDDD001BC9A1 /* BasicSheetViewController.h */,
+				B5E763821732DDDD001BC9A1 /* BasicSheetViewController.m */,
+				B5E763831732DDDD001BC9A1 /* SheetController.h */,
+				B5E763841732DDDD001BC9A1 /* SheetController.m */,
+				B5E763851732DDDD001BC9A1 /* SheetHistoryManager.h */,
+				B5E763861732DDDD001BC9A1 /* SheetHistoryManager.m */,
+				B5E763871732DDDD001BC9A1 /* SheetLayoutModel.h */,
+				B5E763881732DDDD001BC9A1 /* SheetLayoutModel.m */,
+				B5E763891732DDDD001BC9A1 /* SheetNavigationController.h */,
+				B5E7638A1732DDDD001BC9A1 /* SheetNavigationController.m */,
+				B5E7638B1732DDDD001BC9A1 /* SheetNavigationItem.h */,
+				B5E7638C1732DDDD001BC9A1 /* SheetNavigationItem.m */,
+				B5E7638D1732DDDD001BC9A1 /* SheetPageView.xib */,
+				B5E7638E1732DDDD001BC9A1 /* SheetPageViewController.h */,
+				B5E7638F1732DDDD001BC9A1 /* SheetPageViewController.m */,
+				B5E763901732DDDD001BC9A1 /* UIViewController+SheetNavigationController.h */,
 				B5E763551732D9A3001BC9A1 /* OCAppDelegate.h */,
 				B5E763561732D9A3001BC9A1 /* OCAppDelegate.m */,
 				B5E7635E1732D9A3001BC9A1 /* OCViewController.h */,
@@ -237,6 +277,7 @@
 				B5E7635B1732D9A3001BC9A1 /* Default@2x.png in Resources */,
 				B5E7635D1732D9A3001BC9A1 /* Default-568h@2x.png in Resources */,
 				B5E763631732D9A3001BC9A1 /* OCViewController.xib in Resources */,
+				B5E763971732DDDD001BC9A1 /* SheetPageView.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -274,6 +315,13 @@
 				B5E763531732D9A3001BC9A1 /* main.m in Sources */,
 				B5E763571732D9A3001BC9A1 /* OCAppDelegate.m in Sources */,
 				B5E763601732D9A3001BC9A1 /* OCViewController.m in Sources */,
+				B5E763911732DDDD001BC9A1 /* BasicSheetViewController.m in Sources */,
+				B5E763921732DDDD001BC9A1 /* SheetController.m in Sources */,
+				B5E763931732DDDD001BC9A1 /* SheetHistoryManager.m in Sources */,
+				B5E763941732DDDD001BC9A1 /* SheetLayoutModel.m in Sources */,
+				B5E763951732DDDD001BC9A1 /* SheetNavigationController.m in Sources */,
+				B5E763961732DDDD001BC9A1 /* SheetNavigationItem.m in Sources */,
+				B5E763981732DDDD001BC9A1 /* SheetPageViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
