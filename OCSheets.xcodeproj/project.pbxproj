@@ -10,14 +10,6 @@
 		B5E763471732D9A3001BC9A1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5E763461732D9A3001BC9A1 /* UIKit.framework */; };
 		B5E763491732D9A3001BC9A1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5E763481732D9A3001BC9A1 /* Foundation.framework */; };
 		B5E7634B1732D9A3001BC9A1 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5E7634A1732D9A3001BC9A1 /* CoreGraphics.framework */; };
-		B5E763511732D9A3001BC9A1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B5E7634F1732D9A3001BC9A1 /* InfoPlist.strings */; };
-		B5E763531732D9A3001BC9A1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763521732D9A3001BC9A1 /* main.m */; };
-		B5E763571732D9A3001BC9A1 /* SheetsSampleAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763561732D9A3001BC9A1 /* SheetsSampleAppDelegate.m */; };
-		B5E763591732D9A3001BC9A1 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = B5E763581732D9A3001BC9A1 /* Default.png */; };
-		B5E7635B1732D9A3001BC9A1 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5E7635A1732D9A3001BC9A1 /* Default@2x.png */; };
-		B5E7635D1732D9A3001BC9A1 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5E7635C1732D9A3001BC9A1 /* Default-568h@2x.png */; };
-		B5E763601732D9A3001BC9A1 /* OCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E7635F1732D9A3001BC9A1 /* OCViewController.m */; };
-		B5E763631732D9A3001BC9A1 /* OCViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5E763611732D9A3001BC9A1 /* OCViewController.xib */; };
 		B5E7636B1732D9A4001BC9A1 /* SenTestingKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5E7636A1732D9A4001BC9A1 /* SenTestingKit.framework */; };
 		B5E7636C1732D9A4001BC9A1 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5E763461732D9A3001BC9A1 /* UIKit.framework */; };
 		B5E7636D1732D9A4001BC9A1 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B5E763481732D9A3001BC9A1 /* Foundation.framework */; };
@@ -30,10 +22,19 @@
 		B5E763951732DDDD001BC9A1 /* SheetNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E7638A1732DDDD001BC9A1 /* SheetNavigationController.m */; };
 		B5E763961732DDDD001BC9A1 /* SheetNavigationItem.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E7638C1732DDDD001BC9A1 /* SheetNavigationItem.m */; };
 		B5E763971732DDDD001BC9A1 /* SheetPageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5E7638D1732DDDD001BC9A1 /* SheetPageView.xib */; };
-		B5E763981732DDDD001BC9A1 /* SheetPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E7638F1732DDDD001BC9A1 /* SheetPageViewController.m */; };
 		B5E763E317330CB1001BC9A1 /* UIView+position.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763E217330CB1001BC9A1 /* UIView+position.m */; };
 		B5E763E717330DA4001BC9A1 /* UIView+position.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763E217330CB1001BC9A1 /* UIView+position.m */; };
-		B5E763E817330DA9001BC9A1 /* UsefulMacros.h in Sources */ = {isa = PBXBuildFile; fileRef = B5E763E417330CE4001BC9A1 /* UsefulMacros.h */; };
+		B5E763F81733267E001BC9A1 /* SheetsSampleAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763F71733267E001BC9A1 /* SheetsSampleAppDelegate.m */; };
+		B5E763FB17332693001BC9A1 /* OCViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763FA17332693001BC9A1 /* OCViewController.m */; };
+		B5E763FF173326D0001BC9A1 /* SheetPageView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5E763FC173326D0001BC9A1 /* SheetPageView.xib */; };
+		B5E76400173326D0001BC9A1 /* SheetPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E763FE173326D0001BC9A1 /* SheetPageViewController.m */; };
+		B5E76402173326F2001BC9A1 /* OCView.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5E76401173326F2001BC9A1 /* OCView.xib */; };
+		B5E7640E17332710001BC9A1 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5E7640317332710001BC9A1 /* Default-568h@2x.png */; };
+		B5E7640F17332710001BC9A1 /* Default.png in Resources */ = {isa = PBXBuildFile; fileRef = B5E7640417332710001BC9A1 /* Default.png */; };
+		B5E7641017332710001BC9A1 /* Default@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B5E7640517332710001BC9A1 /* Default@2x.png */; };
+		B5E7641117332710001BC9A1 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = B5E7640717332710001BC9A1 /* InfoPlist.strings */; };
+		B5E7641317332710001BC9A1 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B5E7640B17332710001BC9A1 /* main.m */; };
+		B5E7641A173408BC001BC9A1 /* OCSheets-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = B5E76419173408BC001BC9A1 /* OCSheets-Info.plist */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,18 +52,6 @@
 		B5E763461732D9A3001BC9A1 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		B5E763481732D9A3001BC9A1 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		B5E7634A1732D9A3001BC9A1 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		B5E7634E1732D9A3001BC9A1 /* OCSheets-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OCSheets-Info.plist"; sourceTree = "<group>"; };
-		B5E763501732D9A3001BC9A1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		B5E763521732D9A3001BC9A1 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		B5E763541732D9A3001BC9A1 /* OCSheets-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "OCSheets-Prefix.pch"; sourceTree = "<group>"; };
-		B5E763551732D9A3001BC9A1 /* SheetsSampleAppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SheetsSampleAppDelegate.h; sourceTree = "<group>"; };
-		B5E763561732D9A3001BC9A1 /* SheetsSampleAppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SheetsSampleAppDelegate.m; sourceTree = "<group>"; };
-		B5E763581732D9A3001BC9A1 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Default.png; sourceTree = "<group>"; };
-		B5E7635A1732D9A3001BC9A1 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default@2x.png"; sourceTree = "<group>"; };
-		B5E7635C1732D9A3001BC9A1 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
-		B5E7635E1732D9A3001BC9A1 /* OCViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OCViewController.h; sourceTree = "<group>"; };
-		B5E7635F1732D9A3001BC9A1 /* OCViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OCViewController.m; sourceTree = "<group>"; };
-		B5E763621732D9A3001BC9A1 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/OCViewController.xib; sourceTree = "<group>"; };
 		B5E763691732D9A4001BC9A1 /* OCSheetsTests.octest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OCSheetsTests.octest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B5E7636A1732D9A4001BC9A1 /* SenTestingKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SenTestingKit.framework; path = Library/Frameworks/SenTestingKit.framework; sourceTree = DEVELOPER_DIR; };
 		B5E763721732D9A4001BC9A1 /* OCSheetsTests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "OCSheetsTests-Info.plist"; sourceTree = "<group>"; };
@@ -82,12 +71,24 @@
 		B5E7638B1732DDDD001BC9A1 /* SheetNavigationItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SheetNavigationItem.h; sourceTree = "<group>"; };
 		B5E7638C1732DDDD001BC9A1 /* SheetNavigationItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SheetNavigationItem.m; sourceTree = "<group>"; };
 		B5E7638D1732DDDD001BC9A1 /* SheetPageView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SheetPageView.xib; sourceTree = "<group>"; };
-		B5E7638E1732DDDD001BC9A1 /* SheetPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SheetPageViewController.h; sourceTree = "<group>"; };
-		B5E7638F1732DDDD001BC9A1 /* SheetPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SheetPageViewController.m; sourceTree = "<group>"; };
 		B5E763901732DDDD001BC9A1 /* UIViewController+SheetNavigationController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+SheetNavigationController.h"; sourceTree = "<group>"; };
 		B5E763E117330CB1001BC9A1 /* UIView+position.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+position.h"; sourceTree = "<group>"; };
 		B5E763E217330CB1001BC9A1 /* UIView+position.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+position.m"; sourceTree = "<group>"; };
-		B5E763E417330CE4001BC9A1 /* UsefulMacros.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UsefulMacros.h; sourceTree = "<group>"; };
+		B5E763F61733267E001BC9A1 /* SheetsSampleAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SheetsSampleAppDelegate.h; path = OCSheetsDemo/SheetsSampleAppDelegate.h; sourceTree = SOURCE_ROOT; };
+		B5E763F71733267E001BC9A1 /* SheetsSampleAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SheetsSampleAppDelegate.m; path = OCSheetsDemo/SheetsSampleAppDelegate.m; sourceTree = SOURCE_ROOT; };
+		B5E763F917332693001BC9A1 /* OCViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OCViewController.h; path = OCSheetsDemo/OCViewController.h; sourceTree = SOURCE_ROOT; };
+		B5E763FA17332693001BC9A1 /* OCViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = OCViewController.m; path = OCSheetsDemo/OCViewController.m; sourceTree = SOURCE_ROOT; };
+		B5E763FC173326D0001BC9A1 /* SheetPageView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = SheetPageView.xib; path = OCSheetsDemo/SheetPageView.xib; sourceTree = SOURCE_ROOT; };
+		B5E763FD173326D0001BC9A1 /* SheetPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SheetPageViewController.h; path = OCSheetsDemo/SheetPageViewController.h; sourceTree = SOURCE_ROOT; };
+		B5E763FE173326D0001BC9A1 /* SheetPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SheetPageViewController.m; path = OCSheetsDemo/SheetPageViewController.m; sourceTree = SOURCE_ROOT; };
+		B5E76401173326F2001BC9A1 /* OCView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = OCView.xib; sourceTree = "<group>"; };
+		B5E7640317332710001BC9A1 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default-568h@2x.png"; path = "OCSheetsDemo/Default-568h@2x.png"; sourceTree = SOURCE_ROOT; };
+		B5E7640417332710001BC9A1 /* Default.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Default.png; path = OCSheetsDemo/Default.png; sourceTree = SOURCE_ROOT; };
+		B5E7640517332710001BC9A1 /* Default@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "Default@2x.png"; path = "OCSheetsDemo/Default@2x.png"; sourceTree = SOURCE_ROOT; };
+		B5E7640817332710001BC9A1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = InfoPlist.strings; sourceTree = "<group>"; };
+		B5E7640B17332710001BC9A1 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = OCSheetsDemo/main.m; sourceTree = SOURCE_ROOT; };
+		B5E7640D17332710001BC9A1 /* OCSheets-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "OCSheets-Prefix.pch"; path = "OCSheetsDemo/OCSheets-Prefix.pch"; sourceTree = SOURCE_ROOT; };
+		B5E76419173408BC001BC9A1 /* OCSheets-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "OCSheets-Info.plist"; path = "OCSheetsDemo/OCSheets-Info.plist"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -149,16 +150,15 @@
 			children = (
 				B5E763E517330D10001BC9A1 /* Containment */,
 				B5E763E617330D2B001BC9A1 /* Helpers */,
-				B5E763551732D9A3001BC9A1 /* SheetsSampleAppDelegate.h */,
-				B5E763561732D9A3001BC9A1 /* SheetsSampleAppDelegate.m */,
-				B5E7635E1732D9A3001BC9A1 /* OCViewController.h */,
-				B5E7635F1732D9A3001BC9A1 /* OCViewController.m */,
-				B5E763611732D9A3001BC9A1 /* OCViewController.xib */,
-				B5E763811732DDDD001BC9A1 /* BasicSheetViewController.h */,
-				B5E763821732DDDD001BC9A1 /* BasicSheetViewController.m */,
+				B5E763F61733267E001BC9A1 /* SheetsSampleAppDelegate.h */,
+				B5E763F71733267E001BC9A1 /* SheetsSampleAppDelegate.m */,
+				B5E763FC173326D0001BC9A1 /* SheetPageView.xib */,
+				B5E763FD173326D0001BC9A1 /* SheetPageViewController.h */,
+				B5E763FE173326D0001BC9A1 /* SheetPageViewController.m */,
+				B5E763F917332693001BC9A1 /* OCViewController.h */,
+				B5E763FA17332693001BC9A1 /* OCViewController.m */,
+				B5E76401173326F2001BC9A1 /* OCView.xib */,
 				B5E7638D1732DDDD001BC9A1 /* SheetPageView.xib */,
-				B5E7638E1732DDDD001BC9A1 /* SheetPageViewController.h */,
-				B5E7638F1732DDDD001BC9A1 /* SheetPageViewController.m */,
 				B5E7634D1732D9A3001BC9A1 /* Supporting Files */,
 			);
 			path = OCSheets;
@@ -167,13 +167,13 @@
 		B5E7634D1732D9A3001BC9A1 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				B5E7634E1732D9A3001BC9A1 /* OCSheets-Info.plist */,
-				B5E7634F1732D9A3001BC9A1 /* InfoPlist.strings */,
-				B5E763521732D9A3001BC9A1 /* main.m */,
-				B5E763541732D9A3001BC9A1 /* OCSheets-Prefix.pch */,
-				B5E763581732D9A3001BC9A1 /* Default.png */,
-				B5E7635A1732D9A3001BC9A1 /* Default@2x.png */,
-				B5E7635C1732D9A3001BC9A1 /* Default-568h@2x.png */,
+				B5E76419173408BC001BC9A1 /* OCSheets-Info.plist */,
+				B5E7640317332710001BC9A1 /* Default-568h@2x.png */,
+				B5E7640417332710001BC9A1 /* Default.png */,
+				B5E7640517332710001BC9A1 /* Default@2x.png */,
+				B5E7640617332710001BC9A1 /* en.lproj */,
+				B5E7640B17332710001BC9A1 /* main.m */,
+				B5E7640D17332710001BC9A1 /* OCSheets-Prefix.pch */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -200,6 +200,8 @@
 		B5E763E517330D10001BC9A1 /* Containment */ = {
 			isa = PBXGroup;
 			children = (
+				B5E763811732DDDD001BC9A1 /* BasicSheetViewController.h */,
+				B5E763821732DDDD001BC9A1 /* BasicSheetViewController.m */,
 				B5E763831732DDDD001BC9A1 /* SheetController.h */,
 				B5E763841732DDDD001BC9A1 /* SheetController.m */,
 				B5E763851732DDDD001BC9A1 /* SheetHistoryManager.h */,
@@ -220,10 +222,18 @@
 			children = (
 				B5E763E117330CB1001BC9A1 /* UIView+position.h */,
 				B5E763E217330CB1001BC9A1 /* UIView+position.m */,
-				B5E763E417330CE4001BC9A1 /* UsefulMacros.h */,
 			);
 			name = Helpers;
 			sourceTree = "<group>";
+		};
+		B5E7640617332710001BC9A1 /* en.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				B5E7640717332710001BC9A1 /* InfoPlist.strings */,
+			);
+			name = en.lproj;
+			path = OCSheetsDemo/en.lproj;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -297,12 +307,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B5E763511732D9A3001BC9A1 /* InfoPlist.strings in Resources */,
-				B5E763591732D9A3001BC9A1 /* Default.png in Resources */,
-				B5E7635B1732D9A3001BC9A1 /* Default@2x.png in Resources */,
-				B5E7635D1732D9A3001BC9A1 /* Default-568h@2x.png in Resources */,
-				B5E763631732D9A3001BC9A1 /* OCViewController.xib in Resources */,
 				B5E763971732DDDD001BC9A1 /* SheetPageView.xib in Resources */,
+				B5E763FF173326D0001BC9A1 /* SheetPageView.xib in Resources */,
+				B5E76402173326F2001BC9A1 /* OCView.xib in Resources */,
+				B5E7640E17332710001BC9A1 /* Default-568h@2x.png in Resources */,
+				B5E7640F17332710001BC9A1 /* Default.png in Resources */,
+				B5E7641017332710001BC9A1 /* Default@2x.png in Resources */,
+				B5E7641117332710001BC9A1 /* InfoPlist.strings in Resources */,
+				B5E7641A173408BC001BC9A1 /* OCSheets-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -337,18 +349,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				B5E763E817330DA9001BC9A1 /* UsefulMacros.h in Sources */,
 				B5E763E717330DA4001BC9A1 /* UIView+position.m in Sources */,
-				B5E763531732D9A3001BC9A1 /* main.m in Sources */,
-				B5E763571732D9A3001BC9A1 /* SheetsSampleAppDelegate.m in Sources */,
-				B5E763601732D9A3001BC9A1 /* OCViewController.m in Sources */,
 				B5E763911732DDDD001BC9A1 /* BasicSheetViewController.m in Sources */,
 				B5E763921732DDDD001BC9A1 /* SheetController.m in Sources */,
 				B5E763931732DDDD001BC9A1 /* SheetHistoryManager.m in Sources */,
 				B5E763941732DDDD001BC9A1 /* SheetLayoutModel.m in Sources */,
 				B5E763951732DDDD001BC9A1 /* SheetNavigationController.m in Sources */,
 				B5E763961732DDDD001BC9A1 /* SheetNavigationItem.m in Sources */,
-				B5E763981732DDDD001BC9A1 /* SheetPageViewController.m in Sources */,
+				B5E763F81733267E001BC9A1 /* SheetsSampleAppDelegate.m in Sources */,
+				B5E763FB17332693001BC9A1 /* OCViewController.m in Sources */,
+				B5E76400173326D0001BC9A1 /* SheetPageViewController.m in Sources */,
+				B5E7641317332710001BC9A1 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -372,26 +383,18 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
-		B5E7634F1732D9A3001BC9A1 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B5E763501732D9A3001BC9A1 /* en */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		B5E763611732D9A3001BC9A1 /* OCViewController.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				B5E763621732D9A3001BC9A1 /* en */,
-			);
-			name = OCViewController.xib;
-			sourceTree = "<group>";
-		};
 		B5E763731732D9A4001BC9A1 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
 				B5E763741732D9A4001BC9A1 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		B5E7640717332710001BC9A1 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B5E7640817332710001BC9A1 /* en */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -459,8 +462,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "OCSheets/OCSheets-Prefix.pch";
-				INFOPLIST_FILE = "OCSheets/OCSheets-Info.plist";
+				GCC_PREFIX_HEADER = "OCSheetsDemo/OCSheets-Prefix.pch";
+				INFOPLIST_FILE = "OCSheetsDemo/OCSheets-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -470,8 +473,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = "OCSheets/OCSheets-Prefix.pch";
-				INFOPLIST_FILE = "OCSheets/OCSheets-Info.plist";
+				GCC_PREFIX_HEADER = "OCSheetsDemo/OCSheets-Prefix.pch";
+				INFOPLIST_FILE = "OCSheetsDemo/OCSheets-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};

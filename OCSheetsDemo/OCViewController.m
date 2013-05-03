@@ -14,6 +14,20 @@
 
 @implementation OCViewController
 
+- (id)init
+{
+    self = [super initWithNibName:@"OCView" bundle:nil];
+    if (self){
+        //
+    }
+    
+    return self;
+}
+- (id)initWithNibName:(NSString *)n bundle:(NSBundle *)b
+{
+    return [self init];
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
