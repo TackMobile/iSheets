@@ -274,8 +274,8 @@ typedef enum {
     }
 }
 
-- (CGRect)peekedFrameForViewController:(SheetController *)vc {
-    const CGFloat peekWidth = [self getPeekedWidth:vc.contentViewController];
+- (CGRect)peekedFrameForViewController:(UIViewController *)vc {
+    const CGFloat peekWidth = [self getPeekedWidth:[(SheetController *)vc contentViewController]];
     CGFloat xPos = [self overallWidth];
     return CGRectMake(xPos - peekWidth,
                       0.0,
@@ -372,14 +372,9 @@ typedef enum {
         xLoc -= vc.sheetNavigationItem.peekedWidth;
     }
     
-    //BOOL isFullscreen = vc.sheetNavigationItem.layoutType == kSheetLayoutFullScreen ? YES : NO;
     BOOL wantsDefaultPeekedSheet = wantsDefaultPeekedSheet([(SheetController *)self.firstStackedController contentViewController]);
-    BOOL isPeekedSheet = vc.sheetNavigationItem.expanded;//isDefaultPeekedSheet(vc.contentViewController);
-    BOOL animateOutAndInDefaultPeekedSheet = wantsDefaultPeekedSheet && isPeekedSheet;// && isFullscreen;
-    
-    if (animateOutAndInDefaultPeekedSheet) {
-        self.defaultPeekedViewController.view.frameX = [self overallWidth];
-    }
+    BOOL isPeekedSheet = vc.sheetNavigationItem.expanded;
+    BOOL animateOutAndInDefaultPeekedSheet = wantsDefaultPeekedSheet;
     
     if (isPeekedSheet) {
         xLoc -= [self getPeekedWidth:vc.contentViewController];
@@ -396,8 +391,18 @@ typedef enum {
         UIViewController *contentVC = vc.contentViewController;
         [self removeSheetFromViewHeirarchy:vc];
         
-        [self configurePeekedViewController:contentVC];
-        [self peekViewController:(SheetController *)self.defaultPeekedViewController animated:NO];
+        if (isPeekedSheet) {
+            [self configurePeekedViewController:contentVC];
+            [self peekViewController:(SheetController *)self.defaultPeekedViewController animated:NO];
+        } else if (animateOutAndInDefaultPeekedSheet) {
+            [UIView animateWithDuration:[self animateOnDuration]
+                                  delay:0
+                                options: SHEET_ADDING_ANIMATION_OPTION
+                             animations:^{
+                                 self.defaultPeekedViewController.view.frameX = [self peekedFrameForViewController:self.defaultPeekedViewController].origin.x;
+                             }
+                             completion:nil];
+        }
     };
     
     if (animated) {
@@ -405,6 +410,9 @@ typedef enum {
                               delay:0
                             options: SHEET_REMOVAL_ANIMATION_OPTION
                          animations:^{
+                             if (animateOutAndInDefaultPeekedSheet) {
+                                 self.defaultPeekedViewController.view.frameX = [self overallWidth];
+                             }
                              vc.view.frame = goAwayFrame;
                              
                          }
@@ -542,7 +550,7 @@ typedef enum {
                                     options: SHEET_ADDING_ANIMATION_OPTION
                                  animations:^{
                                      [self.view addSubview:self.defaultPeekedViewController.view];
-                                     self.defaultPeekedViewController.view.frame = [self peekedFrameForViewController:(SheetController *)contentViewController];
+                                     self.defaultPeekedViewController.view.frame = [self peekedFrameForViewController:(SheetController *)self.defaultPeekedViewController];
                                  } completion:nil];
             }
         }
