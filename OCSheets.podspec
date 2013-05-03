@@ -3,9 +3,9 @@ Pod::Spec.new do |s|
   s.version  = '0.1.1'
   s.license  = 'Modified BSD'
   s.summary  = 'Layered navigation controller for hierarchical iPad apps.'
-  s.homepage = 'https://bitbucket.org/tackmobile/sheets'
+  s.homepage = 'https://github.com/TackMobile/iSheets'
   s.author   = { 'Ben Pilcher' => 'benpilcher@tackmobile.com' }
-  s.source   = { :git => 'https://bitbucket.org/tackmobile/sheets.git', :tag =>  s.version.to_s }
+  s.source   = { :git => 'https://github.com/TackMobile/iSheets.git', :tag =>  s.version.to_s }
 
   s.description = 'Layered navigation controller for hierarchical iPad apps, with variable widths and history. Based originally on fork of FRLayeredNavigationController by Johannes Weiß'
 
