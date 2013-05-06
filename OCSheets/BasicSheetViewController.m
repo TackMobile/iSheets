@@ -40,18 +40,6 @@ block(); \
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 }
 
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-	// Do any additional setup after loading the view.
-    [self applySpecialLayoutRules];
-    
-}
-
-- (void)viewWillLayoutSubviews {
-
-}
-
 - (void)addShadow {
     self.view.layer.shadowRadius = 3.0;
     self.view.layer.shadowOffset = CGSizeMake(-2.0, -1.0);
@@ -67,14 +55,6 @@ block(); \
     }
     [_coverView setFrame:self.view.bounds];
     return _coverView;
-}
-
-- (void)applySpecialLayoutRules {
-    CGFloat width = [[SheetLayoutModel sharedInstance] viewWidthForSheetClassName:NSStringFromClass([self class])];
-    if (width != 0.0) {
-        self.view.frameWidth = width;
-        [self.view setNeedsLayout];
-    }
 }
 
 - (NSNumber *)widthForSheetPosition:(NSNumber *)position navItem:(SheetNavigationItem *)navItem {
@@ -123,7 +103,7 @@ block(); \
 
 - (void)beingUnstacked:(CGFloat)percentUnstacked {
     if (percentUnstacked == 1.0 && self.coverView.alpha == kCoverOpacity) {
-        [self hideView:self.coverView withDelay:0.0];
+        [self hideView:self.coverView withDuration:[SheetLayoutModel animateOffDuration] withDelay:0.0];
         return;
     }
     self.coverView.alpha = kCoverOpacity*(1-percentUnstacked);
@@ -150,14 +130,6 @@ block(); \
     [self.view addSubview:self.coverView];
     self.coverView.alpha = kCoverOpacity;
     self.coverView.backgroundColor = [UIColor blackColor];
-
-//    UILabel *myLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-//    myLabel.text = @"restored!";
-//    [self.view addSubview:myLabel];
-//    [myLabel sizeToFit];
-//    myLabel.textColor = [UIColor redColor];
-//    myLabel.backgroundColor = [UIColor clearColor];
-//    myLabel.frame = CGRectMake(100.0, 5.0, 100.0, 40.0);
 }
 
 - (UIView *)viewForLeftNavButton {
@@ -168,7 +140,7 @@ block(); \
     } else {
         circleImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"sheetsCircle"]];
     }
-
+    
     CGRect frame = circleImage.bounds;
     view = [[UIView alloc] initWithFrame:frame];
     [view addSubview:circleImage];
@@ -210,12 +182,13 @@ block(); \
     [self.sheetNavigationController pushViewController:vc inFrontOf:self configuration:nil];
 }
 
-- (void)hideView:(UIView *)view withDelay:(float)delay {
-    void(^hide)(void) = ^{[UIView animateWithDuration:0.5
-                     animations:^{
-                         view.alpha = 0.0;
-                     }
-                     completion:nil];
+- (void)hideView:(UIView *)view withDuration:(float)duration withDelay:(float)delay {
+    
+    void(^hide)(void) = ^{[UIView animateWithDuration:duration
+                                           animations:^{
+                                               view.alpha = 0.0;
+                                           }
+                                           completion:nil];
     };
     DELAYED_BLOCK(hide, delay);
 }

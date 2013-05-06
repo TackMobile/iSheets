@@ -34,24 +34,24 @@ const CGFloat kSheetDefaultStickingEdge     = 175.0;
 
 #define USE_HARD_CODED_WIDTHS YES
 
-__strong static SheetLayoutModel *_sharedInstance; 
-+ (SheetLayoutModel *) sharedInstance { 
+__strong static SheetLayoutModel *_sharedInstance;
++ (SheetLayoutModel *) sharedInstance {
     if (_sharedInstance == nil) {
         _sharedInstance = [[self alloc] init];
-        [[NSNotificationCenter defaultCenter] addObserver:self 
-                                                 selector:@selector(resetSharedInstance) 
-                                                     name:@"logout" 
-                                                   object:nil]; 
-    } 
-    return _sharedInstance; 
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(resetSharedInstance)
+                                                     name:@"logout"
+                                                   object:nil];
+    }
+    return _sharedInstance;
 }
 
-+ (void) resetSharedInstance { 
++ (void) resetSharedInstance {
     if ([_sharedInstance respondsToSelector:@selector(resetSharedInstance)]) {
         [_sharedInstance performSelector:@selector(resetSharedInstance)];
     }
-    _sharedInstance = nil; 
-    [[NSNotificationCenter defaultCenter] removeObserver:self]; 
+    _sharedInstance = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark Width calculations
@@ -61,7 +61,7 @@ __strong static SheetLayoutModel *_sharedInstance;
 }
 
 - (CGFloat)desiredWidthForContent:(UIViewController *)viewController navItem:(SheetNavigationItem *)navItem {
-   
+    
     CGFloat desiredWidth = 0.0;//navItem.width;
     SheetStackPosition position = -1;
     switch (navItem.offset) {
@@ -87,7 +87,7 @@ __strong static SheetLayoutModel *_sharedInstance;
     }
     // update with overidden width from subclass
     navItem.width = desiredWidth;
-        
+    
     return desiredWidth;
 }
 
@@ -103,7 +103,7 @@ __strong static SheetLayoutModel *_sharedInstance;
 }
 
 - (void)updateNavItem:(SheetNavigationItem *)navItem {
-
+    
     //NSLog(@"%@",navItem.description);
     navItem.width = [self widthForNavItem:navItem];
     navItem.initialViewPosition = [self initialPositionForNavItem:navItem];
@@ -115,7 +115,7 @@ __strong static SheetLayoutModel *_sharedInstance;
 - (CGFloat)widthForNavItem:(SheetNavigationItem *)navItem {
     
     SheetLayoutType layoutType = navItem.layoutType;
-
+    
     CGFloat width = 0.0;
     BOOL shouldTakeAvailableWidth = NO;
     CGFloat availableWidthModifier = 0.0;
@@ -128,7 +128,7 @@ __strong static SheetLayoutModel *_sharedInstance;
         width = [self navControllerWidth];
         CGFloat xPos = [self initX:navItem];
         width -= xPos;
-    
+        
     } else if (layoutType == kSheetLayoutDefault) {
         
         if (USE_HARD_CODED_WIDTHS) {
@@ -148,7 +148,7 @@ __strong static SheetLayoutModel *_sharedInstance;
             shouldTakeAvailableWidth = YES;
             availableWidthPerc = [self widthPercentageForNavItem:navItem];
         }
-    
+        
     }
     
     if (shouldTakeAvailableWidth) {
@@ -159,11 +159,11 @@ __strong static SheetLayoutModel *_sharedInstance;
             width += availableWidthModifier;
         } else if (availableWidthPerc > 0) {
             width *= availableWidthPerc;
-        } 
+        }
     } else if (width == 0.0) {
-         width = kStandardSheetWidth;
+        width = kStandardSheetWidth;
     }
-        
+    
     return floorf(width);
 }
 
@@ -176,7 +176,7 @@ __strong static SheetLayoutModel *_sharedInstance;
 }
 
 - (CGFloat)nextItemDistanceForNavItem:(SheetNavigationItem *)navItem  {
-
+    
     SheetController *controller = navItem.layerController;
     
     if (navItem.index >= [self thresholdForDroppingSheets]) {
@@ -270,19 +270,25 @@ __strong static SheetLayoutModel *_sharedInstance;
     }
 }
 
-/* special rules */
-- (CGFloat)viewWidthForSheetClassName:(NSString *)sheetClass {
-    //UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    
-    //    i.e
-    //    if ([sheetClass isEqualToString:@"NotificationsSheetViewController"]) {
-    //        return 578.99;
-    //    }
-    
-    return 0.0;
+#pragma mark - Helpers
+
++ (NSTimeInterval)animateOffDuration {
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    if (UIInterfaceOrientationIsLandscape(orientation)) {
+        return 0.25;
+    } else {
+        return 0.3;
+    }
 }
 
-#pragma mark - Class methods
++ (NSTimeInterval)animateOnDuration {
+    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
+    if (UIInterfaceOrientationIsLandscape(orientation)) {
+        return 0.4;
+    } else {
+        return 0.5;
+    }
+}
 
 + (CGFloat)stickingEdgeForNavItem:(SheetNavigationItem *)navItem {
     return kSheetDefaultStickingEdge;

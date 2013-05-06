@@ -40,6 +40,7 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 - (BOOL)sheetIsAtBottom:(UIViewController *)sheet;
 - (SheetNavigationItem *)next:(SheetController *)controller;
 - (SheetNavigationItem *)sheetNavigationItemForSheet:(UIViewController *)vc;
+- (BOOL)viewControllerIsPeeked:(UIViewController *)viewController;
 
 /* number of sheets pushed (both in memory and dropped/placeholders) */
 - (NSUInteger)count;
