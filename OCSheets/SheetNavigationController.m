@@ -20,7 +20,7 @@ const CGFloat kSheetSnappingVelocityThreshold   = 340.0;
 #define SHEET_REMOVAL_ANIMATION_OPTION          UIViewAnimationOptionCurveLinear
 #define SHEET_ADDING_ANIMATION_OPTION           UIViewAnimationOptionCurveEaseOut
 
-#define isDefaultPeekedSheet(x)                 [x isEqual:self.defaultPeekedViewController]
+#define isDefaultPeekedSheet(x)                 [x isEqual:self.peekedSheetController]
 #define wantsDefaultPeekedSheet(x)              [self showsDefaultPeekedViewController:x]
 
 typedef enum {

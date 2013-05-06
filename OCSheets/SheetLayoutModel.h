@@ -44,8 +44,8 @@ typedef enum {
 
 @interface SheetLayoutModel : NSObject
 
-+ (SheetLayoutModel *) sharedInstance; \
-+ (void) resetSharedInstance; \
++ (SheetLayoutModel *) sharedInstance;
++ (void) resetSharedInstance;
 
 
 @property (nonatomic, strong) SheetNavigationController *controller;
