@@ -109,6 +109,7 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 - (BOOL)peeked;
 
 @optional
+- (void)didGetUnpeeked;
 - (CGFloat)peekedWidth;
 - (void)updateViewForPeeking;
 - (BOOL)showsDefaultPeekedViewController;

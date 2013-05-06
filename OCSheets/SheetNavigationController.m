@@ -350,11 +350,14 @@ typedef enum {
     UIViewController *contentVC = vc.contentViewController;
     void (^completeViewRemoval)(BOOL) = ^(BOOL finished) {
         
-        
+        UIViewController *contentVC = vc.contentViewController;
         [self removeSheetFromViewHeirarchy:vc];
         
         if (isPeekedSheet) {
             vc.sheetNavigationItem.expanded = NO;
+            if ([contentVC respondsToSelector:@selector(didGetUnpeeked)]) {
+                [(id<SheetStackPeeking>)contentVC didGetUnpeeked];
+            }
             [self peekViewController:self.peekedSheetController animated:NO];
         } else if (animateOutAndInDefaultPeekedSheet) {
             [UIView animateWithDuration:[SheetLayoutModel animateOnDuration]
@@ -1430,17 +1433,15 @@ typedef enum {
 - (void)didRemoveSheetWithGesture {
     
     SheetController *vc = (SheetController *)[self.sheetViewControllers lastObject];
+    if ([vc.contentViewController respondsToSelector:@selector(didGetUnpeeked)]) {
+        [(id<SheetStackPeeking>)vc.contentViewController didGetUnpeeked];
+    }
     [self removeSheetFromHistory:vc];
     [self removeSheetFromViewHeirarchy:vc];
     BOOL isExpandedPeeked = vc.sheetNavigationItem.expanded;
     if (isExpandedPeeked){
         [self peekViewController:self.peekedSheetController animated:NO];
     }
-    
-    //    BOOL isDroppedSheet = !controller.contentViewController;
-    //    if (isDroppedSheet) {
-    //        [self restoreSheetContentAtIndex:[self.sheetViewControllers indexOfObject:controller]];
-    //    }
     
     NSUInteger count = self.sheetViewControllers.count;
     [self.sheetViewControllers enumerateObjectsUsingBlock:^(SheetController *vc,NSUInteger idx,BOOL *stop){
@@ -1576,7 +1577,6 @@ typedef enum {
 }
 
 - (void)restoreFirstEmptySheetContentUnder:(UIViewController *)viewController {
-    NSUInteger indexToPop = [_sheetViewControllers indexOfObject:viewController];
     NSUInteger count = _sheetViewControllers.count;
     NSUInteger threshold = [[SheetLayoutModel sharedInstance] thresholdForDroppingSheets];
     if (count < threshold) {
