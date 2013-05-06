@@ -14,9 +14,10 @@
 #import "UIViewController+SheetNavigationController.h"
 #import <QuartzCore/QuartzCore.h>
 
-#define DEFAULT_MENU_WIDTH  200.0
-#define DROPPED_BG_COLOR    [UIColor clearColor]
-#define SAVED_IMAGE_VIEW    80
+#define DEFAULT_MENU_WIDTH      200.0
+#define DROPPED_BG_COLOR        [UIColor clearColor]
+#define SAVED_IMAGE_VIEW        80
+#define DEBUG_DROPPED_SHEETS    NO
 
 @interface SheetController ()
 
@@ -63,8 +64,19 @@
 - (void)dumpContentViewController {
     [self.contentViewController willMoveToParentViewController:nil];
     
+    void(^animationsComplete)(void) = ^{
+        [self.contentViewController.view removeFromSuperview];
+        [self.contentViewController removeFromParentViewController];
+        _contentViewController = nil;
+    };
+    
     // TODO: move this into basic sheet OR hook sheetcontroller into
     // willGetStacked and didGetStacked
+    if (DEBUG_DROPPED_SHEETS) {
+        animationsComplete();
+        self.view.backgroundColor = [UIColor redColor];
+        return;
+    }
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
         UIImageView *savedImage = [self snapshotView];
@@ -72,12 +84,6 @@
         savedImage.tag = SAVED_IMAGE_VIEW;
         savedImage.alpha = 0.0;
         [self.view addSubview:savedImage];
-        
-        void(^crossfadeComplete)(void) = ^{
-            [self.contentViewController.view removeFromSuperview];
-            [self.contentViewController removeFromParentViewController];
-            _contentViewController = nil;
-        };
         
         [UIView animateWithDuration:0.3
                               delay:0
@@ -88,11 +94,11 @@
                          }
                          completion:^(BOOL finished) {
                              if (finished) {
-                                 crossfadeComplete();
+                                 animationsComplete();
                              }
                          }];
     });
-
+    
     self.view.backgroundColor = DROPPED_BG_COLOR;
 }
 
@@ -123,7 +129,7 @@
 
 - (void)setContentViewController:(UIViewController *)contentViewController {
     if (_contentViewController != contentViewController) {
-            
+        
         [[self.view viewWithTag:SAVED_IMAGE_VIEW] removeFromSuperview];
         [UIView animateWithDuration:0.5
                          animations:^{
@@ -169,9 +175,9 @@
     
     borderFrame = CGRectMake(0,0,CGRectGetWidth(self.view.bounds),CGRectGetHeight(self.view.bounds));
     contentFrame = CGRectMake(borderSpacing,
-                                  borderSpacing,
-                                  CGRectGetWidth(self.view.bounds)-(2*borderSpacing),
-                                  CGRectGetHeight(self.view.bounds)-(2*borderSpacing));
+                              borderSpacing,
+                              CGRectGetWidth(self.view.bounds)-(2*borderSpacing),
+                              CGRectGetHeight(self.view.bounds)-(2*borderSpacing));
     
     SheetNavigationItem *navItem = self.sheetNavigationItem;
     
@@ -187,7 +193,7 @@
     }
     
     void(^doFrameMove)(void) = ^{
-        self.contentView.frame = contentFrame;        
+        self.contentView.frame = contentFrame;
     };
     void(^frameMoveComplete)(void) = ^{
         [self.contentView setNeedsLayout];
@@ -231,7 +237,7 @@
 {
     self.view = [[UIView alloc] init];
     self.view.backgroundColor = [UIColor whiteColor];
-
+    
     if (self.contentView == nil && self.contentViewController.parentViewController == self) {
         /* when loaded again after a low memory view removal */
         self.contentView = self.contentViewController.view;
@@ -239,14 +245,14 @@
     
     if (self.contentView != nil) {
         [self.view addSubview:self.contentView];
-      
+        
         if (self.sheetNavigationItem.displayShadow ||
             self.sheetNavigationItem.layoutType == kSheetLayoutDefault ||
             self.sheetNavigationItem.layoutType == kSheetLayoutFullAvailable) {
             [self addShadow:self.contentView];
         }
     }
-
+    
     //self.view.layer.borderColor = [UIColor redColor].CGColor;
     //self.view.layer.borderWidth = 1.0;
 }
@@ -338,14 +344,14 @@
 - (void)didGetUnstacked {
     if ([self.contentViewController respondsToSelector:@selector(didGetUnstacked)]) {
         [(id<SheetStackPage>)self.contentViewController didGetUnstacked];
-    }   
+    }
 }
 
 - (void)willBeStacked {
     if ([self.contentViewController respondsToSelector:@selector(willBeStacked)]) {
         [(id<SheetStackPage>)self.contentViewController willBeStacked];
     }
-  
+    
 }
 
 - (void)didGetStacked {
@@ -388,7 +394,7 @@
                              [self.leftNavButtonItem setHidden:YES];
                          }];
     }
-
+    
 }
 
 @end
