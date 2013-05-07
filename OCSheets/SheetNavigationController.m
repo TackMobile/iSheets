@@ -1132,31 +1132,31 @@ typedef enum {
     }];
 }
 
-- (void)peekViewController:(SheetController *)viewController animated:(BOOL)animated {
-    viewController.sheetNavigationItem.layoutType = kSheetLayoutPeeked;
-    if ([viewController respondsToSelector:@selector(setPeeking:)]) {
-        [(id<SheetStackPeeking>)viewController setPeeking:YES];
+- (void)peekViewController:(SheetController *)sheetController animated:(BOOL)animated {
+    sheetController.sheetNavigationItem.layoutType = kSheetLayoutPeeked;
+    if ([sheetController.contentViewController respondsToSelector:@selector(setPeeking:)]) {
+        [(id<SheetStackPeeking>)sheetController.contentViewController setPeeking:YES];
     }
     
-    [viewController willMoveToParentViewController:self];
-    [viewController.view removeFromSuperview];
-    [viewController removeFromParentViewController];
-    [self addChildViewController:viewController];
+    [sheetController willMoveToParentViewController:self];
+    [sheetController.view removeFromSuperview];
+    [sheetController removeFromParentViewController];
+    [self addChildViewController:sheetController];
     
-    CGRect onscreenFrame = [self peekedFrameForViewController:viewController];
+    CGRect onscreenFrame = [self peekedFrameForViewController:sheetController];
     
-    [self.view addSubview:viewController.view];
+    [self.view addSubview:sheetController.view];
     
     void(^doNewFrameMove)(void) = ^{
-        viewController.view.frame = onscreenFrame;
+        sheetController.view.frame = onscreenFrame;
     };
     void(^frameMoveComplete)(void) = ^{
-        [viewController didMoveToParentViewController:self];
+        [sheetController didMoveToParentViewController:self];
         [(id<SheetStackPage>)self.topSheetContentViewController didGetStacked];
-        [viewController.view setNeedsLayout];
+        [sheetController.view setNeedsLayout];
     };
     if (animated) {
-        viewController.view.frameX = [self overallWidth];
+        sheetController.view.frameX = [self overallWidth];
         [UIView animateWithDuration:0.5
                               delay:0
                             options: SHEET_ADDING_ANIMATION_OPTION
