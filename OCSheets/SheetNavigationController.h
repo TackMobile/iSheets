@@ -81,7 +81,8 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 
 - (BOOL)isProtectedSheet;
 
-- (UIView *)viewForLeftNavButton;
+- (UIView *)leftButtonViewForTopPosition;
+- (UIView *)leftButtonViewForStackedPosition;
 
 // implement if different sheets need different offsets (ie gutters) from the left of the sheet
 - (CGFloat)nextItemDistanceForSheetClass:(NSString *)sheetClass;
@@ -96,8 +97,6 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 
 // unencode previous state for restoration of the sheet
 - (void)decodeRestorableState:(NSDictionary *)archiveDict;
-
-// peloaded view controller peeking in 50px from right
 
 
 @end

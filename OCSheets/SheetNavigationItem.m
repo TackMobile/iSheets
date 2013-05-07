@@ -24,16 +24,11 @@
         self.displayShadow = YES;
         self.width = -1;
         self.nextItemDistance = -1;
-        self.parentID = -1;
         _expanded = NO;
         _count = 0;
     }
     
     return self;
-}
-
-- (SheetNavItemState)reactToTap {
-    return kSheetPopTo;
 }
 
 - (void)setCount:(NSUInteger)count {
@@ -45,6 +40,20 @@
     _expanded = peeked;
 }
 
+- (UIView *)leftButtonView {
+    if (self.offset == 1) {
+        if ([self.sheetController.contentViewController respondsToSelector:@selector(leftButtonViewForTopPosition)]) {
+            return [(id<SheetStackPage>)self.sheetController.contentViewController leftButtonViewForTopPosition];
+        }
+    } else {
+        if ([self.sheetController.contentViewController respondsToSelector:@selector(leftButtonViewForStackedPosition)]) {
+            return [(id<SheetStackPage>)self.sheetController.contentViewController leftButtonViewForStackedPosition];
+        }
+    }
+    
+    return _leftButtonView;
+}
+
 - (NSString *)description {
     NSString *desc = [NSString stringWithFormat:@"\nindex: %i\n",self.index];
     desc = [desc stringByAppendingFormat:@"count: %i\n",self.count];
@@ -54,8 +63,7 @@
     desc = [desc stringByAppendingFormat:@"peeked width: %f\n",self.peekedWidth];
     desc = [desc stringByAppendingFormat:@"display shadow: %s\n",self.displayShadow ? "yes" : "no"];
     desc = [desc stringByAppendingFormat:@"layout type: %i\n",self.layoutType];
-    desc = [desc stringByAppendingFormat:@"parent id: %i\n",self.parentID];
-    desc = [desc stringByAppendingFormat:@"class: %@\n",NSStringFromClass([self.layerController.contentViewController class])];
+    desc = [desc stringByAppendingFormat:@"class: %@\n",NSStringFromClass([self.sheetController.contentViewController class])];
     desc = [desc stringByAppendingFormat:@"init view postion: %@\n",NSStringFromCGPoint(self.initialViewPosition)];
     desc = [desc stringByAppendingFormat:@"current view position: %@\n",NSStringFromCGPoint(self.currentViewPosition)];
     desc = [desc stringByAppendingFormat:@"next item distance: %f\n",self.nextItemDistance];

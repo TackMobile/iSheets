@@ -40,25 +40,33 @@
         
         SheetLayoutType layoutType = [SheetLayoutModel layoutTypeForSheetController:self];
         self.sheetNavigationItem = [[SheetNavigationItem alloc] initWithType:layoutType];
-        self.sheetNavigationItem.layerController = self;
+        self.sheetNavigationItem.sheetController = self;
         self.sheetNavigationItem.nextItemDistance = kSheetNextItemDefaultDistance;
         self.maximumWidth = maxWidth;
         _isRestored = NO;
         
-        if (self.sheetNavigationItem.layoutType != kSheetLayoutFullScreen) {
-            [self.sheetNavigationItem addObserver:self forKeyPath:@"offset" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:NULL];
-        }
     }
     
     return self;
 }
 
+- (void)addObservers {
+    if ([SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem]) {
+        [self.sheetNavigationItem addObserver:self forKeyPath:@"offset" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:NULL];
+        [self.sheetNavigationItem addObserver:self forKeyPath:@"leftButtonView" options:NSKeyValueObservingOptionNew context:NULL];
+        self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
+        self.leftNavButtonItem.alpha = 1.0;
+        [self.view addSubview:self.leftNavButtonItem];
+    }
+}
+
 - (void)dealloc {
-    if (self.sheetNavigationItem.layoutType != kSheetLayoutFullScreen) {
+    if ([SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem]) {
         [self.sheetNavigationItem removeObserver:self forKeyPath:@"offset"];
+        [self.sheetNavigationItem removeObserver:self forKeyPath:@"leftButtonView"];
     }
     
-    self.sheetNavigationItem.layerController = nil;
+    self.sheetNavigationItem.sheetController = nil;
 }
 
 - (void)dumpContentViewController {
@@ -163,7 +171,7 @@
     if (self.leftNavButtonItem) {
         CGRect frame = self.leftNavButtonItem.bounds;
         self.leftNavButtonItem.frameX = -floorf(frame.size.width*0.5);
-        self.leftNavButtonItem.frameY = 10.0;
+        self.leftNavButtonItem.frameY = 7.0;
     }
     
     CGRect contentFrame = CGRectZero;
@@ -227,10 +235,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    if (self.sheetNavigationItem.layoutType != kSheetLayoutFullScreen) {
-        self.leftNavButtonItem = [self getLeftNavButtonItem];
-        [self.view addSubview:self.leftNavButtonItem];
-    }
+    [self addObservers];
 }
 
 - (void)loadView
@@ -257,17 +262,6 @@
     //self.view.layer.borderWidth = 1.0;
 }
 
-- (UIView *)getLeftNavButtonItem {
-    [self.leftNavButtonItem removeFromSuperview];
-    self.leftNavButtonItem = nil;
-    
-    if ([self.contentViewController respondsToSelector:@selector(viewForLeftNavButton)]) {
-        return [(id<SheetStackPage>)self.contentViewController viewForLeftNavButton];
-    }
-    
-    return nil;
-}
-
 - (void)viewWillLayoutSubviews {
     [self doViewLayout];
 }
@@ -278,7 +272,7 @@
     self.borderView = nil;
     self.contentView = nil;
     self.leftNavButtonItem = nil;
-    if (self.sheetNavigationItem.layoutType != kSheetLayoutFullScreen) {
+    if ([SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem]) {
         [self.sheetNavigationItem removeObserver:self forKeyPath:@"offset"];
     }
 }
@@ -366,20 +360,26 @@
                       ofObject:(id)object
                         change:(NSDictionary *)change
                        context:(void *)context {
-    if ([keyPath isEqual:@"offset"]) {
+    if ([keyPath isEqualToString:@"offset"]) {
         [self updateLeftNavButton:change];
+    } else if ([keyPath isEqualToString:@"leftButtonView"]) {
+        [self.leftNavButtonItem removeFromSuperview];
+        self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
+        self.leftNavButtonItem.alpha = 1.0;
+        [self.view addSubview:self.leftNavButtonItem];
     }
 }
 
 - (void)updateLeftNavButton:(NSDictionary *)change {
-    NSNumber *oldVal = (NSNumber *)[change objectForKey:NSKeyValueChangeOldKey];
-    NSNumber * newVal = (NSNumber *)[change objectForKey:NSKeyValueChangeNewKey];
+    NSNumber *oldOffset = (NSNumber *)[change objectForKey:NSKeyValueChangeOldKey];
+    NSNumber * newOffset = (NSNumber *)[change objectForKey:NSKeyValueChangeNewKey];
     
-    BOOL justRevealed = oldVal.intValue == 3 && newVal.intValue == 2;
-    BOOL justHidden = oldVal.intValue == 2 && newVal.intValue == 3;
+    BOOL justRevealed = oldOffset.intValue == 3 && newOffset.intValue == 2;
+    BOOL justHidden = oldOffset.intValue == 2 && newOffset.intValue == 3;
     
-    if (justRevealed || newVal.intValue < 3) {
-        self.leftNavButtonItem = [self getLeftNavButtonItem];
+    if (justRevealed || newOffset.intValue < 3) {
+        [self.leftNavButtonItem removeFromSuperview];
+        self.leftNavButtonItem = [self.sheetNavigationItem leftButtonView];
         self.leftNavButtonItem.alpha = 1.0;
         [self.view addSubview:self.leftNavButtonItem];
     } else if (justHidden) {
@@ -387,7 +387,6 @@
                               delay:0.25
                             options: UIViewAnimationOptionCurveEaseOut
                          animations:^{
-                             NSLog(@"hiding button for %@",NSStringFromClass([self.sheetNavigationItem.layerController.contentViewController class]));
                              self.leftNavButtonItem.alpha = 0.0;
                          }
                          completion:^(BOOL finished) {

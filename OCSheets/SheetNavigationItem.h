@@ -10,13 +10,6 @@
 #import <Foundation/Foundation.h>
 #import "SheetLayoutModel.h"
 
-typedef enum {
-    kSheetIgnore,
-    kSheetPopTo,
-    kSheetCollapse,
-    kExpanded
-} SheetNavItemState;
-
 @class SheetController;
 
 @interface SheetNavigationItem : NSObject
@@ -41,7 +34,6 @@ typedef enum {
 
 @property (nonatomic, readonly) NSUInteger offset;
 
-@property (nonatomic, assign) NSInteger parentID;
 /**
  * All remaining properties below are documented in FRLayeredNavigationItem
  */
@@ -51,10 +43,10 @@ typedef enum {
 @property (nonatomic, assign) CGFloat width;
 @property (nonatomic, assign) BOOL displayShadow;
 @property (nonatomic, strong) NSString *title;
+@property (nonatomic, strong) UIView *leftButtonView;
 
-@property (nonatomic, weak) SheetController *layerController;
+@property (nonatomic, weak) SheetController *sheetController;
 
 - (id)initWithType:(SheetLayoutType)layoutType;
-- (SheetNavItemState)reactToTap;
 
 @end

@@ -15,10 +15,10 @@ dispatch_after(popTime, dispatch_get_main_queue(), ^(void){ \
 block(); \
 });
 
-#define COVER_TAG 45
+#define COVER_TAG               45
 
 @interface BasicSheetViewController () {
-    BOOL _peeked;
+    BOOL _peeking;
 }
 
 @property (nonatomic, strong) UIView *coverView;
@@ -31,7 +31,7 @@ block(); \
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        _peeked = NO;
+        _peeking = NO;
     }
     return self;
 }
@@ -132,17 +132,9 @@ block(); \
     self.coverView.backgroundColor = [UIColor blackColor];
 }
 
-- (UIView *)viewForLeftNavButton {
-    UIView *view = nil;
-    UIImageView *circleImage = nil;
-    if (self.sheetNavigationItem.offset > 1) {
-        circleImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"sheetsCircleStacked"]];
-    } else {
-        circleImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"sheetsCircle"]];
-    }
-    
-    CGRect frame = circleImage.bounds;
-    view = [[UIView alloc] initWithFrame:frame];
+- (UIView *)leftButtonViewForStackedPosition {
+    UIImageView *circleImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"sheetsCircleStacked"]];
+    UIView *view = [[UIView alloc] initWithFrame:circleImage.bounds];
     [view addSubview:circleImage];
     return view;
 }
@@ -158,16 +150,16 @@ block(); \
 }
 
 - (void)setPeeking:(BOOL)peeked {
-    _peeked = peeked;
+    _peeking = peeked;
     [self updateViewForPeeking];
 }
 
 - (BOOL)peeked {
-    return _peeked;
+    return _peeking;
 }
 
 - (void)updateViewForPeeking {
-    if (_peeked) {
+    if (_peeking) {
         [self.view addSubview:self.coverView];
         self.coverView.backgroundColor = [UIColor clearColor];
         self.coverView.alpha = 1.0;

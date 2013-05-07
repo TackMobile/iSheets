@@ -133,7 +133,7 @@ __strong static SheetLayoutModel *_sharedInstance;
         
         if (USE_HARD_CODED_WIDTHS) {
             if (navItem.offset == 1) {
-                CGFloat desiredWidth = [self desiredWidthForContent:navItem.layerController.contentViewController navItem:navItem];
+                CGFloat desiredWidth = [self desiredWidthForContent:navItem.sheetController.contentViewController navItem:navItem];
                 if (desiredWidth != 0.0) {
                     width = desiredWidth;
                 }
@@ -168,16 +168,18 @@ __strong static SheetLayoutModel *_sharedInstance;
 }
 
 - (NSUInteger)thresholdForDroppingSheets {
+    //NSLog(@"%i + %i",kInflatedSheetCountMax,[self protectedCount]);
     return kInflatedSheetCountMax + [self protectedCount];
 }
 
 - (BOOL)shouldDropSheet {
+    //NSLog(@"%i >= %i",self.controller.count,[self thresholdForDroppingSheets]);
     return self.controller.count >= [self thresholdForDroppingSheets];
 }
 
 - (CGFloat)nextItemDistanceForNavItem:(SheetNavigationItem *)navItem  {
     
-    SheetController *controller = navItem.layerController;
+    SheetController *controller = navItem.sheetController;
     
     if (navItem.index >= [self thresholdForDroppingSheets]) {
         navItem.displayShadow = NO;
@@ -226,7 +228,7 @@ __strong static SheetLayoutModel *_sharedInstance;
     UIViewController *parentVc = parentLayerController.contentViewController;
     SheetNavigationItem *parentNavItem = parentLayerController.sheetNavigationItem;
     
-    UIViewController *sheetContent = navItem.layerController.contentViewController;
+    UIViewController *sheetContent = navItem.sheetController.contentViewController;
     CGFloat desiredNextDist = [self desiredNextItemDistanceForParent:parentVc forChild:sheetContent];
     parentNavItem.nextItemDistance = desiredNextDist >= 0.0 ? desiredNextDist : parentNavItem.nextItemDistance;
     
@@ -270,7 +272,15 @@ __strong static SheetLayoutModel *_sharedInstance;
     }
 }
 
-#pragma mark - Helpers
+#pragma mark - Helpers/Rules
+
++ (BOOL)shouldShowLeftNavItem:(SheetNavigationItem *)navItem {
+    if (navItem.layoutType == kSheetLayoutFullScreen ||
+        navItem.layoutType == kSheetLayoutPeeked) {
+        return NO;
+    }
+    return YES;
+}
 
 + (NSTimeInterval)animateOffDuration {
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];

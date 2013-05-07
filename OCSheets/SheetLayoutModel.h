@@ -23,7 +23,8 @@ extern const CGFloat kSheetNotificationWidth;
 typedef enum {
     kSheetLayoutFullScreen,
     kSheetLayoutFullAvailable,
-    kSheetLayoutDefault
+    kSheetLayoutDefault,
+    kSheetLayoutPeeked
 } SheetLayoutType;
 
 typedef enum {
@@ -67,5 +68,6 @@ typedef enum {
 + (SheetLayoutType)layoutTypeForSheetController:(SheetController *)sheetController;
 + (NSTimeInterval)animateOnDuration;
 + (NSTimeInterval)animateOffDuration;
++ (BOOL)shouldShowLeftNavItem:(SheetNavigationItem *)navItem;
 
 @end

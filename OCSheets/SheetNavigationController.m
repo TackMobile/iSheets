@@ -268,7 +268,7 @@ typedef enum {
     CGFloat offScreenX = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
     if (navItem.expanded) {
         // offset it left to match initial x of peeked sheet
-        offScreenX -= [self getPeekedWidth:navItem.layerController.contentViewController];
+        offScreenX -= [self getPeekedWidth:navItem.sheetController.contentViewController];
     }
     frame = CGRectMake(MAX(offScreenX, CGRectGetMinX(onscreenFrame)),
                        0.0,
@@ -1133,7 +1133,7 @@ typedef enum {
 }
 
 - (void)peekViewController:(SheetController *)viewController animated:(BOOL)animated {
-    
+    viewController.sheetNavigationItem.layoutType = kSheetLayoutPeeked;
     if ([viewController respondsToSelector:@selector(setPeeking:)]) {
         [(id<SheetStackPeeking>)viewController setPeeking:YES];
     }
@@ -1246,7 +1246,6 @@ typedef enum {
     switch (gestureRecognizer.state) {
             
         case UIGestureRecognizerStateEnded: {
-            SheetNavItemState state = kSheetIgnore;
             
             UIView *touchedView = [gestureRecognizer.view hitTest:[gestureRecognizer locationInView:gestureRecognizer.view] withEvent:nil];
             self.firstTouchedView = touchedView;
