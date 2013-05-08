@@ -17,7 +17,6 @@
 - (void)pushNewSheet:(UIViewController *)vc;
 - (void)peekSheet:(UIViewController *)vc animated:(BOOL)animated;
 
-// TODO: needed?
 - (CGFloat)widthForSheetPosition:(NSUInteger)position navItem:(SheetNavigationItem *)navItem;
 
 @end

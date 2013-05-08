@@ -1337,8 +1337,8 @@ typedef enum {
             SheetController *firstStacked =  [self firstStackedOnSheetController];
             [(id<SheetStackPage>)firstStacked performSelector:@selector(willBeUnstacked)];
             [self restoreFirstEmptySheetContentUnder:firstStacked];
-            if ([firstStacked.contentViewController respondsToSelector:@selector(sheetNavigationControllerWillMoveController:)]) {
-                [(id<SheetStackPage>)firstStacked.contentViewController sheetNavigationControllerWillMoveController:self];
+            if ([firstStacked.contentViewController respondsToSelector:@selector(sheetNavigationControllerWillPanSheet)]) {
+                [(id<SheetStackPage>)firstStacked.contentViewController sheetNavigationControllerWillPanSheet];
             }
             self.firstStackedController = firstStacked;
             
@@ -1377,8 +1377,8 @@ typedef enum {
             if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:)]) {
                 [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController];
             }
-            if ([self.firstStackedController.contentViewController respondsToSelector:@selector(sheetNavigationControllerMovingViewController:)]) {
-                [(id<SheetStackPage>)self.firstStackedController.contentViewController sheetNavigationControllerMovingViewController:self];
+            if ([self.firstStackedController.contentViewController respondsToSelector:@selector(sheetNavigationControllerPanningSheet)]) {
+                [(id<SheetStackPage>)self.firstStackedController.contentViewController sheetNavigationControllerPanningSheet];
             }
             
             [gestureRecognizer setTranslation:CGPointZero inView:startVc.view];
@@ -1418,8 +1418,8 @@ typedef enum {
                                  if ([self.delegate respondsToSelector:@selector(sheetsheetNavigationController:didMoveController:)]) {
                                      [self.delegate sheetNavigationController:self didMoveController:self.firstTouchedController];
                                  }
-                                 if ([self.firstStackedController.contentViewController respondsToSelector:@selector(sheetNavigationControllerDidMoveController:)]) {
-                                     [(id<SheetStackPage>)self.firstStackedController.contentViewController sheetNavigationControllerDidMoveController:self];
+                                 if ([self.firstStackedController.contentViewController respondsToSelector:@selector(sheetNavigationControllerDidPanSheet)]) {
+                                     [(id<SheetStackPage>)self.firstStackedController.contentViewController sheetNavigationControllerDidPanSheet];
                                  }
                                  SheetStackState stackState = [[SheetLayoutModel sharedInstance] stackState];
                                  if (stackState == kSheetStackStateRemoving) {

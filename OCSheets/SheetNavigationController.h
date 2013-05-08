@@ -89,7 +89,7 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 
 // implement if the sheet's content should be a specific width for different stacking positions
 // and it's not subclassed from BasicSheetViewController.
-// default is to strecth to fullscreen
+// default is to stretch to fullscreen
 - (CGFloat)desiredWidthForSheetPosition:(SheetStackPosition)position navItem:(SheetNavigationItem *)navItem;
 
 // encode any data necessary for restoration of the sheet if dropped
@@ -98,9 +98,9 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 // unencode previous state for restoration of the sheet
 - (void)decodeRestorableState:(NSDictionary *)archiveDict;
 
-- (void)sheetNavigationControllerWillMoveController:(UIViewController*)controller;
-- (void)sheetNavigationControllerMovingViewController:(UIViewController*)controller;
-- (void)sheetNavigationControllerDidMoveController:(UIViewController*)controller;
+- (void)sheetNavigationControllerWillPanSheet;
+- (void)sheetNavigationControllerPanningSheet;
+- (void)sheetNavigationControllerDidPanSheet;
 
 @end
 
