@@ -53,12 +53,12 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 
 @optional
 
-- (void)layeredNavigationController:(SheetNavigationController*)layeredController
-                 willMoveController:(UIViewController*)controller;
-- (void)layeredNavigationController:(SheetNavigationController*)layeredController
-               movingViewController:(UIViewController*)controller;
-- (void)layeredNavigationController:(SheetNavigationController*)layeredController
-                  didMoveController:(UIViewController*)controller;
+- (void)sheetNavigationController:(SheetNavigationController*)controller
+               willMoveController:(UIViewController*)controller;
+- (void)sheetNavigationController:(SheetNavigationController*)controller
+             movingViewController:(UIViewController*)controller;
+- (void)sheetNavigationController:(SheetNavigationController*)controller
+                didMoveController:(UIViewController*)controller;
 
 @end
 
@@ -98,6 +98,9 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 // unencode previous state for restoration of the sheet
 - (void)decodeRestorableState:(NSDictionary *)archiveDict;
 
+- (void)sheetNavigationControllerWillMoveController:(UIViewController*)controller;
+- (void)sheetNavigationControllerMovingViewController:(UIViewController*)controller;
+- (void)sheetNavigationControllerDidMoveController:(UIViewController*)controller;
 
 @end
 

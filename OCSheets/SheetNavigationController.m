@@ -45,7 +45,7 @@ typedef enum {
 
 @property (nonatomic, strong) SheetController *peekedSheetController;
 @property (nonatomic, weak) UIViewController *firstTouchedController;
-@property (nonatomic, weak) UIViewController *firstStackedController;
+@property (nonatomic, weak) SheetController *firstStackedController;
 @property (nonatomic, strong) NSMutableArray *peekedViewControllers;
 
 @end
@@ -334,7 +334,7 @@ typedef enum {
     }
     
     BOOL isFullscreen = vc.sheetNavigationItem.layoutType == kSheetLayoutFullScreen ? YES : NO;
-    BOOL wantsDefaultPeekedSheet = wantsDefaultPeekedSheet([(SheetController *)self.firstStackedController contentViewController]);
+    BOOL wantsDefaultPeekedSheet = wantsDefaultPeekedSheet(self.firstStackedController.contentViewController);
     BOOL isPeekedSheet = vc.sheetNavigationItem.expanded;
     BOOL animateOutAndInDefaultPeekedSheet = wantsDefaultPeekedSheet && isFullscreen && !isPeekedSheet;
     
@@ -588,7 +588,7 @@ typedef enum {
     return topSheetController.contentViewController;
 }
 
-- (UIViewController *)firstStackedOnSheetController {
+- (SheetController *)firstStackedOnSheetController {
     if (self.count < 2) {
         return nil;
     }
@@ -1274,8 +1274,8 @@ typedef enum {
                 }
             }
             
-            if ([self.delegate respondsToSelector:@selector(layeredNavigationController:willMoveController:)]) {
-                [self.delegate layeredNavigationController:self willMoveController:self.firstTouchedController];
+            if ([self.delegate respondsToSelector:@selector(sheetNavigationController:willMoveController:)]) {
+                [self.delegate sheetNavigationController:self willMoveController:self.firstTouchedController];
             }
             
             if (self.firstTouchedController) {
@@ -1316,28 +1316,31 @@ typedef enum {
             self.firstTouchedView = touchedView;
             for (SheetController *controller in [self.sheetViewControllers reverseObjectEnumerator]) {
                 if ([touchedView isDescendantOfView:controller.view]) {
-                    self.firstTouchedController = controller.contentViewController;
                     
                     if (![self sheetShouldPan:self.firstTouchedController]) {
                         [gestureRecognizer setEnabled:NO];
                         [gestureRecognizer setEnabled:YES];
+                    } else {
+                        self.firstTouchedController = controller.contentViewController;
                     }
                     
                     break;
                 }
             }
             
-            if ([self.delegate respondsToSelector:@selector(layeredNavigationController:willMoveController:)]) {
-                [self.delegate layeredNavigationController:self willMoveController:self.firstTouchedController];
+            if ([self.delegate respondsToSelector:@selector(sheetNavigationController:willMoveController:)]) {
+                [self.delegate sheetNavigationController:self willMoveController:self.firstTouchedController];
             }
             
-            UIViewController *firstStacked = [self firstStackedOnSheetController];
+            SheetController *firstStacked =  [self firstStackedOnSheetController];
             [(id<SheetStackPage>)firstStacked performSelector:@selector(willBeUnstacked)];
             [self restoreFirstEmptySheetContentUnder:firstStacked];
+            if ([firstStacked.contentViewController respondsToSelector:@selector(sheetNavigationControllerWillMoveController:)]) {
+                [(id<SheetStackPage>)firstStacked.contentViewController sheetNavigationControllerWillMoveController:self];
+            }
             self.firstStackedController = firstStacked;
             
             willPopToRootSheet = gestureRecognizer.numberOfTouches == 2;
-            
             
             break;
         }
@@ -1369,8 +1372,11 @@ typedef enum {
                 [self forwardUnstackingPercentage:percComplete];
             }
             
-            if ([self.delegate respondsToSelector:@selector(layeredNavigationController:movingViewController:)]) {
-                [self.delegate layeredNavigationController:self movingViewController:self.firstTouchedController];
+            if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:)]) {
+                [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController];
+            }
+            if ([self.firstStackedController.contentViewController respondsToSelector:@selector(sheetNavigationControllerMovingViewController:)]) {
+                [(id<SheetStackPage>)self.firstStackedController.contentViewController sheetNavigationControllerMovingViewController:self];
             }
             
             [gestureRecognizer setTranslation:CGPointZero inView:startVc.view];
@@ -1407,8 +1413,11 @@ typedef enum {
                 [self moveToSnappingPointsWithGestureRecognizer:gestureRecognizer];
             }
                              completion:^(BOOL finished) {
-                                 if ([self.delegate respondsToSelector:@selector(layeredNavigationController:didMoveController:)]) {
-                                     [self.delegate layeredNavigationController:self didMoveController:self.firstTouchedController];
+                                 if ([self.delegate respondsToSelector:@selector(sheetsheetNavigationController:didMoveController:)]) {
+                                     [self.delegate sheetNavigationController:self didMoveController:self.firstTouchedController];
+                                 }
+                                 if ([self.firstStackedController.contentViewController respondsToSelector:@selector(sheetNavigationControllerDidMoveController:)]) {
+                                     [(id<SheetStackPage>)self.firstStackedController.contentViewController sheetNavigationControllerDidMoveController:self];
                                  }
                                  SheetStackState stackState = [[SheetLayoutModel sharedInstance] stackState];
                                  if (stackState == kSheetStackStateRemoving) {
@@ -1428,6 +1437,7 @@ typedef enum {
             break;
     }
 }
+
 
 - (void)didRemoveSheetWithGesture {
     

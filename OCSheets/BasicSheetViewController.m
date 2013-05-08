@@ -168,7 +168,29 @@ block(); \
     }
 }
 
+- (void)sheetNavigationControllerWillMoveController:(UIViewController *)controller {
+    
+}
+
+- (void)sheetNavigationControllerDidMoveController:(UIViewController *)controller {
+    
+}
+
 #pragma mark View helpers
+
+- (UIImageView *)snapshotView
+{
+    UIGraphicsBeginImageContextWithOptions(self.view.bounds.size,YES,0.0f); //screenshot
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    [self.view.layer renderInContext:context];
+    UIImage *viewImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    
+    UIImageView *snapshot = [[UIImageView alloc] initWithImage:viewImage];
+    
+    return snapshot;
+}
 
 - (void)pushNewSheet:(UIViewController *)vc {
     [self.sheetNavigationController pushViewController:vc inFrontOf:self configuration:nil];
