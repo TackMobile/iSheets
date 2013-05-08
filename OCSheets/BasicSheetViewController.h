@@ -10,7 +10,7 @@
 #import "SheetNavigationController.h"
 #import "UIViewController+SheetNavigationController.h"
 
-@interface BasicSheetViewController : UIViewController <SheetStackPage,SheetStackPeeking>
+@interface BasicSheetViewController : UIViewController <SheetStackPage>
 
 @property (nonatomic, strong) UIViewController *peekedViewController;
 
@@ -18,6 +18,6 @@
 - (void)peekSheet:(UIViewController *)vc animated:(BOOL)animated;
 
 // TODO: needed?
-- (NSNumber *)widthForSheetPosition:(NSNumber *)position navItem:(SheetNavigationItem *)navItem;
+- (CGFloat)widthForSheetPosition:(NSUInteger)position navItem:(SheetNavigationItem *)navItem;
 
 @end

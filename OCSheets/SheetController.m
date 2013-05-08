@@ -19,13 +19,21 @@
 #define SAVED_IMAGE_VIEW        80
 #define DEBUG_DROPPED_SHEETS    NO
 
-@interface SheetController ()
+#define DELAYED_BLOCK(block,delay) dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)); \
+dispatch_after(popTime, dispatch_get_main_queue(), ^(void){ \
+block(); \
+});
+
+@interface SheetController () {
+    BOOL _peeking;
+}
 
 @property (nonatomic, readwrite, strong) SheetNavigationItem *sheetNavigationItem;
 @property (nonatomic, readwrite) BOOL maximumWidth;
 @property (nonatomic, strong) UIView *borderView;
 @property (nonatomic, strong) UIView *leftNavButtonItem;
 @property (nonatomic, weak) UIView *contentView;
+@property (nonatomic, strong) UIView *coverView;
 
 @end
 
@@ -37,7 +45,7 @@
 {
     if ((self = [super init])) {
         _contentViewController = vc;
-        
+        _peeking = NO;
         SheetLayoutType layoutType = [SheetLayoutModel layoutTypeForSheetController:self];
         self.sheetNavigationItem = [[SheetNavigationItem alloc] initWithType:layoutType];
         self.sheetNavigationItem.sheetController = self;
@@ -156,6 +164,7 @@
         self.contentView = self.contentViewController.view;
         [self.view addSubview:self.contentView];
         [self.view addSubview:self.leftNavButtonItem];
+        //[self.view addSubview:self.coverView];
         
         _isRestored = YES;
         self.view.backgroundColor = [UIColor whiteColor];
@@ -257,9 +266,6 @@
             [self addShadow:self.contentView];
         }
     }
-    
-    //self.view.layer.borderColor = [UIColor redColor].CGColor;
-    //self.view.layer.borderWidth = 1.0;
 }
 
 - (void)viewWillLayoutSubviews {
@@ -290,7 +296,9 @@
         self.contentView = self.contentViewController.view;
         [self.view addSubview:self.contentView];
         [self.view addSubview:self.leftNavButtonItem];
-        
+        if (_peeking) {
+            [self.view addSubview:self.coverView];
+        }
     } else {
         /* will shortly detach from parent view controller */
         [self.contentViewController willMoveToParentViewController:nil];
@@ -311,6 +319,25 @@
     }
 }
 
+- (void)rasterizeAndSnapshot {
+    if (self.sheetNavigationItem.offset == 2) {
+        UIImageView *snapshot = [self snapshotView];
+        snapshot.layer.borderColor = [UIColor redColor].CGColor;
+        snapshot.layer.borderWidth = 1.0;
+        //#import <QuartzCore/QuartzCore.h>
+        snapshot.tag = 120;
+        [self.view insertSubview:snapshot belowSubview:self.coverView];
+        [self.view.layer setShouldRasterize:YES];
+        //NSLog(@"did turn ON rasterization for %@",NSStringFromClass([self.sheetNavigationItem.sheetController.contentViewController class]));
+    }
+}
+
+- (void)unrasterizeAndUnsnapshot {
+    [[self.view viewWithTag:120] removeFromSuperview];
+    [self.view.layer setShouldRasterize:NO];
+    ///NSLog(@"did turn OFF rasterization for %@",NSStringFromClass([self.sheetNavigationItem.sheetController.contentViewController class]));
+}
+
 #pragma mark Sheet stack page
 
 - (void)willBeUnstacked {
@@ -320,6 +347,13 @@
 }
 
 - (void)beingUnstacked:(CGFloat)percentUnstacked {
+    
+    if (percentUnstacked == 1.0 && self.coverView.alpha == kCoverOpacity) {
+        [self hideView:self.coverView withDuration:[SheetLayoutModel animateOffDuration] withDelay:0.0];
+        return;
+    }
+    self.coverView.alpha = kCoverOpacity*(1-percentUnstacked);
+    
     if ([self.contentViewController respondsToSelector:@selector(beingUnstacked:)]) {
         [(id<SheetStackPage>)self.contentViewController beingUnstacked:percentUnstacked];
     }
@@ -336,21 +370,66 @@
 }
 
 - (void)didGetUnstacked {
+    [self removeView:self.coverView];
+    if (self.sheetNavigationItem.offset == 1) {
+        [self unrasterizeAndUnsnapshot];
+    }
+    
     if ([self.contentViewController respondsToSelector:@selector(didGetUnstacked)]) {
         [(id<SheetStackPage>)self.contentViewController didGetUnstacked];
     }
 }
 
 - (void)willBeStacked {
+    
+    [self.view addSubview:self.coverView];
+    self.coverView.backgroundColor = [UIColor blackColor];
+    [self revealView:self.coverView withDelay:0.0];
+    
     if ([self.contentViewController respondsToSelector:@selector(willBeStacked)]) {
         [(id<SheetStackPage>)self.contentViewController willBeStacked];
     }
-    
 }
 
 - (void)didGetStacked {
+    if (self.sheetNavigationItem.offset == 2) {
+        [self rasterizeAndSnapshot];
+    }
     if ([self.contentViewController respondsToSelector:@selector(didGetStacked)]) {
         [(id<SheetStackPage>)self.contentViewController didGetStacked];
+    }
+}
+
+- (void)decodeRestorableState:(NSDictionary *)archiveDict {
+    [self.view addSubview:self.coverView];
+    self.coverView.alpha = kCoverOpacity;
+    self.coverView.backgroundColor = [UIColor blackColor];
+    
+    if ([self.contentViewController respondsToSelector:@selector(decodeRestorableState)]) {
+        [(id<SheetStackPage>)self.contentViewController decodeRestorableState:archiveDict];
+    }
+}
+
+- (void)setPeeking:(BOOL)peeked {
+    _peeking = peeked;
+    [self updateViewForPeeking];
+    
+    if ([self.contentViewController respondsToSelector:@selector(setPeeking:)]) {
+        [(id<SheetStackPeeking>)self.contentViewController setPeeking:_peeking];
+    }
+}
+
+- (BOOL)peeked {
+    return _peeking;
+}
+
+- (void)updateViewForPeeking {
+    if (_peeking) {
+        [self.view addSubview:self.coverView];
+        self.coverView.backgroundColor = [UIColor clearColor];
+        self.coverView.alpha = 1.0;
+    } else {
+        [self removeView:_coverView];
     }
 }
 
@@ -394,6 +473,48 @@
                          }];
     }
     
+}
+
+- (UIView *)coverView {
+    if (!_coverView) {
+        _coverView = [[UIView alloc] initWithFrame:CGRectZero];
+        _coverView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
+    }
+    [_coverView setFrame:self.view.bounds];
+    return _coverView;
+}
+
+- (void)hideView:(UIView *)view withDuration:(float)duration withDelay:(float)delay {
+    
+    void(^hide)(void) = ^{[UIView animateWithDuration:duration
+                                           animations:^{
+                                               view.alpha = 0.0;
+                                           }
+                                           completion:nil];
+    };
+    DELAYED_BLOCK(hide, delay);
+}
+
+- (void)revealView:(UIView *)view withDelay:(float)delay {
+    view.alpha = 0.0;
+    void(^show)(void) = ^{
+        [UIView animateWithDuration:0.5
+                         animations:^{
+                             view.alpha = kCoverOpacity;
+                         }
+                         completion:nil];
+    };
+    DELAYED_BLOCK(show, delay);
+}
+
+- (void)removeView:(UIView *)view {
+    [UIView animateWithDuration:0.5
+                     animations:^{
+                         view.alpha = 0.0;
+                     }
+                     completion:^(BOOL finished){
+                         [view removeFromSuperview];
+                     }];
 }
 
 @end

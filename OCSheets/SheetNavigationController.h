@@ -54,11 +54,11 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 @optional
 
 - (void)sheetNavigationController:(SheetNavigationController*)controller
-               willMoveController:(UIViewController*)controller;
+                 willMoveController:(UIViewController*)controller;
 - (void)sheetNavigationController:(SheetNavigationController*)controller
-             movingViewController:(UIViewController*)controller;
+               movingViewController:(UIViewController*)controller;
 - (void)sheetNavigationController:(SheetNavigationController*)controller
-                didMoveController:(UIViewController*)controller;
+                  didMoveController:(UIViewController*)controller;
 
 @end
 

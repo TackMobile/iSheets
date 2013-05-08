@@ -910,7 +910,7 @@ typedef enum {
     
     BOOL descendentOfTouched = NO;
     SheetController *rootVC = [self.sheetViewControllers objectAtIndex:0];
-    BOOL hasPeekedViewControllers = self.peekedSheetController ? YES : NO;
+    //BOOL hasPeekedViewControllers = self.peekedSheetController ? YES : NO;
     
     for (SheetController *me in [self.sheetViewControllers reverseObjectEnumerator]) {
         if (rootVC == me) {
@@ -1111,10 +1111,10 @@ typedef enum {
 }
 
 - (void)expandPeekedSheet {
-    SheetController *peekedSheetController = self.peekedSheetController;//(SheetController *)[self topPeekedSheet];
-    UIViewController *peekedVC = peekedSheetController.contentViewController;
-    if ([peekedVC respondsToSelector:@selector(setPeeking:)]) {
-        [(id<SheetStackPeeking>)peekedVC setPeeking:NO];
+    SheetController *peekedSheetController = self.peekedSheetController;
+    
+    if ([peekedSheetController respondsToSelector:@selector(setPeeking:)]) {
+        [(id<SheetStackPeeking>)peekedSheetController setPeeking:NO];
     }
     
     SheetNavigationItem *oldNavItem = peekedSheetController.sheetNavigationItem;
@@ -1123,6 +1123,7 @@ typedef enum {
     [peekedSheetController.view removeFromSuperview];
     [peekedSheetController willMoveToParentViewController:nil];
     
+    UIViewController *peekedVC = peekedSheetController.contentViewController;
     peekedVC.view.frameX = 0.0;
     peekedVC.view.frameY = 0.0;
     
@@ -1134,8 +1135,8 @@ typedef enum {
 
 - (void)peekViewController:(SheetController *)sheetController animated:(BOOL)animated {
     sheetController.sheetNavigationItem.layoutType = kSheetLayoutPeeked;
-    if ([sheetController.contentViewController respondsToSelector:@selector(setPeeking:)]) {
-        [(id<SheetStackPeeking>)sheetController.contentViewController setPeeking:YES];
+    if ([sheetController respondsToSelector:@selector(setPeeking:)]) {
+        [(id<SheetStackPeeking>)sheetController setPeeking:YES];
     }
     
     [sheetController willMoveToParentViewController:self];
@@ -1143,7 +1144,8 @@ typedef enum {
     [sheetController removeFromParentViewController];
     [self addChildViewController:sheetController];
     
-    CGRect onscreenFrame = [self peekedFrameForViewController:sheetController];
+    CGRect onscreenFrame = [self peekedFrameForViewController:sheetController.contentViewController];
+    //CGRect onscreenFrameX = [self peekedFrameForViewController:sheetController];
     
     [self.view addSubview:sheetController.view];
     
@@ -1152,7 +1154,7 @@ typedef enum {
     };
     void(^frameMoveComplete)(void) = ^{
         [sheetController didMoveToParentViewController:self];
-        [(id<SheetStackPage>)self.topSheetContentViewController didGetStacked];
+        [(id<SheetStackPage>)[self topSheetController] didGetStacked];
         [sheetController.view setNeedsLayout];
     };
     if (animated) {
@@ -1251,7 +1253,7 @@ typedef enum {
             self.firstTouchedView = touchedView;
             
             SheetController *topPeekedSheet = self.peekedSheetController;
-            BOOL controllerContentIsPeekedSheet = [touchedView isDescendantOfView:topPeekedSheet.contentViewController.view];
+            BOOL controllerContentIsPeekedSheet = [touchedView isDescendantOfView:topPeekedSheet.view];
             BOOL isExpandedPeekedSheet = [[self topSheetController] sheetNavigationItem].expanded;
             if (controllerContentIsPeekedSheet && !isExpandedPeekedSheet){
                 [self expandPeekedSheet];
@@ -1531,7 +1533,7 @@ typedef enum {
     
     [(id<SheetStackPage>)[self topSheetController] willBeStacked];
     
-    self.firstStackedController = [self topSheetContentViewController];
+    self.firstStackedController = [self topSheetController];
 }
 
 - (void)didAddSheet {
@@ -1546,7 +1548,7 @@ typedef enum {
 - (void)willRemoveSheet {
     [[SheetLayoutModel sharedInstance] setStackState:kSheetStackStateRemoving];
     
-    UIViewController *vc = [self firstStackedOnSheetController];
+    SheetController *vc = [self firstStackedOnSheetController];
     [(id<SheetStackPage>)vc willBeUnstacked];
     
     self.firstStackedController = vc;

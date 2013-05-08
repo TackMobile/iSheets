@@ -78,7 +78,7 @@ __strong static SheetLayoutModel *_sharedInstance;
     
     if ([viewController isKindOfClass:[BasicSheetViewController class]]) {
         BasicSheetViewController *vc = (BasicSheetViewController *)viewController;
-        desiredWidth = [[vc widthForSheetPosition:[NSNumber numberWithInt:position] navItem:navItem] floatValue];
+        desiredWidth = [vc widthForSheetPosition:position navItem:navItem];
         
     } else {
         if ([viewController respondsToSelector:@selector(desiredWidthForSheetPosition:navItem:)]) {

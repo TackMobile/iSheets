@@ -18,7 +18,7 @@ block(); \
 #define COVER_TAG               45
 
 @interface BasicSheetViewController () {
-    BOOL _peeking;
+    //BOOL _peeking;
 }
 
 @property (nonatomic, strong) UIView *coverView;
@@ -31,7 +31,7 @@ block(); \
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
-        _peeking = NO;
+        //_peeking = NO;
     }
     return self;
 }
@@ -40,26 +40,8 @@ block(); \
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 }
 
-- (void)addShadow {
-    self.view.layer.shadowRadius = 3.0;
-    self.view.layer.shadowOffset = CGSizeMake(-2.0, -1.0);
-    self.view.layer.shadowOpacity = 0.3;
-    self.view.layer.shadowColor = [UIColor blackColor].CGColor;
-    self.view.layer.shadowPath = [UIBezierPath bezierPathWithRect:self.view.bounds].CGPath;
-}
-
-- (UIView *)coverView {
-    if (!_coverView) {
-        _coverView = [[UIView alloc] initWithFrame:CGRectZero];
-        _coverView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-    }
-    [_coverView setFrame:self.view.bounds];
-    return _coverView;
-}
-
-- (NSNumber *)widthForSheetPosition:(NSNumber *)position navItem:(SheetNavigationItem *)navItem {
-    NSNumber *width = [NSNumber numberWithFloat:[self desiredWidthForSheetPosition:position.intValue navItem:navItem]];
-    return width;
+- (CGFloat)widthForSheetPosition:(NSUInteger)position navItem:(SheetNavigationItem *)navItem {
+    return [self desiredWidthForSheetPosition:position navItem:navItem];
 }
 
 #pragma mark Sheet Stack Page
@@ -88,9 +70,7 @@ block(); \
  when a sheet is about to be stacked on top of for the first time
  */
 - (void)willBeStacked {
-    [self.view addSubview:self.coverView];
-    self.coverView.backgroundColor = [UIColor blackColor];
-    [self revealView:self.coverView withDelay:0.0];
+    
 }
 
 - (void)didGetStacked {
@@ -98,19 +78,15 @@ block(); \
 }
 
 - (void)willBeUnstacked {
-    
+
 }
 
 - (void)beingUnstacked:(CGFloat)percentUnstacked {
-    if (percentUnstacked == 1.0 && self.coverView.alpha == kCoverOpacity) {
-        [self hideView:self.coverView withDuration:[SheetLayoutModel animateOffDuration] withDelay:0.0];
-        return;
-    }
-    self.coverView.alpha = kCoverOpacity*(1-percentUnstacked);
+
 }
 
 - (void)didGetUnstacked {
-    [self removeView:self.coverView];
+
 }
 
 - (void)willBeDropped {
@@ -126,10 +102,7 @@ block(); \
 }
 
 - (void)decodeRestorableState:(NSDictionary *)archiveDict {
-    
-    [self.view addSubview:self.coverView];
-    self.coverView.alpha = kCoverOpacity;
-    self.coverView.backgroundColor = [UIColor blackColor];
+ 
 }
 
 - (UIView *)leftButtonViewForStackedPosition {
@@ -149,84 +122,16 @@ block(); \
     return YES;
 }
 
-- (void)setPeeking:(BOOL)peeked {
-    _peeking = peeked;
-    [self updateViewForPeeking];
-}
-
-- (BOOL)peeked {
-    return _peeking;
-}
-
-- (void)updateViewForPeeking {
-    if (_peeking) {
-        [self.view addSubview:self.coverView];
-        self.coverView.backgroundColor = [UIColor clearColor];
-        self.coverView.alpha = 1.0;
-    } else {
-        [self removeView:_coverView];
-    }
-}
-
 - (void)sheetNavigationControllerWillMoveController:(UIViewController *)controller {
-    
+
 }
 
 - (void)sheetNavigationControllerDidMoveController:(UIViewController *)controller {
-    
-}
 
-#pragma mark View helpers
-
-- (UIImageView *)snapshotView
-{
-    UIGraphicsBeginImageContextWithOptions(self.view.bounds.size,YES,0.0f); //screenshot
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    [self.view.layer renderInContext:context];
-    UIImage *viewImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    UIImageView *snapshot = [[UIImageView alloc] initWithImage:viewImage];
-    
-    return snapshot;
 }
 
 - (void)pushNewSheet:(UIViewController *)vc {
     [self.sheetNavigationController pushViewController:vc inFrontOf:self configuration:nil];
-}
-
-- (void)hideView:(UIView *)view withDuration:(float)duration withDelay:(float)delay {
-    
-    void(^hide)(void) = ^{[UIView animateWithDuration:duration
-                                           animations:^{
-                                               view.alpha = 0.0;
-                                           }
-                                           completion:nil];
-    };
-    DELAYED_BLOCK(hide, delay);
-}
-
-- (void)revealView:(UIView *)view withDelay:(float)delay {
-    view.alpha = 0.0;
-    void(^show)(void) = ^{
-        [UIView animateWithDuration:0.5
-                         animations:^{
-                             view.alpha = kCoverOpacity;
-                         }
-                         completion:nil];
-    };
-    DELAYED_BLOCK(show, delay);
-}
-
-- (void)removeView:(UIView *)view {
-    [UIView animateWithDuration:0.5
-                     animations:^{
-                         view.alpha = 0.0;
-                     }
-                     completion:^(BOOL finished){
-                         [view removeFromSuperview];
-                     }];
 }
 
 @end
