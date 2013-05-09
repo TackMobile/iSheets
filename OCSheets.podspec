@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.description = 'Layered navigation controller for hierarchical iPad apps, with variable widths and history. Based originally on fork of FRLayeredNavigationController by Johannes Weiß'
 
   s.platform = :ios, '5.0'
-  s.ios.source_files = '*'
+  s.ios.source_files = 'OCSheets/*.{h,m}'
   s.framework = 'UIKit'
   s.requires_arc = true
 end
