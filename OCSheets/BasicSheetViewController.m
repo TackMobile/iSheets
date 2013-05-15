@@ -7,23 +7,6 @@
 //
 
 #import "BasicSheetViewController.h"
-#import "UIView+position.h"
-#import <QuartzCore/QuartzCore.h>
-
-#define DELAYED_BLOCK(block,delay) dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)); \
-dispatch_after(popTime, dispatch_get_main_queue(), ^(void){ \
-block(); \
-});
-
-#define COVER_TAG               45
-
-@interface BasicSheetViewController () {
-    //BOOL _peeking;
-}
-
-@property (nonatomic, strong) UIView *coverView;
-
-@end
 
 @implementation BasicSheetViewController
 
@@ -51,8 +34,6 @@ block(); \
  content at different stacking positions
  */
 - (CGFloat)desiredWidthForSheetPosition:(SheetStackPosition)position navItem:(SheetNavigationItem *)navItem {
-    //NSLog(@"Index: %i, count: %i, offset: %i",navItem.index,navItem.count,navItem.offset);
-    
     SheetLayoutType type = navItem.layoutType;
     if (type == kSheetLayoutFullScreen) {
         return [[SheetLayoutModel sharedInstance] availableWidthForOffset:navItem.initialViewPosition.x];
@@ -70,31 +51,31 @@ block(); \
  when a sheet is about to be stacked on top of for the first time
  */
 - (void)willBeStacked {
-    
+    // The default implementation of this method isn't not empty.
 }
 
 - (void)didGetStacked {
-    
+    // The default implementation of this method isn't not empty.
 }
 
 - (void)willBeUnstacked {
-
+    // The default implementation of this method isn't not empty.
 }
 
 - (void)beingUnstacked:(CGFloat)percentUnstacked {
-
+    // The default implementation of this method isn't not empty.
 }
 
 - (void)didGetUnstacked {
-
+    // The default implementation of this method isn't not empty.
 }
 
 - (void)willBeDropped {
-    
+    // The default implementation of this method isn't not empty.
 }
 
 - (void)didGetDropped {
-    
+    // The default implementation of this method isn't not empty.
 }
 
 - (NSMutableDictionary *)encodeRestorableState {
@@ -112,6 +93,10 @@ block(); \
     return view;
 }
 
+- (float)availableContentWidth {
+    return [self desiredWidthForSheetPosition:kSheetStackTop navItem:self.sheetNavigationItem] - 50.0;
+}
+
 #pragma mark Sheet stack peeking
 
 - (void)peekSheet:(UIViewController *)vc animated:(BOOL)animated {
@@ -123,11 +108,11 @@ block(); \
 }
 
 - (void)sheetNavigationControllerWillMoveController:(UIViewController *)controller {
-
+    // The default implementation of this method isn't not empty.
 }
 
 - (void)sheetNavigationControllerDidMoveController:(UIViewController *)controller {
-
+    // The default implementation of this method isn't not empty.
 }
 
 - (void)pushNewSheet:(UIViewController *)vc {

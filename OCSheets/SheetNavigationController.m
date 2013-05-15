@@ -61,6 +61,7 @@ typedef enum {
     self = [super init];
     if (self) {
         
+        _outOfBoundsViewController = nil;
         _userInteractionEnabled = YES;
         _historyManager = [[SheetHistoryManager alloc] init];
         [[SheetLayoutModel sharedInstance] setController:self];
@@ -70,14 +71,11 @@ typedef enum {
         [sheetRC.sheetNavigationItem setCount:1];
         _sheetViewControllers = [[NSMutableArray alloc] initWithObjects:sheetRC, nil];
         
-        
         if (configuration) {
             configuration(sheetRC.sheetNavigationItem);
         }
         
         [_historyManager addHistoryItemForSheetController:sheetRC];
-        
-        _outOfBoundsViewController = nil;
         
         [self addChildViewController:sheetRC];
         [sheetRC didMoveToParentViewController:self];
@@ -1405,6 +1403,8 @@ typedef enum {
                 CGFloat currentX = abs([self topSheetController].view.frame.origin.x);
                 CGFloat pointsX = [self overallWidth] - currentX;
                 duration = pointsX / velocity;
+                
+                NSLog(@"velocity: %f", velocity);
             }
             /* but not too slow either */
             if (duration > defaultSpeed) {
