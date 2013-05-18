@@ -104,12 +104,10 @@ __strong static SheetLayoutModel *_sharedInstance;
 
 - (void)updateNavItem:(SheetNavigationItem *)navItem {
     
-    //NSLog(@"%@",navItem.description);
     navItem.width = [self widthForNavItem:navItem];
     navItem.initialViewPosition = [self initialPositionForNavItem:navItem];
     navItem.currentViewPosition = navItem.initialViewPosition;
     navItem.nextItemDistance = [self nextItemDistanceForNavItem:navItem];
-    //NSLog(@"%@",navItem.description);
 }
 
 - (CGFloat)widthForNavItem:(SheetNavigationItem *)navItem {

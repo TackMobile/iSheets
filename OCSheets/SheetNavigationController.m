@@ -185,6 +185,7 @@ typedef enum {
     }
 }
 
+
 - (void)layoutSheetController:(SheetController *)sheetController {
     CGRect f = sheetController.view.frame;
     
@@ -219,12 +220,16 @@ typedef enum {
         [sheetController.view setNeedsLayout];
     };
     
+    SheetStackState state = [[SheetLayoutModel sharedInstance] stackState];
+    UIViewAnimationOptions curve = state == kSheetStackStateAdding ? SHEET_ADDING_ANIMATION_OPTION : SHEET_REMOVAL_ANIMATION_OPTION;
+    float duration = state == kSheetStackStateAdding ? [SheetLayoutModel animateOnDuration] : [SheetLayoutModel animateOffDuration];
     // animated if visible on top of stack and is not root
+    
     BOOL animated = (offset > 0 && offset < kFirstStackedSheet+1) ? YES : NO;
     if (animated) {
-        [UIView animateWithDuration:[SheetLayoutModel animateOnDuration]
+        [UIView animateWithDuration:duration
                               delay:0
-                            options: SHEET_ADDING_ANIMATION_OPTION
+                            options: curve
                          animations:^{
                              stateChange();
                          }
@@ -453,7 +458,7 @@ typedef enum {
     if (newCount>=2) {
         SheetController *currentTop = [self.sheetViewControllers lastObject];
         [currentTop.sheetNavigationItem setCount:newCount];
-        if (![currentTop.contentViewController isEqual:self.peekedSheetController]) {
+        if (![currentTop.contentViewController isEqual:self.peekedSheetController] && currentTop.sheetNavigationItem.index != 0) {
             [self layoutSheetController:currentTop];
         }
     }
