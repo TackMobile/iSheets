@@ -322,9 +322,6 @@ block(); \
 - (void)rasterizeAndSnapshot {
     if (self.sheetNavigationItem.offset == 2) {
         UIImageView *snapshot = [self snapshotView];
-        snapshot.layer.borderColor = [UIColor redColor].CGColor;
-        snapshot.layer.borderWidth = 1.0;
-        //#import <QuartzCore/QuartzCore.h>
         snapshot.tag = 120;
         [self.view insertSubview:snapshot belowSubview:self.coverView];
         [self.view.layer setShouldRasterize:YES];

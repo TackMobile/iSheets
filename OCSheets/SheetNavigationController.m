@@ -88,7 +88,9 @@ typedef enum {
 - (id)initWithRootViewController:(UIViewController *)rootViewController peekedViewController:(UIViewController *)peekedViewController configuration:(SheetNavigationConfigBlock)configuration {
     self = [self initWithRootViewController:rootViewController configuration:configuration];
     if (self) {
-        self.peekedSheetController = [[SheetController alloc] initWithContentViewController:peekedViewController maximumWidth:NO];
+        if (peekedViewController) {
+            self.peekedSheetController = [[SheetController alloc] initWithContentViewController:peekedViewController maximumWidth:NO];
+        }
     }
     
     return self;
