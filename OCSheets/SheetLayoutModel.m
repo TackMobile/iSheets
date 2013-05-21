@@ -294,9 +294,9 @@ __strong static SheetLayoutModel *_sharedInstance;
 + (NSTimeInterval)animateOnDuration {
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if (UIInterfaceOrientationIsLandscape(orientation)) {
-        return 0.4*DurationMultiplier;
+        return 0.3*DurationMultiplier;
     } else {
-        return 0.5*DurationMultiplier;
+        return 0.4*DurationMultiplier;
     }
 }
 
