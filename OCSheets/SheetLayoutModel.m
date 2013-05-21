@@ -280,21 +280,23 @@ __strong static SheetLayoutModel *_sharedInstance;
     return YES;
 }
 
+#define DurationMultiplier 0.75
+
 + (NSTimeInterval)animateOffDuration {
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if (UIInterfaceOrientationIsLandscape(orientation)) {
-        return 0.25;
+        return 0.25*DurationMultiplier;
     } else {
-        return 0.3;
+        return 0.3*DurationMultiplier;
     }
 }
 
 + (NSTimeInterval)animateOnDuration {
     UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
     if (UIInterfaceOrientationIsLandscape(orientation)) {
-        return 0.4;
+        return 0.4*DurationMultiplier;
     } else {
-        return 0.5;
+        return 0.5*DurationMultiplier;
     }
 }
 
