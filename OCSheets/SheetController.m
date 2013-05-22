@@ -369,7 +369,7 @@ block(); \
 - (void)didGetUnstacked {
     [self removeView:self.coverView];
     if (self.sheetNavigationItem.offset == 1) {
-        [self unrasterizeAndUnsnapshot];
+        //[self unrasterizeAndUnsnapshot];
     }
     
     if ([self.contentViewController respondsToSelector:@selector(didGetUnstacked)]) {
@@ -390,7 +390,7 @@ block(); \
 
 - (void)didGetStacked {
     if (self.sheetNavigationItem.offset == 2) {
-        [self rasterizeAndSnapshot];
+        //[self rasterizeAndSnapshot];
     }
     if ([self.contentViewController respondsToSelector:@selector(didGetStacked)]) {
         [(id<SheetStackPage>)self.contentViewController didGetStacked];
