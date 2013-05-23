@@ -94,7 +94,7 @@
 }
 
 - (float)availableContentWidth {
-    return [self desiredWidthForSheetPosition:kSheetStackTop navItem:self.sheetNavigationItem] - 50.0;
+    return [self desiredWidthForSheetPosition:kSheetStackTop navItem:self.sheetNavigationItem];
 }
 
 #pragma mark Sheet stack peeking
