@@ -439,10 +439,14 @@ block(); \
     if ([keyPath isEqualToString:@"offset"]) {
         [self updateLeftNavButton:change];
     } else if ([keyPath isEqualToString:@"leftButtonView"]) {
-        [self.leftNavButtonItem removeFromSuperview];
-        self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
-        self.leftNavButtonItem.alpha = 1.0;
-        [self.view addSubview:self.leftNavButtonItem];
+        if ([self.sheetNavigationItem.leftButtonView isEqual:self.leftNavButtonItem]) {
+            self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
+        } else {
+            [self.leftNavButtonItem removeFromSuperview];
+            self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
+            self.leftNavButtonItem.alpha = 1.0;
+            [self.view addSubview:self.leftNavButtonItem];
+        }
     }
 }
 
