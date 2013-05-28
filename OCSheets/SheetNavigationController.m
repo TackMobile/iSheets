@@ -126,8 +126,10 @@ typedef enum {
     }
     self.view.backgroundColor = [UIColor clearColor];
     
-    if (self.peekedSheetController) {
-        [self peekViewController:self.peekedSheetController animated:NO];
+    if (self.topSheetContentViewController.sheetNavigationItem.autoPeek) {
+        if (self.peekedSheetController) {
+            [self peekViewController:self.peekedSheetController animated:NO];
+        }
     }
 }
 
@@ -179,14 +181,16 @@ typedef enum {
     if (sheetStackState == kSheetStackStateDefault) {
         if (!self.peekedSheetController.sheetNavigationItem.expanded) {
             if (wantsDefaultPeekedSheet(self.topSheetContentViewController)) {
-                self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
+                SheetNavigationItem *navItem = self.topSheetContentViewController.sheetNavigationItem;
+                if (navItem.autoPeek) {
+                    self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
+                }
             } else {
                 self.peekedSheetController.view.frameX = [self overallWidth];
             }
         }
     }
 }
-
 
 - (void)layoutSheetController:(SheetController *)sheetController {
     CGRect f = sheetController.view.frame;
@@ -1138,6 +1142,29 @@ typedef enum {
     }];
 }
 
+- (void)preloadDefaultPeekedViewController {
+    if ([self.peekedSheetController.parentViewController isEqual:self]) {
+        return;
+    }
+    SheetNavigationItem *topNavItem = self.topSheetContentViewController.sheetNavigationItem;
+    
+    if ([self.peekedSheetController respondsToSelector:@selector(setPeeking:)]) {
+        [(id<SheetStackPeeking>)self.peekedSheetController setPeeking:YES];
+    }
+    
+    [self.peekedSheetController willMoveToParentViewController:self];
+    [self.peekedSheetController.view removeFromSuperview];
+    [self.peekedSheetController removeFromParentViewController];
+    [self addChildViewController:self.peekedSheetController];
+
+    [self.view addSubview:self.peekedSheetController.view];
+    self.peekedSheetController.view.frameX = [self overallWidth];
+}
+
+- (void)peekDefaultViewController {
+    [self peekViewController:self.peekedSheetController animated:YES];
+}
+
 - (void)peekViewController:(SheetController *)sheetController animated:(BOOL)animated {
     sheetController.sheetNavigationItem.layoutType = kSheetLayoutPeeked;
     if ([sheetController respondsToSelector:@selector(setPeeking:)]) {
@@ -1150,7 +1177,6 @@ typedef enum {
     [self addChildViewController:sheetController];
     
     CGRect onscreenFrame = [self peekedFrameForViewController:sheetController.contentViewController];
-    //CGRect onscreenFrameX = [self peekedFrameForViewController:sheetController];
     
     [self.view addSubview:sheetController.view];
     

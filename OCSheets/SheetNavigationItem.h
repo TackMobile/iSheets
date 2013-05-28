@@ -28,6 +28,7 @@
  * The current count of the sheet stack
  */
 @property (nonatomic, assign) BOOL expanded;
+@property (nonatomic, assign) BOOL autoPeek;
 @property (nonatomic, assign) CGFloat peekedWidth;
 
 @property (nonatomic, assign) SheetLayoutType layoutType;
