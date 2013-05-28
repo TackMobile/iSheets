@@ -182,9 +182,7 @@ typedef enum {
         if (!self.peekedSheetController.sheetNavigationItem.expanded) {
             if (wantsDefaultPeekedSheet(self.topSheetContentViewController)) {
                 SheetNavigationItem *navItem = self.topSheetContentViewController.sheetNavigationItem;
-                if (navItem.autoPeek) {
-                    self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
-                }
+                self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
             } else {
                 self.peekedSheetController.view.frameX = [self overallWidth];
             }
