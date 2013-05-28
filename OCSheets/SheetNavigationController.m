@@ -85,7 +85,7 @@ typedef enum {
     return self;
 }
 
-- (id)initWithRootViewController:(UIViewController *)rootViewController peekedViewController:(UIViewController *)peekedViewController configuration:(SheetNavigationConfigBlock)configuration {
+- (id)initWithRootViewController:(UIViewController *)rootViewController peekedViewController:(UIViewController *)peekedViewController configuration:(SheetNavigationConfigBlock)configuration  {
     self = [self initWithRootViewController:rootViewController configuration:configuration];
     if (self) {
         if (peekedViewController) {
@@ -1142,10 +1142,17 @@ typedef enum {
     }];
 }
 
+- (void)readyToPeek:(UIViewController *)sheet {
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        if ([self isViewLoaded] && [sheet isEqual:self.peekedSheetController.contentViewController]) {
+            [self peekDefaultViewController];
+        }
+    });
+}
+
 - (void)preloadDefaultPeekedViewController {
-    if ([self.peekedSheetController.parentViewController isEqual:self]) {
-        return;
-    }
+    
     SheetNavigationItem *topNavItem = self.topSheetContentViewController.sheetNavigationItem;
     
     if ([self.peekedSheetController respondsToSelector:@selector(setPeeking:)]) {
