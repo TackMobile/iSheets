@@ -22,7 +22,6 @@
     if ((self = [super init])) {
         self.layoutType = layoutType;
         self.displayShadow = YES;
-        self.autoPeek = YES;
         self.width = -1;
         self.nextItemDistance = -1;
         _expanded = NO;
@@ -61,7 +60,6 @@
     desc = [desc stringByAppendingFormat:@"offset: %i\n",self.offset];
     desc = [desc stringByAppendingFormat:@"width: %f\n",self.width];
     desc = [desc stringByAppendingFormat:@"expanded: %s\n",self.expanded ? "yes" : "no"];
-    desc = [desc stringByAppendingFormat:@"auto peek: %s\n",self.autoPeek ? "yes" : "no"];
     desc = [desc stringByAppendingFormat:@"peeked width: %f\n",self.peekedWidth];
     desc = [desc stringByAppendingFormat:@"display shadow: %s\n",self.displayShadow ? "yes" : "no"];
     desc = [desc stringByAppendingFormat:@"layout type: %i\n",self.layoutType];

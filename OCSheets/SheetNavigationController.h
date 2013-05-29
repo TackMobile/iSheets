@@ -106,11 +106,13 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 - (void)sheetNavigationControllerPanningSheet;
 - (void)sheetNavigationControllerDidPanSheet;
 
+- (BOOL)showPeeked;
+- (BOOL)showsDefaultPeekedViewController;
+
 @end
 
 @protocol SheetStackPeeking <NSObject>
 
-- (BOOL)shouldPeekDefaultSheet;
 - (void)setPeeking:(BOOL)peeking;
 - (BOOL)peeked;
 
@@ -118,7 +120,7 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 - (void)didGetUnpeeked;
 - (CGFloat)peekedWidth;
 - (void)updateViewForPeeking;
-- (BOOL)showsDefaultPeekedViewController;
+
 
 @end
 

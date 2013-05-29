@@ -97,15 +97,16 @@
     return [self desiredWidthForSheetPosition:kSheetStackTop navItem:self.sheetNavigationItem];
 }
 
+- (BOOL)showsDefaultPeekedViewController {
+    return NO;
+}
+
 #pragma mark Sheet stack peeking
 
 - (void)peekSheet:(UIViewController *)vc animated:(BOOL)animated {
     [self.sheetNavigationController peekViewController:vc];
 }
 
-- (BOOL)shouldPeekDefaultSheet {
-    return YES;
-}
 
 - (void)sheetNavigationControllerWillMoveController:(UIViewController *)controller {
     // The default implementation of this method isn't not empty.

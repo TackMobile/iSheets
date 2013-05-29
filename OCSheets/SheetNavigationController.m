@@ -126,7 +126,7 @@ typedef enum {
     }
     self.view.backgroundColor = [UIColor clearColor];
     
-    if (self.topSheetContentViewController.sheetNavigationItem.autoPeek) {
+    if ([self shouldShowDefaultPeeked]) {
         if (self.peekedSheetController) {
             [self peekViewController:self.peekedSheetController animated:NO];
         }
@@ -179,10 +179,18 @@ typedef enum {
     
     SheetStackState sheetStackState = [[SheetLayoutModel sharedInstance] stackState];
     if (sheetStackState == kSheetStackStateDefault) {
-        if (!self.peekedSheetController.sheetNavigationItem.expanded) {
-            if (wantsDefaultPeekedSheet(self.topSheetContentViewController)) {
-                SheetNavigationItem *navItem = self.topSheetContentViewController.sheetNavigationItem;
-                self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
+        if ([self.peekedSheetController isViewLoaded]) {
+            if (!self.peekedSheetController.sheetNavigationItem.expanded) {
+                if (wantsDefaultPeekedSheet(self.topSheetContentViewController)) {
+                    SheetNavigationItem *navItem = self.topSheetContentViewController.sheetNavigationItem;
+                    float duration = self.peekedSheetController.view.frameX >= [self overallWidth] ? 0.5 : 0.0;
+                    [UIView animateWithDuration:duration
+                                          delay:0
+                                        options: SHEET_ADDING_ANIMATION_OPTION
+                                     animations:^{
+                                         self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
+                                     }
+                                     completion:nil];                    }
             } else {
                 self.peekedSheetController.view.frameX = [self overallWidth];
             }
@@ -247,8 +255,15 @@ typedef enum {
 
 - (CGRect)peekedFrameForViewController:(UIViewController *)vc {
     const CGFloat peekWidth = [self getPeekedWidth:vc];
+    
+    BOOL shouldShow = [self shouldShowDefaultPeeked];
+    
+    const CGFloat peekWidthTopSheet = [self getPeekedWidth:self.topSheetContentViewController];
     CGFloat xPos = [self overallWidth];
-    return CGRectMake(xPos - peekWidth,
+    if (shouldShow) {
+        xPos -= peekWidth;
+    }
+    return CGRectMake(xPos,
                       0.0,
                       vc.view.frameWidth,
                       [self overallHeight]);
@@ -1110,9 +1125,17 @@ typedef enum {
 
 #pragma mark Peeked view controllers
 
+- (BOOL)shouldShowDefaultPeeked {
+    BOOL shouldShow = YES;
+    if ([self.topSheetContentViewController respondsToSelector:@selector(showPeeked)]) {
+        shouldShow = [(id<SheetStackPage>)self.topSheetContentViewController showPeeked];
+    }
+    return shouldShow;
+}
+
 - (BOOL)showsDefaultPeekedViewController:(UIViewController *)vc {
     if ([vc respondsToSelector:@selector(showsDefaultPeekedViewController)]) {
-        return [(id<SheetStackPeeking>)vc showsDefaultPeekedViewController];
+        return [(id<SheetStackPage>)vc showsDefaultPeekedViewController];
     }
     return NO;
 }
