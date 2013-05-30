@@ -1671,12 +1671,12 @@ typedef enum {
         UIViewController *newViewController = [_historyManager restoredViewControllerForIndex:index];
         if (newViewController) {
             SheetController *restoredSheetController = [self.sheetViewControllers objectAtIndex:index];
-            [restoredSheetController setContentViewController:newViewController];
-            
-            if ([restoredSheetController.contentViewController respondsToSelector:@selector(decodeRestorableState:)]) {
-                NSMutableDictionary *archiveDict = [_historyManager historyItemAtIndex:index];
-                [(id<SheetStackPage>)restoredSheetController.contentViewController decodeRestorableState:archiveDict];
+            NSMutableDictionary *archiveDict = [_historyManager historyItemAtIndex:index];
+            if ([newViewController respondsToSelector:@selector(decodeRestorableState:)]) {
+                [(id<SheetStackPage>)newViewController decodeRestorableState:archiveDict];
             }
+            
+            [restoredSheetController setContentViewController:newViewController];
             
             //NSLog(@"new count: %i",self.sheetViewControllers.count-1);
             restoredSheetController.sheetNavigationItem.count = self.sheetViewControllers.count-1;
