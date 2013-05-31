@@ -68,12 +68,14 @@ block(); \
     }
 }
 
-- (void)dealloc {
+- (void)viewWillDisappear:(BOOL)animated {
     if ([SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem]) {
         [self.sheetNavigationItem removeObserver:self forKeyPath:@"offset"];
         [self.sheetNavigationItem removeObserver:self forKeyPath:@"leftButtonView"];
     }
-    
+}
+
+- (void)dealloc {
     self.sheetNavigationItem.sheetController = nil;
 }
 
@@ -244,6 +246,9 @@ block(); \
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    if (!NSStringFromClass([self.sheetNavigationItem.sheetController.contentViewController class]).length) {
+        NSLog(@"huh");
+    }
     [self addObservers];
 }
 
