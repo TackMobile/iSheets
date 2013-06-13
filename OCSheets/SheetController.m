@@ -188,7 +188,6 @@ block(); \
     
     CGRect borderFrame = CGRectZero;
     const CGFloat borderSpacing = 0.0;
-    //self.sheetNavigationItem.hasBorder ? 1 : 0;
     
     borderFrame = CGRectMake(0,0,CGRectGetWidth(self.view.bounds),CGRectGetHeight(self.view.bounds));
     contentFrame = CGRectMake(borderSpacing,
@@ -244,9 +243,9 @@ block(); \
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    if (!NSStringFromClass([self.sheetNavigationItem.sheetController.contentViewController class]).length) {
-        NSLog(@"huh");
-    }
+//    if (!NSStringFromClass([self.sheetNavigationItem.sheetController.contentViewController class]).length) {
+//        NSLog(@"huh");
+//    }
     [self addObservers];
 }
 
