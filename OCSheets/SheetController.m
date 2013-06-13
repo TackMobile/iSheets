@@ -68,14 +68,13 @@ block(); \
     }
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
+- (void)dealloc {
+    
     if ([SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem]) {
         [self.sheetNavigationItem removeObserver:self forKeyPath:@"offset"];
         [self.sheetNavigationItem removeObserver:self forKeyPath:@"leftButtonView"];
     }
-}
-
-- (void)dealloc {
+    
     self.sheetNavigationItem.sheetController = nil;
 }
 
@@ -166,7 +165,6 @@ block(); \
         self.contentView = self.contentViewController.view;
         [self.view addSubview:self.contentView];
         [self.view addSubview:self.leftNavButtonItem];
-        //[self.view addSubview:self.coverView];
         
         _isRestored = YES;
         self.view.backgroundColor = [UIColor whiteColor];
@@ -283,9 +281,7 @@ block(); \
     self.borderView = nil;
     self.contentView = nil;
     self.leftNavButtonItem = nil;
-    if ([SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem]) {
-        [self.sheetNavigationItem removeObserver:self forKeyPath:@"offset"];
-    }
+    
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {

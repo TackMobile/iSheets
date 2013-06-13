@@ -825,7 +825,7 @@ typedef enum {
         if (last == nil) {
             last = [self sheetControllerAtIndex:index-1];
             NSAssert(last != nil, @"we should have a last nav item");
-            NSAssert(last.sheetNavigationItem.offset == navItem.offset+1, @"should be one back");
+            //NSAssert(last.sheetNavigationItem.offset == navItem.offset+1, @"should be one back");
         }
         
         SheetNavigationItem *lastNavItem = last.sheetNavigationItem;
