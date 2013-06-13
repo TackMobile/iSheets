@@ -1378,7 +1378,7 @@ typedef enum {
             for (SheetController *controller in [self.sheetViewControllers reverseObjectEnumerator]) {
                 if ([touchedView isDescendantOfView:controller.view]) {
                     
-                    if (![self sheetShouldPan:self.firstTouchedController]) {
+                    if (![self sheetShouldPan:controller.contentViewController]) {
                         [gestureRecognizer setEnabled:NO];
                         [gestureRecognizer setEnabled:YES];
                     } else {
