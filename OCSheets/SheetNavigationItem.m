@@ -17,6 +17,8 @@
 
 @implementation SheetNavigationItem
 
+@synthesize leftButtonView=_leftButtonView;
+
 - (id)initWithType:(SheetLayoutType)layoutType
 {
     if ((self = [super init])) {
@@ -50,7 +52,10 @@
             return [(id<SheetStackPage>)self.sheetController.contentViewController leftButtonViewForStackedPosition];
         }
     }
-    
+    // if sheet content vc didn't provide a new one, use existing
+    if (_leftButtonView) {
+        return _leftButtonView;
+    }
     return _leftButtonView;
 }
 

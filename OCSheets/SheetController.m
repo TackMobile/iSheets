@@ -63,18 +63,23 @@ block(); \
         [self.sheetNavigationItem addObserver:self forKeyPath:@"offset" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:NULL];
         [self.sheetNavigationItem addObserver:self forKeyPath:@"leftButtonView" options:NSKeyValueObservingOptionNew context:NULL];
         self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
+        if (!self.leftNavButtonItem) {
+            self.leftNavButtonItem = [self.sheetNavigationItem leftButtonView];
+        }
         self.leftNavButtonItem.alpha = 1.0;
         [self.view addSubview:self.leftNavButtonItem];
     }
 }
 
-- (void)dealloc {
-    
+- (void)removeObservers {
     if ([SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem]) {
         [self.sheetNavigationItem removeObserver:self forKeyPath:@"offset"];
         [self.sheetNavigationItem removeObserver:self forKeyPath:@"leftButtonView"];
     }
-    
+}
+
+- (void)dealloc {
+    [self removeObservers];
     self.sheetNavigationItem.sheetController = nil;
 }
 
@@ -240,15 +245,6 @@ block(); \
 
 #pragma mark - UIViewController interface methods
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-//    if (!NSStringFromClass([self.sheetNavigationItem.sheetController.contentViewController class]).length) {
-//        NSLog(@"huh");
-//    }
-    [self addObservers];
-}
-
 - (void)loadView
 {
     self.view = [[UIView alloc] init];
@@ -268,6 +264,14 @@ block(); \
             [self addShadow:self.contentView];
         }
     }
+    
+    [self addObservers];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:YES];
+    
+    self.leftNavButtonItem.alpha = self.sheetNavigationItem.offset == 1 ? 1.0 : 00.;
 }
 
 - (void)viewWillLayoutSubviews {
@@ -280,7 +284,6 @@ block(); \
     self.borderView = nil;
     self.contentView = nil;
     self.leftNavButtonItem = nil;
-    
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -451,6 +454,7 @@ block(); \
 }
 
 - (void)updateLeftNavButton:(NSDictionary *)change {
+    
     NSNumber *oldOffset = (NSNumber *)[change objectForKey:NSKeyValueChangeOldKey];
     NSNumber * newOffset = (NSNumber *)[change objectForKey:NSKeyValueChangeNewKey];
     
@@ -473,7 +477,6 @@ block(); \
                              [self.leftNavButtonItem setHidden:YES];
                          }];
     }
-    
 }
 
 - (UIView *)coverView {

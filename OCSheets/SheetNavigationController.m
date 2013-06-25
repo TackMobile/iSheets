@@ -90,6 +90,7 @@ typedef enum {
     if (self) {
         if (peekedViewController) {
             self.peekedSheetController = [[SheetController alloc] initWithContentViewController:peekedViewController maximumWidth:NO];
+            //[self.peekedSheetController updateLeftNavButton:nil];
         }
     }
     
