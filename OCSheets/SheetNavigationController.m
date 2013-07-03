@@ -1195,7 +1195,7 @@ typedef enum {
 }
 
 - (void)peekViewController:(SheetController *)sheetController animated:(BOOL)animated {
-    sheetController.sheetNavigationItem.layoutType = kSheetLayoutPeeked;
+//    sheetController.sheetNavigationItem.layoutType = sheetController.sheetNavigationItem.layoutType == kSheetLayoutFullScreen ? kSheetLayoutFullScreen : kSheetLayoutPeeked;
     if ([sheetController respondsToSelector:@selector(setPeeking:)]) {
         [(id<SheetStackPeeking>)sheetController setPeeking:YES];
     }
