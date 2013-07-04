@@ -1379,10 +1379,18 @@ typedef enum {
             for (SheetController *controller in [self.sheetViewControllers reverseObjectEnumerator]) {
                 if ([touchedView isDescendantOfView:controller.view]) {
                     
-                    if (![self sheetShouldPan:controller.contentViewController]) {
+                    // if it's protected and it's NOT being panned because it's visible in
+                    // the gutter, cancel it
+                    BOOL shouldPan = [self sheetShouldPan:controller.contentViewController];
+                    BOOL isGutter = [self isGutter:controller.contentViewController];
+                    if (!shouldPan && !isGutter) {
+                        // kill the gesture
                         [gestureRecognizer setEnabled:NO];
                         [gestureRecognizer setEnabled:YES];
                     } else {
+                        if (isGutter) {
+                            self.firstTouchedController = [self topSheetContentViewController];
+                        }
                         self.firstTouchedController = controller.contentViewController;
                     }
                     
@@ -1555,9 +1563,13 @@ typedef enum {
 
 - (BOOL)sheetShouldPan:(UIViewController *)viewController {
     BOOL isProtectedSheet = [self isProtectedSheet:viewController];
-    BOOL isStacked = [self sheetControllerOf:viewController].sheetNavigationItem.offset > 1;
-    
-    return !isProtectedSheet && !isStacked;
+    return !isProtectedSheet ;
+}
+
+- (BOOL)isGutter:(UIViewController *)viewController {
+    int offset = [self sheetControllerOf:viewController].sheetNavigationItem.offset;
+    BOOL isInGutter = offset == 2 ? YES : NO;
+    return isInGutter;
 }
 
 - (BOOL)isProtectedSheet:(UIViewController *)viewController {
