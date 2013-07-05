@@ -819,7 +819,8 @@ typedef enum {
     [self.sheetViewControllers enumerateObjectsUsingBlock:^(SheetController *vc, NSUInteger index, BOOL *stop){
         
         SheetNavigationItem *navItem = vc.sheetNavigationItem;
-        if ([self isProtectedSheet:vc.contentViewController] || navItem.offset > 2) {
+        BOOL isDraggable = [self sheetShouldPan:vc.contentViewController];
+        if (!isDraggable || navItem.offset > 2) {
             return;
         }
         
@@ -909,10 +910,6 @@ typedef enum {
             doRightSnapping();
         } else {
             doLeftSnapping();
-        }
-        
-        if (navItem.offset == 1) {
-            
         }
         
         BOOL didMoveOutOfBounds = [self viewController:vc xTranslation:xTranslation bounded:YES];
@@ -1457,7 +1454,7 @@ typedef enum {
         case UIGestureRecognizerStateEnded: {
             
             const CGFloat velocity = [gestureRecognizer velocityInView:self.view].x;
-            
+            NSLog(@"willPopToRootSheet: %s",willPopToRootSheet?"yes":"no");
             if (willPopToRootSheet && velocity > kSheetSnappingVelocityThreshold) {
                 //NSLog(@"%i -----  %s",gestureRecognizer.numberOfTouches,willPopToRootSheet ? "yes" : "no");
                 [self popToRootViewControllerAnimated:YES];
@@ -1562,8 +1559,11 @@ typedef enum {
 }
 
 - (BOOL)sheetShouldPan:(UIViewController *)viewController {
-    BOOL isProtectedSheet = [self isProtectedSheet:viewController];
-    return !isProtectedSheet ;
+    BOOL isDraggable = NO;
+    if ([viewController respondsToSelector:@selector(isDraggableSheet)]) {
+        isDraggable = [(id<SheetStackPage>)viewController isDraggableSheet];
+    }
+    return isDraggable;
 }
 
 - (BOOL)isGutter:(UIViewController *)viewController {

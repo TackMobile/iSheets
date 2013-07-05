@@ -13,9 +13,6 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        //_peeking = NO;
-    }
     return self;
 }
 
@@ -40,6 +37,10 @@
     }
     
     return kStandardSheetWidth;
+}
+
+- (BOOL)isDraggableSheet {
+    return YES;
 }
 
 - (BOOL)isProtectedSheet {

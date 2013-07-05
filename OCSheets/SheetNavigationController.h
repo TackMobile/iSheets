@@ -84,6 +84,7 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 - (void)didGetUnstacked;
 
 - (BOOL)isProtectedSheet;
+- (BOOL)isDraggableSheet;
 
 - (UIView *)leftButtonViewForTopPosition;
 - (UIView *)leftButtonViewForStackedPosition;
