@@ -31,10 +31,10 @@
  content at different stacking positions
  */
 - (CGFloat)desiredWidthForSheetPosition:(SheetStackPosition)position navItem:(SheetNavigationItem *)navItem {
-    SheetLayoutType type = navItem.layoutType;
-    if (type == kSheetLayoutFullScreen) {
+    SheetLayoutType type = navItem ? navItem.layoutType : kStandardSheetWidth;
+    if (type == kSheetLayoutFullScreen || type == kSheetLayoutFullAvailable) {
         return [[SheetLayoutModel sharedInstance] availableWidthForOffset:navItem.initialViewPosition.x];
-    }
+    } 
     
     return kStandardSheetWidth;
 }

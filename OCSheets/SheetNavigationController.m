@@ -484,6 +484,12 @@ typedef enum {
     }
     
     [[SheetLayoutModel sharedInstance] updateNavItem:navItem];
+
+    if (navItem.expanded) {
+        float expandedW = [[SheetLayoutModel sharedInstance] availableWidthForOffset:navItem.initialViewPosition.x];
+        newSheetController.contentViewController.view.frameWidth = expandedW;
+        [newSheetController.contentViewController.view setNeedsLayout];
+    }
     
     const CGFloat overallWidth = [self overallWidth];
     
@@ -819,8 +825,10 @@ typedef enum {
     [self.sheetViewControllers enumerateObjectsUsingBlock:^(SheetController *vc, NSUInteger index, BOOL *stop){
         
         SheetNavigationItem *navItem = vc.sheetNavigationItem;
-        BOOL isDraggable = [self sheetShouldPan:vc.contentViewController];
-        if (!isDraggable || navItem.offset > 2) {
+        BOOL isNotDraggable = ![self sheetShouldPan:vc.contentViewController];
+        BOOL isNonInteractive = [self isNonInteractiveSheet:vc.contentViewController];
+        BOOL isNotVisible = navItem.offset > 2;
+        if (isNotDraggable || isNonInteractive || isNotVisible) {
             return;
         }
         
@@ -1185,6 +1193,7 @@ typedef enum {
 
     [self.view addSubview:self.peekedSheetController.view];
     self.peekedSheetController.view.frameX = [self overallWidth];
+    self.peekedSheetController.view.frameWidth = [[SheetLayoutModel sharedInstance] widthDefaultPeekedSheet];
 }
 
 - (void)peekDefaultViewController {
@@ -1192,7 +1201,8 @@ typedef enum {
 }
 
 - (void)peekViewController:(SheetController *)sheetController animated:(BOOL)animated {
-//    sheetController.sheetNavigationItem.layoutType = sheetController.sheetNavigationItem.layoutType == kSheetLayoutFullScreen ? kSheetLayoutFullScreen : kSheetLayoutPeeked;
+    sheetController.sheetNavigationItem.layoutType = kSheetLayoutPeeked;
+    //sheetController.sheetNavigationItem.layoutType = sheetController.sheetNavigationItem.layoutType == kSheetLayoutFullScreen ? kSheetLayoutFullScreen : kSheetLayoutPeeked;
     if ([sheetController respondsToSelector:@selector(setPeeking:)]) {
         [(id<SheetStackPeeking>)sheetController setPeeking:YES];
     }
@@ -1570,6 +1580,17 @@ typedef enum {
     int offset = [self sheetControllerOf:viewController].sheetNavigationItem.offset;
     BOOL isInGutter = offset == 2 ? YES : NO;
     return isInGutter;
+}
+
+- (BOOL)isNonInteractiveSheet:(UIViewController *)viewController {
+    BOOL isNonInteractive = NO;
+    if ([viewController respondsToSelector:@selector(isInteractiveSheet)]) {
+        isNonInteractive = [(id<SheetStackPage>)viewController isNonInteractiveSheet];
+    }
+    // never allow root sheet to be interactive
+    int index = [self sheetControllerOf:viewController].sheetNavigationItem.index;
+    isNonInteractive = index == 0 ? YES : isNonInteractive;
+    return isNonInteractive;
 }
 
 - (BOOL)isProtectedSheet:(UIViewController *)viewController {

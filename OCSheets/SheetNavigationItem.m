@@ -76,11 +76,11 @@
     return desc;
 }
 
-- (CGPoint)initialViewPosition {
-    if (self.layoutType == kSheetLayoutFullScreen) {
-        return CGPointMake(0, 0);
-    }
-    return _initialViewPosition;
-}
+//- (CGPoint)initialViewPosition {
+//    if (self.layoutType == kSheetLayoutFullScreen) {
+//        return CGPointMake(0, 0);
+//    }
+//    return _initialViewPosition;
+//}
 
 @end

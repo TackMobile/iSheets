@@ -83,8 +83,20 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 - (void)beingUnstacked:(CGFloat)percentUnstacked;
 - (void)didGetUnstacked;
 
+/**
+ Allow it to be dropped for memory purposes
+*/
 - (BOOL)isProtectedSheet;
+/**
+ Allow it to be dragged on its own or
+ attached to a dragging sheet above it
+ */
 - (BOOL)isDraggableSheet;
+/**
+ Shouldn't really behave like a sheet, other than
+ sitting in the sheet stack
+ */
+- (BOOL)isNonInteractiveSheet;
 
 - (UIView *)leftButtonViewForTopPosition;
 - (UIView *)leftButtonViewForStackedPosition;
