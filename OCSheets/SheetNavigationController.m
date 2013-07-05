@@ -1193,7 +1193,6 @@ typedef enum {
 
     [self.view addSubview:self.peekedSheetController.view];
     self.peekedSheetController.view.frameX = [self overallWidth];
-    self.peekedSheetController.view.frameWidth = [[SheetLayoutModel sharedInstance] widthDefaultPeekedSheet];
 }
 
 - (void)peekDefaultViewController {
