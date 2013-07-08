@@ -47,6 +47,10 @@
     return NO;
 }
 
+- (void)setPeekedHidden:(BOOL)hidden {
+    self.sheetNavigationItem.showingPeeked = !hidden;
+}
+
 /*
  Call this method to perform additional UI work
  when a sheet is about to be stacked on top of for the first time

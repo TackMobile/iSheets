@@ -32,6 +32,7 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 
 - (void)preloadDefaultPeekedViewController;
 - (void)peekDefaultViewController;
+- (void)layoutPeekedViewControllers;
 - (void)peekViewController:(UIViewController *)viewController;
 - (void)popViewControllerAnimated:(BOOL)animated;
 - (void)popToRootViewControllerAnimated:(BOOL)animated;

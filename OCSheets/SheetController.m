@@ -69,6 +69,7 @@ block(); \
         self.leftNavButtonItem.alpha = 1.0;
         [self.view addSubview:self.leftNavButtonItem];
     }
+    [self.sheetNavigationItem addObserver:self forKeyPath:@"showingPeeked" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:NULL];
 }
 
 - (void)removeObservers {
@@ -76,6 +77,7 @@ block(); \
         [self.sheetNavigationItem removeObserver:self forKeyPath:@"offset"];
         [self.sheetNavigationItem removeObserver:self forKeyPath:@"leftButtonView"];
     }
+    [self.sheetNavigationItem removeObserver:self forKeyPath:@"showingPeeked"];
 }
 
 - (void)dealloc {
@@ -450,6 +452,12 @@ block(); \
             self.leftNavButtonItem.alpha = 1.0;
             [self.view addSubview:self.leftNavButtonItem];
         }
+    } else if ([keyPath isEqualToString:@"showingPeeked"]) {
+        
+        id val = [change objectForKey:NSKeyValueChangeOldKey];
+        id newVal = [change objectForKey:NSKeyValueChangeNewKey];
+        
+        [self.sheetNavigationController layoutPeekedViewControllers];
     }
 }
 

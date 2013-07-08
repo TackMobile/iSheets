@@ -16,7 +16,7 @@
 
 - (void)pushNewSheet:(UIViewController *)vc;
 - (void)peekSheet:(UIViewController *)vc animated:(BOOL)animated;
-
+- (void)setPeekedHidden:(BOOL)hidden;
 - (float)availableContentWidth;
 - (CGFloat)widthForSheetPosition:(NSUInteger)position navItem:(SheetNavigationItem *)navItem;
 

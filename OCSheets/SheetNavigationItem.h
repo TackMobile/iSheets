@@ -28,11 +28,25 @@
  * The current count of the sheet stack
  */
 @property (nonatomic, assign) BOOL expanded;
+/**
+ * How much of a sheet you see in in its peeked state
+ */
 @property (nonatomic, assign) CGFloat peekedWidth;
-
+/**
+ * Controls the width and behavior of the sheet
+ */
 @property (nonatomic, assign) SheetLayoutType layoutType;
 
+/**
+ * Offset from top of stack. Non-zero indexed (1 means sheet is on top)
+ */
 @property (nonatomic, readonly) NSUInteger offset;
+
+/**
+ * Whether a sheet with a peeked sheet is hiding or showing it currently
+ */
+@property (nonatomic, getter=isShowingPeeked) BOOL showingPeeked;
+
 
 /**
  * All remaining properties below are documented in FRLayeredNavigationItem
