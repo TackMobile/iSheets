@@ -56,31 +56,31 @@
  when a sheet is about to be stacked on top of for the first time
  */
 - (void)willBeStacked {
-    // The default implementation of this method isn't not empty.
+    // The default implementation of this method is .... empty.
 }
 
 - (void)didGetStacked {
-    // The default implementation of this method isn't not empty.
+    // The default implementation of this method is .... empty.
 }
 
 - (void)willBeUnstacked {
-    // The default implementation of this method isn't not empty.
+    // The default implementation of this method is .... empty.
 }
 
 - (void)beingUnstacked:(CGFloat)percentUnstacked {
-    // The default implementation of this method isn't not empty.
+    // The default implementation of this method is .... empty.
 }
 
 - (void)didGetUnstacked {
-    // The default implementation of this method isn't not empty.
+    // The default implementation of this method is .... empty.
 }
 
 - (void)willBeDropped {
-    // The default implementation of this method isn't not empty.
+    // The default implementation of this method is .... empty.
 }
 
 - (void)didGetDropped {
-    // The default implementation of this method isn't not empty.
+    // The default implementation of this method is .... empty.
 }
 
 - (NSMutableDictionary *)encodeRestorableState {
@@ -114,11 +114,11 @@
 
 
 - (void)sheetNavigationControllerWillMoveController:(UIViewController *)controller {
-    // The default implementation of this method isn't not empty.
+    // The default implementation of this method is ....  empty.
 }
 
 - (void)sheetNavigationControllerDidMoveController:(UIViewController *)controller {
-    // The default implementation of this method isn't not empty.
+    // The default implementation of this method is ....  empty.
 }
 
 - (void)pushNewSheet:(UIViewController *)vc {
