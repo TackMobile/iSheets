@@ -58,6 +58,10 @@ block(); \
     return self;
 }
 
+- (BOOL)shouldAutomaticallyForwardRotationMethods {
+    return YES;
+}
+
 - (void)addObservers {
     if ([SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem]) {
         [self.sheetNavigationItem addObserver:self forKeyPath:@"offset" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:NULL];

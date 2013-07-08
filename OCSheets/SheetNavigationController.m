@@ -32,6 +32,7 @@ typedef enum {
 @interface SheetNavigationController () {
     BOOL willDismissTopSheet;
     BOOL willPopToRootSheet;
+    BOOL animatingPeeked;
 }
 
 @property (nonatomic, strong) UITapGestureRecognizer *tapGR;
@@ -135,7 +136,7 @@ typedef enum {
 }
 
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)orientation {
-    NSLog(@"ORIENTATION, new size: %@", NSStringFromCGSize(self.view.bounds.size));
+    //NSLog(@"ORIENTATION, new size: %@", NSStringFromCGSize(self.view.bounds.size));
     [super didRotateFromInterfaceOrientation:orientation];
     [self doLayout];
 }
@@ -182,16 +183,21 @@ typedef enum {
     if (sheetStackState == kSheetStackStateDefault) {
         if ([self.peekedSheetController isViewLoaded]) {
             if (!self.peekedSheetController.sheetNavigationItem.expanded) {
-                if (wantsDefaultPeekedSheet(self.topSheetContentViewController)) {
+                if (wantsDefaultPeekedSheet(self.topSheetContentViewController) && !animatingPeeked) {
                     SheetNavigationItem *navItem = self.topSheetContentViewController.sheetNavigationItem;
-                    float duration = self.peekedSheetController.view.frameX >= [self overallWidth] ? 0.5 : 0.0;
+                    float duration = navItem.showingPeeked  ? 0.5 : 0.0;
                     [UIView animateWithDuration:duration
                                           delay:0
                                         options: SHEET_ADDING_ANIMATION_OPTION
                                      animations:^{
+                                         animatingPeeked = YES;
                                          self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
                                      }
-                                     completion:nil];                    }
+                                     completion:^(BOOL finished){
+                                         if (finished) animatingPeeked = NO;
+                                     }];
+                    
+                }
             } else {
                 self.peekedSheetController.view.frameX = [self overallWidth];
             }
@@ -387,9 +393,12 @@ typedef enum {
                                   delay:0
                                 options: SHEET_REMOVAL_ANIMATION_OPTION
                              animations:^{
+                                 animatingPeeked = YES;
                                  self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
                              }
-                             completion:nil];
+                             completion:^(BOOL finished){
+                                 if (finished) animatingPeeked = NO;
+                             }];
         }
     };
     
@@ -548,9 +557,12 @@ typedef enum {
                                       delay:0
                                     options: SHEET_ADDING_ANIMATION_OPTION
                                  animations:^{
+                                     animatingPeeked = YES;
                                      [self.view addSubview:self.peekedSheetController.view];
                                      self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
-                                 } completion:nil];
+                                 } completion:^(BOOL finished){
+                                     if (finished) animatingPeeked = NO;
+                                 }];
             }
         }
     };
