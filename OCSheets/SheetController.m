@@ -416,12 +416,12 @@ block(); \
     }
 }
 
-- (void)setPeeking:(BOOL)peeked {
-    _peeking = peeked;
+- (void)isPeeking:(BOOL)peeking onTopOfSheet:(UIViewController *)sheet {
+    _peeking = peeking;
     [self updateViewForPeeking];
     
-    if ([self.contentViewController respondsToSelector:@selector(setPeeking:)]) {
-        [(id<SheetStackPeeking>)self.contentViewController setPeeking:_peeking];
+    if ([self.contentViewController respondsToSelector:@selector(isPeeking:onTopOfSheet:)]) {
+        [(id<SheetStackPeeking>)self.contentViewController isPeeking:_peeking onTopOfSheet:sheet];
     }
 }
 

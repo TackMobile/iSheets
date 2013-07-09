@@ -28,7 +28,7 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 - (id)initWithRootViewController:(UIViewController *)rootViewController configuration:(SheetNavigationConfigBlock)configuration;
 - (id)initWithRootViewController:(UIViewController *)rootViewController peekedViewController:(UIViewController *)peekedViewController configuration:(SheetNavigationConfigBlock)configuration;
 
-- (void)readyToPeek:(UIViewController *)sheet;
+- (UIViewController *)peekedSheet;
 
 - (void)preloadDefaultPeekedViewController;
 - (void)peekDefaultViewController;
@@ -112,8 +112,9 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 
 // encode any data necessary for restoration of the sheet if dropped
 - (NSMutableDictionary *)encodeRestorableState;
-
-// unencode previous state for restoration of the sheet
+/**
+ unencode previous state for restoration of the sheet
+  */
 - (void)decodeRestorableState:(NSDictionary *)archiveDict;
 
 - (void)sheetNavigationControllerWillPanSheet;
@@ -127,10 +128,17 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 
 @protocol SheetStackPeeking <NSObject>
 
-- (void)setPeeking:(BOOL)peeking;
+- (void)willPeekOnTopOfSheet:(UIViewController *)sheet;
+
+// Sheet did enter/exit peeked state
+- (void)isPeeking:(BOOL)peeking onTopOfSheet:(UIViewController *)sheet;
 - (BOOL)peeked;
 
 @optional
+
+/**
+ An expanded peeked sheet was return to its peeked state
+ */
 - (void)didGetUnpeeked;
 - (CGFloat)peekedWidth;
 - (void)updateViewForPeeking;

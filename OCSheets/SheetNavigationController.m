@@ -57,6 +57,10 @@ typedef enum {
     return [self initWithRootViewController:rootViewController configuration:nil];
 }
 
+- (UIViewController *)peekedSheet{
+    return self.peekedSheetController.contentViewController;
+}
+
 - (id)initWithRootViewController:(UIViewController *)rootViewController
                    configuration:(void (^)(SheetNavigationItem *item))configuration {
     self = [super init];
@@ -91,7 +95,6 @@ typedef enum {
     if (self) {
         if (peekedViewController) {
             self.peekedSheetController = [[SheetController alloc] initWithContentViewController:peekedViewController maximumWidth:NO];
-            //[self.peekedSheetController updateLeftNavButton:nil];
         }
     }
     
@@ -389,6 +392,7 @@ typedef enum {
             }
             [self peekViewController:self.peekedSheetController animated:NO];
         } else if (animateOutAndInDefaultPeekedSheet) {
+            
             [UIView animateWithDuration:[SheetLayoutModel animateOnDuration]
                                   delay:0
                                 options: SHEET_REMOVAL_ANIMATION_OPTION
@@ -397,7 +401,12 @@ typedef enum {
                                  self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
                              }
                              completion:^(BOOL finished){
-                                 if (finished) animatingPeeked = NO;
+                                 if (finished) {
+                                     if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(willPeekOnTopOfSheet:)]) {
+                                         [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController willPeekOnTopOfSheet:self.topSheetContentViewController];
+                                     }
+                                     animatingPeeked = NO;
+                                 }
                              }];
         }
     };
@@ -559,6 +568,11 @@ typedef enum {
                                  animations:^{
                                      animatingPeeked = YES;
                                      [self.view addSubview:self.peekedSheetController.view];
+                                     
+                                     if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(willPeekOnTopOfSheet:)]) {
+                                         [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController willPeekOnTopOfSheet:self.topSheetContentViewController];
+                                     }
+
                                      self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
                                  } completion:^(BOOL finished){
                                      if (finished) animatingPeeked = NO;
@@ -1161,8 +1175,8 @@ typedef enum {
 - (void)expandPeekedSheet {
     SheetController *peekedSheetController = self.peekedSheetController;
     
-    if ([peekedSheetController respondsToSelector:@selector(setPeeking:)]) {
-        [(id<SheetStackPeeking>)peekedSheetController setPeeking:NO];
+    if ([peekedSheetController respondsToSelector:@selector(isPeeking:onTopOfSheet:)]) {
+        [(id<SheetStackPeeking>)peekedSheetController isPeeking:NO onTopOfSheet:self.topSheetContentViewController];
     }
     
     SheetNavigationItem *oldNavItem = peekedSheetController.sheetNavigationItem;
@@ -1181,21 +1195,23 @@ typedef enum {
     }];
 }
 
-- (void)readyToPeek:(UIViewController *)sheet {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        if ([self isViewLoaded] && [sheet isEqual:self.peekedSheetController.contentViewController]) {
-            [self peekDefaultViewController];
-        }
-    });
-}
+//- (void)readyToPeek:(UIViewController *)sheet {
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        if ([self isViewLoaded] && [sheet isEqual:self.peekedSheetController.contentViewController]) {
+//            [self peekDefaultViewController];
+//        }
+//    });
+//}
 
 - (void)preloadDefaultPeekedViewController {
     
     SheetNavigationItem *topNavItem = self.topSheetContentViewController.sheetNavigationItem;
     
-    if ([self.peekedSheetController respondsToSelector:@selector(setPeeking:)]) {
-        [(id<SheetStackPeeking>)self.peekedSheetController setPeeking:YES];
+    
+    UIViewController *topSheet = self.topSheetContentViewController;
+    if ([self.peekedSheetController respondsToSelector:@selector(isPeeking:onTopOfSheet:)]) {
+        [(id<SheetStackPeeking>)self.peekedSheetController isPeeking:YES onTopOfSheet:topSheet];
     }
     
     [self.peekedSheetController willMoveToParentViewController:self];
@@ -1203,8 +1219,13 @@ typedef enum {
     [self.peekedSheetController removeFromParentViewController];
     [self addChildViewController:self.peekedSheetController];
 
+    if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(willPeekOnTopOfSheet:)]) {
+        [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController willPeekOnTopOfSheet:topSheet];
+    }
+    
     [self.view addSubview:self.peekedSheetController.view];
     self.peekedSheetController.view.frameX = [self overallWidth];
+    [self layoutPeekedViewControllers];
 }
 
 - (void)peekDefaultViewController {
@@ -1213,9 +1234,9 @@ typedef enum {
 
 - (void)peekViewController:(SheetController *)sheetController animated:(BOOL)animated {
     sheetController.sheetNavigationItem.layoutType = kSheetLayoutPeeked;
-    //sheetController.sheetNavigationItem.layoutType = sheetController.sheetNavigationItem.layoutType == kSheetLayoutFullScreen ? kSheetLayoutFullScreen : kSheetLayoutPeeked;
-    if ([sheetController respondsToSelector:@selector(setPeeking:)]) {
-        [(id<SheetStackPeeking>)sheetController setPeeking:YES];
+    
+    if ([sheetController respondsToSelector:@selector(isPeeking:onTopOfSheet:)]) {
+        [(id<SheetStackPeeking>)sheetController isPeeking:YES onTopOfSheet:self.topSheetContentViewController];
     }
     
     [sheetController willMoveToParentViewController:self];
@@ -1235,6 +1256,7 @@ typedef enum {
         [(id<SheetStackPage>)[self topSheetController] didGetStacked];
         [sheetController.view setNeedsLayout];
     };
+    
     if (animated) {
         sheetController.view.frameX = [self overallWidth];
         [UIView animateWithDuration:0.5
@@ -1421,7 +1443,7 @@ typedef enum {
         case UIGestureRecognizerStateEnded: {
             
             const CGFloat velocity = [gestureRecognizer velocityInView:self.view].x;
-            NSLog(@"willPopToRootSheet: %s",willPopToRootSheet?"yes":"no");
+            //NSLog(@"willPopToRootSheet: %s",willPopToRootSheet?"yes":"no");
             if (willPopToRootSheet && velocity > kSheetSnappingVelocityThreshold) {
                 //NSLog(@"%i -----  %s",gestureRecognizer.numberOfTouches,willPopToRootSheet ? "yes" : "no");
                 [self popToRootViewControllerAnimated:YES];
@@ -1474,7 +1496,6 @@ typedef enum {
     }
 }
 
-
 - (void)didRemoveSheetWithGesture {
     
     SheetController *vc = (SheetController *)[self.sheetViewControllers lastObject];
@@ -1488,11 +1509,25 @@ typedef enum {
         [self peekViewController:self.peekedSheetController animated:NO];
     }
     
+    if ([self animateOutAndInDefaultPeekedSheet:vc]) {
+        if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(willPeekOnTopOfSheet:)]) {
+            [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController willPeekOnTopOfSheet:self.topSheetContentViewController];
+        }
+    }
+    
     NSUInteger count = self.sheetViewControllers.count;
     [self.sheetViewControllers enumerateObjectsUsingBlock:^(SheetController *vc,NSUInteger idx,BOOL *stop){
         [vc.sheetNavigationItem setCount:count];
         [vc.sheetNavigationItem setIndex:idx];
     }];
+}
+
+- (BOOL)animateOutAndInDefaultPeekedSheet:(SheetController *)vc {
+    BOOL isFullscreen = vc.sheetNavigationItem.layoutType == kSheetLayoutFullScreen ? YES : NO;
+    BOOL wantsDefaultPeekedSheet = wantsDefaultPeekedSheet(self.topSheetContentViewController);
+    BOOL isPeekedSheet = vc.sheetNavigationItem.expanded;
+    BOOL hasDefaultPeekedSheet = self.peekedSheetController ? YES : NO;
+    return wantsDefaultPeekedSheet && isFullscreen && !isPeekedSheet && hasDefaultPeekedSheet;
 }
 
 - (void)removedPeekedViewController:(SheetController *)vc {
