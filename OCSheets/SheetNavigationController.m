@@ -202,10 +202,9 @@ typedef enum {
                                      }];
                     
                 } else {
-                    NSLog(@"you didn't plan this wele");
+                    NSLog(@"no frame specified for peeked sheet [%i]",__LINE__);
                 }
             } else {
-                NSLog(@"%i set overall width x pos",__LINE__);
                 self.peekedSheetController.view.frameX = [self overallWidth];
             }
         }
@@ -1309,6 +1308,13 @@ typedef enum {
 
 #pragma mark - UIGestureRecognizer delegate interface
 
+- (BOOL)peekedSheetTouched:(UIView *)touchedView {
+    SheetController *topPeekedSheet = self.peekedSheetController;
+    BOOL controllerContentIsPeekedSheet = [touchedView isDescendantOfView:topPeekedSheet.view];
+    BOOL isExpandedPeekedSheet = [[self topSheetController] sheetNavigationItem].expanded;
+    return controllerContentIsPeekedSheet && !isExpandedPeekedSheet;
+}
+
 - (void)handleTapGesture:(UIPanGestureRecognizer *)gestureRecognizer {
     
     switch (gestureRecognizer.state) {
@@ -1321,9 +1327,8 @@ typedef enum {
             SheetController *topPeekedSheet = self.peekedSheetController;
             BOOL controllerContentIsPeekedSheet = [touchedView isDescendantOfView:topPeekedSheet.view];
             BOOL isExpandedPeekedSheet = [[self topSheetController] sheetNavigationItem].expanded;
-            if (controllerContentIsPeekedSheet && !isExpandedPeekedSheet){
+            if ([self peekedSheetTouched:touchedView]){
                 [self expandPeekedSheet];
-                
             } else {
                 for (SheetController *controller in [self.sheetViewControllers reverseObjectEnumerator]) {
                     
@@ -1382,25 +1387,30 @@ typedef enum {
             [gestureRecognizer.view hitTest:[gestureRecognizer locationInView:gestureRecognizer.view]
                                   withEvent:nil];
             self.firstTouchedView = touchedView;
-            for (SheetController *controller in [self.sheetViewControllers reverseObjectEnumerator]) {
-                if ([touchedView isDescendantOfView:controller.view]) {
-                    
-                    // if it's protected and it's NOT being panned because it's visible in
-                    // the gutter, cancel it
-                    BOOL shouldPan = [self sheetShouldPan:controller.contentViewController];
-                    BOOL isGutter = [self isGutter:controller.contentViewController];
-                    if (!shouldPan && !isGutter) {
-                        // kill the gesture
-                        [gestureRecognizer setEnabled:NO];
-                        [gestureRecognizer setEnabled:YES];
-                    } else {
-                        if (isGutter) {
-                            self.firstTouchedController = [self topSheetContentViewController];
+            if ([self peekedSheetTouched:touchedView]) {
+                self.firstTouchedController = self.peekedSheetController;
+            } else {
+                
+                for (SheetController *controller in [self.sheetViewControllers reverseObjectEnumerator]) {
+                    if ([touchedView isDescendantOfView:controller.view]) {
+                        
+                        // if it's protected and it's NOT being panned because it's visible in
+                        // the gutter, cancel it
+                        BOOL shouldPan = [self sheetShouldPan:controller.contentViewController];
+                        BOOL isGutter = [self isGutter:controller.contentViewController];
+                        if (!shouldPan && !isGutter) {
+                            // kill the gesture
+                            [gestureRecognizer setEnabled:NO];
+                            [gestureRecognizer setEnabled:YES];
+                        } else {
+                            if (isGutter) {
+                                self.firstTouchedController = [self topSheetContentViewController];
+                            }
+                            self.firstTouchedController = controller.contentViewController;
                         }
-                        self.firstTouchedController = controller.contentViewController;
+                        
+                        break;
                     }
-                    
-                    break;
                 }
             }
             
