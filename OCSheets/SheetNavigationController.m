@@ -32,7 +32,6 @@ typedef enum {
 @interface SheetNavigationController () {
     BOOL willDismissTopSheet;
     BOOL willPopToRootSheet;
-    BOOL animatingPeeked;
 }
 
 @property (nonatomic, strong) UITapGestureRecognizer *tapGR;
@@ -194,12 +193,9 @@ typedef enum {
                                           delay:0
                                         options: SHEET_ADDING_ANIMATION_OPTION
                                      animations:^{
-                                         animatingPeeked = YES;
                                          self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
                                      }
-                                     completion:^(BOOL finished){
-                                         if (finished) animatingPeeked = NO;
-                                     }];
+                                     completion:nil];
                     
                 } else {
                     NSLog(@"no frame specified for peeked sheet [%i]",__LINE__);
@@ -410,17 +406,14 @@ typedef enum {
                                   delay:0
                                 options: SHEET_REMOVAL_ANIMATION_OPTION
                              animations:^{
-                                 animatingPeeked = YES;
-                                 NSLog(@"%i: showing peeked at peeked position",__LINE__);
+                                 //NSLog(@"%i: showing peeked at peeked position",__LINE__);
                                  self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
                              }
                              completion:^(BOOL finished){
-                                 if (finished) {
-                                     if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(willPeekOnTopOfSheet:)]) {
-                                         [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController willPeekOnTopOfSheet:self.topSheetContentViewController];
-                                     }
-                                     animatingPeeked = NO;
+                                 if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(willPeekOnTopOfSheet:)]) {
+                                     [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController willPeekOnTopOfSheet:self.topSheetContentViewController];
                                  }
+             
                              }];
         }
     };
@@ -582,7 +575,6 @@ typedef enum {
                                       delay:0
                                     options: SHEET_ADDING_ANIMATION_OPTION
                                  animations:^{
-                                     animatingPeeked = YES;
                                      [self.view addSubview:self.peekedSheetController.view];
                                      
                                      if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(willPeekOnTopOfSheet:)]) {
@@ -590,13 +582,11 @@ typedef enum {
                                      }
 
                                      if ([self peekedSheetReadyToPeek]) {
-                                         NSLog(@"%i: showing peeked at peeked position",__LINE__);
+                                         //NSLog(@"%i: showing peeked at peeked position",__LINE__);
                                          self.peekedSheetController.view.frame = [self frameForDefaultPeeked];
                                      }
                                      
-                                 } completion:^(BOOL finished){
-                                     if (finished) animatingPeeked = NO;
-                                 }];
+                                 } completion:nil];
             }
         }
     };
