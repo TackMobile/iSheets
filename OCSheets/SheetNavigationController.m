@@ -30,23 +30,28 @@ typedef enum {
 } SnappingPointsMethod;
 
 @interface SheetNavigationController () {
+    // flags to capture user gesture intent
     BOOL willDismissTopSheet;
     BOOL willPopToRootSheet;
+    BOOL willExpandedPeeked;
+    
+    CGRect peekedFrame;
 }
 
-@property (nonatomic, strong) UITapGestureRecognizer *tapGR;
+@property (nonatomic, strong) UITapGestureRecognizer            *tapGR;
 @property (nonatomic, readwrite, strong) UIPanGestureRecognizer *panGR;
+@property (nonatomic, readwrite, strong) UIPanGestureRecognizer *peekedPanGR;
 @property (nonatomic) BOOL dropLayersWhenPulledRight;
 
-@property (nonatomic, strong) NSMutableArray *sheetViewControllers;
-@property (nonatomic, weak) UIViewController *outOfBoundsViewController;
-@property (nonatomic, weak) UIView *firstTouchedView;
-@property (nonatomic, weak) UIView *dropNotificationView;
+@property (nonatomic, strong) NSMutableArray                    *sheetViewControllers;
+@property (nonatomic, weak) UIViewController                    *outOfBoundsViewController;
+@property (nonatomic, weak) UIView                              *firstTouchedView;
+@property (nonatomic, weak) UIView                              *dropNotificationView;
 
-@property (nonatomic, strong) SheetController *peekedSheetController;
-@property (nonatomic, weak) UIViewController *firstTouchedController;
-@property (nonatomic, weak) SheetController *firstStackedController;
-@property (nonatomic, strong) NSMutableArray *peekedViewControllers;
+@property (nonatomic, strong) SheetController                   *peekedSheetController;
+@property (nonatomic, weak) UIViewController                    *firstTouchedController;
+@property (nonatomic, weak) SheetController                     *firstStackedController;
+@property (nonatomic, strong) NSMutableArray                    *peekedViewControllers;
 
 @end
 
@@ -95,10 +100,19 @@ typedef enum {
         if (peekedViewController) {
             self.peekedSheetController = [[SheetController alloc] initWithContentViewController:peekedViewController maximumWidth:NO];
             self.peekedSheetController.view.frameX = [self overallWidth];
+            
+            [self addPeekedSheetPanGesture];
         }
     }
     
     return self;
+}
+
+- (void)addPeekedSheetPanGesture {
+    self.peekedPanGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePeekedPanGesture:)];
+    self.peekedPanGR.maximumNumberOfTouches = 2;
+    self.peekedPanGR.delegate = self;
+    [self.peekedSheetController.view addGestureRecognizer:self.peekedPanGR];
 }
 
 - (void)dealloc {
@@ -193,7 +207,7 @@ typedef enum {
                                           delay:0
                                         options: SHEET_ADDING_ANIMATION_OPTION
                                      animations:^{
-                                         self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
+                                         self.peekedSheetController.view.frame = [self peekedFrameForSheetController:self.peekedSheetController];
                                      }
                                      completion:nil];
                     
@@ -209,7 +223,7 @@ typedef enum {
 
 - (CGRect)frameForDefaultPeeked {
     if ([self peekedSheetReadyToPeek]) {
-        return [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
+        return [self peekedFrameForSheetController:self.peekedSheetController];
     }
     CGRect frame = self.peekedSheetController.view.frame;
     frame.origin.x = [self overallWidth];
@@ -271,20 +285,20 @@ typedef enum {
     }
 }
 
-- (CGRect)peekedFrameForViewController:(UIViewController *)vc {
+- (CGRect)peekedFrameForSheetController:(SheetController *)sheetController {
     
-    const CGFloat peekWidth = [self getPeekedWidth:vc];
+    const CGFloat peekWidth = [self getPeekedWidth:sheetController.contentViewController];
     
     BOOL shouldShow = [self shouldShowDefaultPeeked];
     
-    const CGFloat peekWidthTopSheet = [self getPeekedWidth:self.topSheetContentViewController];
+    //const CGFloat peekWidthTopSheet = [self getPeekedWidth:self.topSheetContentViewController];
     CGFloat xPos = [self overallWidth];
     if (shouldShow) {
         xPos -= peekWidth;
     }
     return CGRectMake(xPos,
                       0.0,
-                      vc.view.frameWidth,
+                      sheetController.contentViewController.view.frameWidth,
                       [self overallHeight]);
 }
 
@@ -396,6 +410,7 @@ typedef enum {
         
         if (isPeekedSheet) {
             vc.sheetNavigationItem.expanded = NO;
+            [self addPeekedSheetPanGesture];
             if ([contentVC respondsToSelector:@selector(didGetUnpeeked)]) {
                 [(id<SheetStackPeeking>)contentVC didGetUnpeeked];
             }
@@ -407,7 +422,7 @@ typedef enum {
                                 options: SHEET_REMOVAL_ANIMATION_OPTION
                              animations:^{
                                  //NSLog(@"%i: showing peeked at peeked position",__LINE__);
-                                 self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
+                                 self.peekedSheetController.view.frame = [self peekedFrameForSheetController:self.peekedSheetController];
                              }
                              completion:^(BOOL finished){
                                  if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(willPeekOnTopOfSheet:)]) {
@@ -425,7 +440,7 @@ typedef enum {
                             options:curve
                          animations:^{
                              if (isPeekedSheet) {
-                                 vc.view.frame = [self peekedFrameForViewController:contentVC];
+                                 vc.view.frame = [self peekedFrameForSheetController:vc];
                              } else if (animateOutAndInDefaultPeekedSheet) {
                                  NSLog(@"%i for overallwidth pos",__LINE__);
                                  self.peekedSheetController.view.frameX = [self overallWidth];
@@ -590,8 +605,8 @@ typedef enum {
             }
         }
     };
-    
-    [UIView animateWithDuration:[SheetLayoutModel animateOnDuration]
+    float duration = animated ? [SheetLayoutModel animateOnDuration] : 0.0;
+    [UIView animateWithDuration:duration
                           delay:0
                         options: SHEET_ADDING_ANIMATION_OPTION
                      animations:^{
@@ -1190,7 +1205,7 @@ typedef enum {
     return NO;
 }
 
-- (void)expandPeekedSheet {
+- (void)expandPeekedSheet:(BOOL)animated {
     SheetController *peekedSheetController = self.peekedSheetController;
     
     if ([peekedSheetController respondsToSelector:@selector(isPeeking:onTopOfSheet:)]) {
@@ -1207,7 +1222,12 @@ typedef enum {
     peekedVC.view.frameX = 0.0;
     peekedVC.view.frameY = 0.0;
     
-    [self pushViewController:peekedVC inFrontOf:[self topSheetContentViewController] configuration:^(SheetNavigationItem *navItem){
+    [self.peekedPanGR removeTarget:self action:NULL];
+    self.peekedPanGR.delegate = nil;
+    self.peekedPanGR = nil;
+    
+    [self pushViewController:peekedVC inFrontOf:self.topSheetContentViewController maximumWidth:peekedFrame.size.width animated:animated configuration:^(SheetNavigationItem *navItem){
+        
         navItem.expanded = YES;
         navItem.peekedWidth = oldNavItem.peekedWidth;
     }];
@@ -1230,9 +1250,9 @@ typedef enum {
     if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(willPeekOnTopOfSheet:)]) {
         [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController willPeekOnTopOfSheet:topSheet];
     }
-    //self.peekedSheetController.view.frameX = [self overallWidth];
-    NSLog(@"%f %i",self.peekedSheetController.view.frameX,__LINE__);
+
     [self.view addSubview:self.peekedSheetController.view];
+    
     [self layoutPeekedViewControllers];
 }
 
@@ -1252,7 +1272,7 @@ typedef enum {
     [sheetController removeFromParentViewController];
     [self addChildViewController:sheetController];
     
-    CGRect onscreenFrame = [self peekedFrameForViewController:sheetController.contentViewController];
+    CGRect onscreenFrame = [self peekedFrameForSheetController:sheetController];
     
     [self.view addSubview:sheetController.view];
     
@@ -1266,7 +1286,7 @@ typedef enum {
     };
     
     if (animated) {
-        NSLog(@"%i for overallwidth pos",__LINE__);
+        //NSLog(@"%i for overallwidth pos",__LINE__);
         sheetController.view.frameX = [self overallWidth];
         [UIView animateWithDuration:0.5
                               delay:0
@@ -1318,7 +1338,7 @@ typedef enum {
             BOOL controllerContentIsPeekedSheet = [touchedView isDescendantOfView:topPeekedSheet.view];
             BOOL isExpandedPeekedSheet = [[self topSheetController] sheetNavigationItem].expanded;
             if ([self peekedSheetTouched:touchedView]){
-                [self expandPeekedSheet];
+                [self expandPeekedSheet:YES];
             } else {
                 for (SheetController *controller in [self.sheetViewControllers reverseObjectEnumerator]) {
                     
@@ -1358,12 +1378,115 @@ typedef enum {
     }
 }
 
-- (void)handlePanGesture:(UIPanGestureRecognizer *)gestureRecognizer
-{
-    if (self.count <= 1) {
-        return;
+- (void)handlePeekedPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
+    
+    switch (gestureRecognizer.state) {
+        case UIGestureRecognizerStatePossible: {
+            
+        }
+            break;
+            
+        case UIGestureRecognizerStateBegan: {
+            peekedFrame = [self peekedFrameForSheetController:self.peekedSheetController];
+            
+            UIView *touchedView = [gestureRecognizer.view hitTest:[gestureRecognizer locationInView:gestureRecognizer.view] withEvent:nil];
+        }
+            break;
+            
+        case UIGestureRecognizerStateChanged: {
+            
+            float initPosX = peekedFrame.origin.x;
+            
+            CGFloat xTranslation = [gestureRecognizer translationInView:gestureRecognizer.view].x;
+            CGFloat velocity = [gestureRecognizer velocityInView:gestureRecognizer.view].x;
+            
+            
+            const CGPoint myPos = gestureRecognizer.view.frame.origin;
+            const CGPoint myInitPos = CGPointMake(initPosX, 0.0);
+            
+            //NSLog(@"xTranslation: %f",xTranslation);
+            BOOL movedPastHalfOwnWidth = (xTranslation+myPos.x) < initPosX - (peekedFrame.size.width*0.5);
+            const BOOL boundedMove  = (xTranslation+myPos.x) > initPosX || (xTranslation+myPos.x) < 0.0;
+            
+            //NSLog(@"movedPastHalfOwnWidth: %s",movedPastHalfOwnWidth?"YES":"NO");
+            //NSLog(@"boundedMove: %s",boundedMove?"YES":"NO");
+            
+            if (!boundedMove) {
+                self.peekedSheetController.view.frameX += xTranslation;
+            }
+            //NSLog(@"velocity %f",velocity);
+            if (movedPastHalfOwnWidth) {
+                willExpandedPeeked = YES;
+            } else if (abs(velocity) > kSheetSnappingVelocityThreshold) {
+                willExpandedPeeked = YES;
+            } else {
+                willExpandedPeeked = NO;
+            }
+            
+            [gestureRecognizer setTranslation:CGPointZero inView:gestureRecognizer.view];
+        }
+            break;
+            
+        case UIGestureRecognizerStateEnded: {
+            const CGFloat velocity = [gestureRecognizer velocityInView:self.view].x;
+            //NSLog(@"willPopToRootSheet: %s",willPopToRootSheet?"yes":"no");
+            if (willExpandedPeeked && velocity > kSheetSnappingVelocityThreshold) {
+                //NSLog(@"%i -----  %s",gestureRecognizer.numberOfTouches,willPopToRootSheet ? "yes" : "no");
+                [self expandPeekedSheet:YES];
+                willExpandedPeeked = NO;
+                return;
+            } else {
+                
+                NSTimeInterval defaultSpeed = [SheetLayoutModel animateOffDuration];
+                NSTimeInterval duration = defaultSpeed;
+                
+                if (abs(velocity) != 0) {
+                    /* match speed of fast swipe */
+                    CGFloat currentX = abs(self.peekedSheetController.view.frame.origin.x);
+                    CGFloat pointsX = [self overallWidth] - currentX;
+                    duration = pointsX / abs(velocity);
+                    
+                    //NSLog(@"velocity: %f", velocity);
+                }
+                /* but not too slow either */
+                if (duration > defaultSpeed) {
+                    duration = defaultSpeed;
+                }
+                
+                CGPoint destinationPoint = willExpandedPeeked ? CGPointMake(0.0, 0.0) : peekedFrame.origin;
+                SheetNavigationItem *navItem = self.peekedSheetController.sheetNavigationItem;
+                if (willExpandedPeeked) {
+                    destinationPoint.x += self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
+                }
+                
+                [UIView animateWithDuration:duration
+                                 animations:^{
+                                     UIView *view = self.peekedSheetController.view;
+                                     view.frameX = destinationPoint.x;
+                                 }
+                                 completion:^(BOOL finished){
+                                     if (willExpandedPeeked && finished) {
+                                         [self expandPeekedSheet:NO];
+                                         willExpandedPeeked = NO;
+                                     }
+                 
+                                 }];
+            }
+        }
+            break;
+        case UIGestureRecognizerStateFailed: {
+            willExpandedPeeked = NO;
+        }
+            break;
+        default:
+            break;
     }
     
+}
+
+- (void)handlePanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
+    
+    if (self.count <= 1) return;
     switch (gestureRecognizer.state) {
         case UIGestureRecognizerStatePossible: {
             //NSLog(@"UIGestureRecognizerStatePossible");
@@ -1373,10 +1496,17 @@ typedef enum {
         case UIGestureRecognizerStateBegan: {
             //NSLog(@"UIGestureRecognizerStateBegan");
             
-            UIView *touchedView =
-            [gestureRecognizer.view hitTest:[gestureRecognizer locationInView:gestureRecognizer.view]
-                                  withEvent:nil];
+            UIView *touchedView = [gestureRecognizer.view hitTest:[gestureRecognizer locationInView:gestureRecognizer.view] withEvent:nil];
             self.firstTouchedView = touchedView;
+            
+//            if (self.peekedSheetController) {
+//                CGPoint touch = [gestureRecognizer locationInView:gestureRecognizer.view];
+//                if (touch.x > CGRectGetMinX(self.peekedSheetController.view.frame)) {
+//                    NSLog(@"touching peeked sheet");
+//                    
+//                }
+//            }
+            
             if ([self peekedSheetTouched:touchedView]) {
                 self.firstTouchedController = self.peekedSheetController;
             } else {
@@ -1480,7 +1610,7 @@ typedef enum {
                 CGFloat pointsX = [self overallWidth] - currentX;
                 duration = pointsX / velocity;
                 
-                NSLog(@"velocity: %f", velocity);
+                //NSLog(@"velocity: %f", velocity);
             }
             /* but not too slow either */
             if (duration > defaultSpeed) {
@@ -1527,6 +1657,7 @@ typedef enum {
     BOOL isExpandedPeeked = vc.sheetNavigationItem.expanded;
     if (isExpandedPeeked){
         [self peekViewController:self.peekedSheetController animated:NO];
+        [self addPeekedSheetPanGesture];
     }
     
     if ([self animateOutAndInDefaultPeekedSheet:vc]) {
