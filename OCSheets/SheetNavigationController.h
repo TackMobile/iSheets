@@ -128,11 +128,30 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 
 @protocol SheetStackPeeking <NSObject>
 
-- (void)willPeekOnTopOfSheet:(UIViewController *)sheet;
+/**
+ callback to allow peeked sheet to update it's content
+ when it's about to reappear between full sheet changes
+ @param sheet Top sheet that is partially covered by the peeked sheet
+ */
+- (void)willPeekOnTopOfSheet:(UIViewController *)topSheet;
 
-// Sheet did enter/exit peeked state
-- (void)isPeeking:(BOOL)peeking onTopOfSheet:(UIViewController *)sheet;
+/**
+ Sheet did enter/exit peeked state
+ This is where we add a transparent view on top of a peeked sheet's
+ content to disable any user interaction
+ */
+- (void)isPeeking:(BOOL)peeking onTopOfSheet:(UIViewController *)topSheet;
+
+/**
+ Get current peeked state
+ @param sheet Top sheet that is partially covered by the peeked sheet
+ */
 - (BOOL)peeked;
+
+/**
+ Allow the sheet to specify its readiness to appear
+ */
+- (BOOL)readyToPeek;
 
 @optional
 

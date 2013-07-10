@@ -458,8 +458,8 @@ block(); \
         }
     } else if ([keyPath isEqualToString:@"showingPeeked"]) {
         
-        id val = [change objectForKey:NSKeyValueChangeOldKey];
-        id newVal = [change objectForKey:NSKeyValueChangeNewKey];
+        //id val = [change objectForKey:NSKeyValueChangeOldKey];
+        //id newVal = [change objectForKey:NSKeyValueChangeNewKey];
         
         [self.sheetNavigationController layoutPeekedViewControllers];
     }

@@ -95,6 +95,7 @@ typedef enum {
     if (self) {
         if (peekedViewController) {
             self.peekedSheetController = [[SheetController alloc] initWithContentViewController:peekedViewController maximumWidth:NO];
+            self.peekedSheetController.view.frameX = [self overallWidth];
         }
     }
     
@@ -186,7 +187,7 @@ typedef enum {
     if (sheetStackState == kSheetStackStateDefault) {
         if ([self.peekedSheetController isViewLoaded]) {
             if (!self.peekedSheetController.sheetNavigationItem.expanded) {
-                if (wantsDefaultPeekedSheet(self.topSheetContentViewController) && !animatingPeeked) {
+                if (wantsDefaultPeekedSheet(self.topSheetContentViewController)) {
                     SheetNavigationItem *navItem = self.topSheetContentViewController.sheetNavigationItem;
                     float duration = navItem.showingPeeked  ? 0.5 : 0.0;
                     [UIView animateWithDuration:duration
@@ -200,12 +201,24 @@ typedef enum {
                                          if (finished) animatingPeeked = NO;
                                      }];
                     
+                } else {
+                    NSLog(@"you didn't plan this wele");
                 }
             } else {
+                NSLog(@"%i set overall width x pos",__LINE__);
                 self.peekedSheetController.view.frameX = [self overallWidth];
             }
         }
     }
+}
+
+- (CGRect)frameForDefaultPeeked {
+    if ([self peekedSheetReadyToPeek]) {
+        return [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
+    }
+    CGRect frame = self.peekedSheetController.view.frame;
+    frame.origin.x = [self overallWidth];
+    return frame;
 }
 
 - (void)layoutSheetController:(SheetController *)sheetController {
@@ -264,6 +277,7 @@ typedef enum {
 }
 
 - (CGRect)peekedFrameForViewController:(UIViewController *)vc {
+    
     const CGFloat peekWidth = [self getPeekedWidth:vc];
     
     BOOL shouldShow = [self shouldShowDefaultPeeked];
@@ -398,6 +412,7 @@ typedef enum {
                                 options: SHEET_REMOVAL_ANIMATION_OPTION
                              animations:^{
                                  animatingPeeked = YES;
+                                 NSLog(@"%i: showing peeked at peeked position",__LINE__);
                                  self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
                              }
                              completion:^(BOOL finished){
@@ -420,6 +435,7 @@ typedef enum {
                              if (isPeekedSheet) {
                                  vc.view.frame = [self peekedFrameForViewController:contentVC];
                              } else if (animateOutAndInDefaultPeekedSheet) {
+                                 NSLog(@"%i for overallwidth pos",__LINE__);
                                  self.peekedSheetController.view.frameX = [self overallWidth];
                                  vc.view.frame = goAwayFrame;
                              } else {
@@ -552,7 +568,8 @@ typedef enum {
         
         if (self.peekedSheetController) {
             if (wantsDefaultPeekedSheet(contentViewController) && !isDefaultPeekedSheet(contentViewController)) {
-                self.peekedSheetController.view.frameX = [self overallWidth];
+                NSLog(@"%i for overallwidth pos",__LINE__);
+                self.peekedSheetController.view.frame = [self frameForDefaultPeeked];
             }
         }
     };
@@ -573,7 +590,11 @@ typedef enum {
                                          [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController willPeekOnTopOfSheet:self.topSheetContentViewController];
                                      }
 
-                                     self.peekedSheetController.view.frame = [self peekedFrameForViewController:self.peekedSheetController.contentViewController];
+                                     if ([self peekedSheetReadyToPeek]) {
+                                         NSLog(@"%i: showing peeked at peeked position",__LINE__);
+                                         self.peekedSheetController.view.frame = [self frameForDefaultPeeked];
+                                     }
+                                     
                                  } completion:^(BOOL finished){
                                      if (finished) animatingPeeked = NO;
                                  }];
@@ -592,6 +613,14 @@ typedef enum {
                      }];
     
     //[self addDebugLineAtPoint:CGRectGetMidX(onscreenFrame)];
+}
+
+- (BOOL)peekedSheetReadyToPeek {
+    BOOL readyToPeek = YES;
+    if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(readyToPeek)]) {
+        readyToPeek = [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController readyToPeek];
+    }
+    return readyToPeek;
 }
 
 - (NSUInteger)count {
@@ -1195,19 +1224,9 @@ typedef enum {
     }];
 }
 
-//- (void)readyToPeek:(UIViewController *)sheet {
-//    static dispatch_once_t onceToken;
-//    dispatch_once(&onceToken, ^{
-//        if ([self isViewLoaded] && [sheet isEqual:self.peekedSheetController.contentViewController]) {
-//            [self peekDefaultViewController];
-//        }
-//    });
-//}
-
 - (void)preloadDefaultPeekedViewController {
     
     SheetNavigationItem *topNavItem = self.topSheetContentViewController.sheetNavigationItem;
-    
     
     UIViewController *topSheet = self.topSheetContentViewController;
     if ([self.peekedSheetController respondsToSelector:@selector(isPeeking:onTopOfSheet:)]) {
@@ -1222,9 +1241,9 @@ typedef enum {
     if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(willPeekOnTopOfSheet:)]) {
         [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController willPeekOnTopOfSheet:topSheet];
     }
-    
+    //self.peekedSheetController.view.frameX = [self overallWidth];
+    NSLog(@"%f %i",self.peekedSheetController.view.frameX,__LINE__);
     [self.view addSubview:self.peekedSheetController.view];
-    self.peekedSheetController.view.frameX = [self overallWidth];
     [self layoutPeekedViewControllers];
 }
 
@@ -1258,6 +1277,7 @@ typedef enum {
     };
     
     if (animated) {
+        NSLog(@"%i for overallwidth pos",__LINE__);
         sheetController.view.frameX = [self overallWidth];
         [UIView animateWithDuration:0.5
                               delay:0
