@@ -106,6 +106,7 @@ typedef enum {
             float initXPos = self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
             self.peekedSheetController.sheetNavigationItem.initialViewPosition = CGPointMake(initXPos, 0.0);
             frame.size.width = [[SheetLayoutModel sharedInstance] desiredWidthForContent:peekedViewController navItem:self.peekedSheetController.sheetNavigationItem];
+            self.peekedSheetController.coverView.backgroundColor = [UIColor blackColor];
             self.peekedSheetController.sheetNavigationItem.currentViewPosition = CGPointMake(frame.origin.x, 0.0);
             [self addPeekedSheetPanGesture];
         }
@@ -539,6 +540,8 @@ typedef enum {
         float expandedW = [[SheetLayoutModel sharedInstance] availableWidthForOffset:navItem.initialViewPosition.x];
         newSheetController.contentViewController.view.frameWidth = expandedW;
         [newSheetController.contentViewController.view setNeedsLayout];
+        [(id<SheetStackPage>)[self.sheetViewControllers lastObject]  beingUnstacked:0.0]; // it needs to be darkened
+        
     }
     
     const CGFloat overallWidth = [self overallWidth];
@@ -627,6 +630,8 @@ typedef enum {
     
     //[self addDebugLineAtPoint:CGRectGetMidX(onscreenFrame)];
 }
+
+#pragma mark -
 
 - (BOOL)peekedSheetReadyToPeek {
     BOOL readyToPeek = YES;
@@ -1435,9 +1440,9 @@ typedef enum {
             SheetNavigationItem *navItem = self.peekedSheetController.sheetNavigationItem;
             CGFloat rightEdge = [self overallWidth] - 24.0 - 50.0;
             float currPos = initPosX - myPos.x;
-            CGFloat percComplete = currPos/rightEdge;
-            [(id<SheetStackPage>)self.topSheetContentViewController beingUnstacked:percComplete];
-            [(id<SheetStackPage>)[self.sheetViewControllers lastObject] beingUnstacked:percComplete];
+            CGFloat percComplete = (currPos/rightEdge);
+            
+            [(id<SheetStackPage>)[self.sheetViewControllers lastObject] beingUnstacked:1.0-percComplete];
             
             if (!boundedMove && percComplete < 1.0) {
                 self.peekedSheetController.view.frameX += xTranslation;
@@ -1446,8 +1451,6 @@ typedef enum {
             if (movedPastHalfOwnWidth) {
                 willExpandedPeeked = YES;
             } else if (abs(velocity) > kSheetSnappingVelocityThreshold) {
-                willExpandedPeeked = YES;
-            } else if (percComplete == 1.0) {
                 willExpandedPeeked = YES;
             } else {
                 willExpandedPeeked = NO;
@@ -1459,9 +1462,13 @@ typedef enum {
             
         case UIGestureRecognizerStateEnded: {
             const CGFloat velocity = [gestureRecognizer velocityInView:self.view].x;
-            //NSLog(@"willPopToRootSheet: %s",willPopToRootSheet?"yes":"no");
+            
+            if (willExpandedPeeked) {
+                [(id<SheetStackPage>)self.topSheetContentViewController beingUnstacked:0.0];
+                [(id<SheetStackPage>)[self.sheetViewControllers lastObject] beingUnstacked:0.0];
+            }
+            
             if (willExpandedPeeked && velocity > kSheetSnappingVelocityThreshold) {
-                //NSLog(@"%i -----  %s",gestureRecognizer.numberOfTouches,willPopToRootSheet ? "yes" : "no");
                 [self expandPeekedSheet:YES];
                 willExpandedPeeked = NO;
                 return;
@@ -1475,8 +1482,6 @@ typedef enum {
                     CGFloat currentX = abs(self.peekedSheetController.view.frame.origin.x);
                     CGFloat pointsX = [self overallWidth] - currentX;
                     duration = pointsX / abs(velocity);
-                    
-                    //NSLog(@"velocity: %f", velocity);
                 }
                 /* but not too slow either */
                 if (duration > defaultSpeed) {

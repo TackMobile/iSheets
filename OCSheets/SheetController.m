@@ -34,7 +34,6 @@ block(); \
 @property (nonatomic, strong) UIView *borderView;
 @property (nonatomic, strong) UIView *leftNavButtonItem;
 @property (nonatomic, weak) UIView *contentView;
-@property (nonatomic, strong) UIView *coverView;
 
 @end
 
@@ -364,6 +363,7 @@ block(); \
         return;
     }
     self.coverView.alpha = kCoverOpacity*(1-percentUnstacked);
+    [self.view addSubview:self.coverView];
     
     if ([self.contentViewController respondsToSelector:@selector(beingUnstacked:)]) {
         [(id<SheetStackPage>)self.contentViewController beingUnstacked:percentUnstacked];
@@ -462,9 +462,6 @@ block(); \
             [self.view addSubview:self.leftNavButtonItem];
         }
     } else if ([keyPath isEqualToString:@"showingPeeked"]) {
-        
-        //id val = [change objectForKey:NSKeyValueChangeOldKey];
-        //id newVal = [change objectForKey:NSKeyValueChangeNewKey];
         
         [self.sheetNavigationController layoutPeekedViewControllers];
     }

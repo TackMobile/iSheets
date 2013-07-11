@@ -17,8 +17,10 @@
 @property (nonatomic, strong) UIViewController *contentViewController;
 @property (nonatomic, readonly) BOOL maximumWidth;
 @property (nonatomic, readonly) BOOL isRestored;
+@property (nonatomic, strong) UIView *coverView;
 
 - (id)initWithContentViewController:(UIViewController *)contentViewController  maximumWidth:(BOOL)maxWidth;
 - (void)dumpContentViewController;
+- (void)peekedBeingUnstacked:(CGFloat)percentUnstacked;
 
 @end
