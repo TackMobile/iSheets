@@ -26,6 +26,7 @@ block(); \
 
 @interface SheetController () {
     BOOL _peeking;
+    NSMutableArray *keyValueObserving;
 }
 
 @property (nonatomic, readwrite, strong) SheetNavigationItem *sheetNavigationItem;
@@ -52,7 +53,7 @@ block(); \
         self.sheetNavigationItem.nextItemDistance = kSheetNextItemDefaultDistance;
         self.maximumWidth = maxWidth;
         _isRestored = NO;
-        
+        keyValueObserving = [[NSMutableArray alloc] init];
     }
     
     return self;
@@ -64,8 +65,9 @@ block(); \
 
 - (void)addObservers {
     if ([SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem]) {
-        [self.sheetNavigationItem addObserver:self forKeyPath:@"offset" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:NULL];
-        [self.sheetNavigationItem addObserver:self forKeyPath:@"leftButtonView" options:NSKeyValueObservingOptionNew context:NULL];
+        [self observeKeyPathForNavItem:@"offset"];
+        [self observeKeyPathForNavItem:@"leftButtonView"];
+        
         self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
         if (!self.leftNavButtonItem) {
             self.leftNavButtonItem = [self.sheetNavigationItem leftButtonView];
@@ -73,15 +75,18 @@ block(); \
         self.leftNavButtonItem.alpha = 1.0;
         [self.view addSubview:self.leftNavButtonItem];
     }
-    [self.sheetNavigationItem addObserver:self forKeyPath:@"showingPeeked" options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:NULL];
+    [self observeKeyPathForNavItem:@"showingPeeked"];
+}
+
+- (void)observeKeyPathForNavItem:(NSString *)keyPath {
+    [keyValueObserving addObject:keyPath];
+    [self.sheetNavigationItem addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:NULL];
 }
 
 - (void)removeObservers {
-    if ([SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem]) {
-        [self.sheetNavigationItem removeObserver:self forKeyPath:@"offset"];
-        [self.sheetNavigationItem removeObserver:self forKeyPath:@"leftButtonView"];
+    for (NSString *keyPath in keyValueObserving) {
+        [self.sheetNavigationItem removeObserver:self forKeyPath:keyPath];
     }
-    [self.sheetNavigationItem removeObserver:self forKeyPath:@"showingPeeked"];
 }
 
 - (void)dealloc {

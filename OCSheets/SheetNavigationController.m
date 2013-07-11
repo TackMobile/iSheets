@@ -1432,14 +1432,22 @@ typedef enum {
             //NSLog(@"x Translation: %f",xTranslation);
             //NSLog(@"moved Past Half Own Width: %s",movedPastHalfOwnWidth?"YES":"NO");
             //NSLog(@"bounded Move: %s",boundedMove?"YES":"NO");
+            SheetNavigationItem *navItem = self.peekedSheetController.sheetNavigationItem;
+            CGFloat rightEdge = [self overallWidth] - 24.0 - 50.0;
+            float currPos = initPosX - myPos.x;
+            CGFloat percComplete = currPos/rightEdge;
+            [(id<SheetStackPage>)self.topSheetContentViewController beingUnstacked:percComplete];
+            [(id<SheetStackPage>)[self.sheetViewControllers lastObject] beingUnstacked:percComplete];
             
-            if (!boundedMove) {
+            if (!boundedMove && percComplete < 1.0) {
                 self.peekedSheetController.view.frameX += xTranslation;
             }
             //NSLog(@"velocity %f",velocity);
             if (movedPastHalfOwnWidth) {
                 willExpandedPeeked = YES;
             } else if (abs(velocity) > kSheetSnappingVelocityThreshold) {
+                willExpandedPeeked = YES;
+            } else if (percComplete == 1.0) {
                 willExpandedPeeked = YES;
             } else {
                 willExpandedPeeked = NO;
@@ -1573,9 +1581,6 @@ typedef enum {
             
             const CGFloat parentWidth = [self overallWidth];
             const CGFloat peekedWidth = [self getPeekedWidth:self.topSheetContentViewController];
-            
-            //float vel = [gestureRecognizer velocityInView:self.firstTouchedController.view].x;
-            //NSLog(@"UIGestureRecognizerStateChanged, vel=%f",vel);
             
             const NSInteger startVcIdx = [self.sheetViewControllers count]-1;
             const SheetController *startVc = [self.sheetViewControllers objectAtIndex:startVcIdx];
