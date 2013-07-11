@@ -106,6 +106,7 @@ typedef enum {
             float initXPos = self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
             self.peekedSheetController.sheetNavigationItem.initialViewPosition = CGPointMake(initXPos, 0.0);
             frame.size.width = [[SheetLayoutModel sharedInstance] desiredWidthForContent:peekedViewController navItem:self.peekedSheetController.sheetNavigationItem];
+            frame.size.height = [self overallHeight];
             self.peekedSheetController.sheetNavigationItem.currentViewPosition = CGPointMake(frame.origin.x, 0.0);
             [self addPeekedSheetPanGesture];
         }
