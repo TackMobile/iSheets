@@ -1403,7 +1403,7 @@ typedef enum {
             
         case UIGestureRecognizerStateBegan: {
             
-            [[self topSheetContentViewController] performSelector:@selector(willBeStacked)];
+            [[self topSheetController] performSelector:@selector(willBeStacked)];
             
             CGFloat overallWidth = [self overallWidth];
             CGFloat offset = self.topSheetContentViewController.sheetNavigationItem.initialViewPosition.x;
@@ -1411,9 +1411,6 @@ typedef enum {
             CGFloat targetW = overallWidth - offset - nextDist;
             
             peekedFrame = [self peekedFrameForSheetController:self.peekedSheetController];
-            
-            self.peekedSheetController.contentViewController.view.frameWidth = targetW;
-            [self.peekedSheetController.contentViewController.view setNeedsLayout];
             
         }
             break;
@@ -1463,8 +1460,6 @@ typedef enum {
             if (willExpandedPeeked) {
                 [(id<SheetStackPage>)self.topSheetContentViewController beingUnstacked:0.0];
                 [(id<SheetStackPage>)[self.sheetViewControllers lastObject] beingUnstacked:0.0];
-            } else {
-                [[self topSheetController] performSelector:@selector(didGetUnstacked)];
             }
             
             if (willExpandedPeeked && velocity > kSheetSnappingVelocityThreshold) {
@@ -1502,8 +1497,9 @@ typedef enum {
                                      if (willExpandedPeeked && finished) {
                                          [self expandPeekedSheet:NO];
                                          willExpandedPeeked = NO;
+                                     } else {
+                                         [[self topSheetController] performSelector:@selector(didGetUnstacked)];
                                      }
-                 
                                  }];
             }
         }
