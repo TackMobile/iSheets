@@ -357,7 +357,6 @@ block(); \
 }
 
 - (void)beingUnstacked:(CGFloat)percentUnstacked {
-    
     if (percentUnstacked == 1.0 && self.coverView.alpha == kCoverOpacity) {
         [self hideView:self.coverView withDuration:[SheetLayoutModel animateOffDuration] withDelay:0.0];
         return;

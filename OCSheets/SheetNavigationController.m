@@ -106,7 +106,6 @@ typedef enum {
             float initXPos = self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
             self.peekedSheetController.sheetNavigationItem.initialViewPosition = CGPointMake(initXPos, 0.0);
             frame.size.width = [[SheetLayoutModel sharedInstance] desiredWidthForContent:peekedViewController navItem:self.peekedSheetController.sheetNavigationItem];
-            self.peekedSheetController.coverView.backgroundColor = [UIColor blackColor];
             self.peekedSheetController.sheetNavigationItem.currentViewPosition = CGPointMake(frame.origin.x, 0.0);
             [self addPeekedSheetPanGesture];
         }
@@ -1403,10 +1402,8 @@ typedef enum {
             break;
             
         case UIGestureRecognizerStateBegan: {
-
-            if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(sheetNavigationController:willMoveController:)]) {
-                [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController sheetNavigationController:self willMoveController:self.peekedSheetController];
-            }
+            
+            [[self topSheetContentViewController] performSelector:@selector(willBeStacked)];
             
             CGFloat overallWidth = [self overallWidth];
             CGFloat offset = self.topSheetContentViewController.sheetNavigationItem.initialViewPosition.x;
@@ -1466,6 +1463,8 @@ typedef enum {
             if (willExpandedPeeked) {
                 [(id<SheetStackPage>)self.topSheetContentViewController beingUnstacked:0.0];
                 [(id<SheetStackPage>)[self.sheetViewControllers lastObject] beingUnstacked:0.0];
+            } else {
+                [[self topSheetController] performSelector:@selector(didGetUnstacked)];
             }
             
             if (willExpandedPeeked && velocity > kSheetSnappingVelocityThreshold) {
