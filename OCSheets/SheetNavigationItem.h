@@ -25,15 +25,7 @@
 @property (nonatomic, assign) NSUInteger count;
 
 /**
- * The current count of the sheet stack
- */
-@property (nonatomic, assign) BOOL expanded;
-/**
- * How much of a sheet you see in in its peeked state
- */
-@property (nonatomic, assign) CGFloat peekedWidth;
-/**
- * Controls the width and behavior of the sheet
+ * Controls the width and layout behavior of the sheet
  */
 @property (nonatomic, assign) SheetLayoutType layoutType;
 
@@ -42,12 +34,22 @@
  */
 @property (nonatomic, readonly) NSUInteger offset;
 
+#pragma mark -
 /**
- * Whether a sheet with a peeked sheet is hiding or showing it currently
+ * Expanded state of a peeked sheet (is open and interactive)
+ */
+@property (nonatomic, assign) BOOL expandedPeekedSheet;
+/**
+ * How much of a sheet you see in in its non-interactive peeked state
+ */
+@property (nonatomic, assign) CGFloat peekedWidth;
+/**
+ * Whether a sheet with a peeked sheet on top of it 
+ is currently hiding or showing it 
  */
 @property (nonatomic, getter=isShowingPeeked) BOOL showingPeeked;
 
-
+#pragma mark - FRLayeredNavigationItem properties
 /**
  * All remaining properties below are documented in FRLayeredNavigationItem
  */

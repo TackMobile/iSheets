@@ -153,6 +153,11 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
  */
 - (BOOL)readyToPeek;
 
+/**
+ Notifies sheet it's about to be dragged */
+- (void)sheetNavigationController:(SheetNavigationController*)navController
+               willMoveController:(SheetController *)sheetController;
+
 @optional
 
 /**

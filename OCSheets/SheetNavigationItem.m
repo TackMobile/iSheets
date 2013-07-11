@@ -26,7 +26,7 @@
         self.displayShadow = YES;
         self.width = -1;
         self.nextItemDistance = -1;
-        _expanded = NO;
+        _expandedPeekedSheet = NO;
         _count = 0;
     }
     
@@ -38,8 +38,8 @@
     self.offset = _count - _index;
 }
 
-- (void)setPeeked:(BOOL)peeked {
-    _expanded = peeked;
+- (void)setExpandedPeeked:(BOOL)expandedPeeked {
+    _expandedPeekedSheet = expandedPeeked;
 }
 
 - (UIView *)leftButtonView {
@@ -64,7 +64,7 @@
     desc = [desc stringByAppendingFormat:@"count: %i\n",self.count];
     desc = [desc stringByAppendingFormat:@"offset: %i\n",self.offset];
     desc = [desc stringByAppendingFormat:@"width: %f\n",self.width];
-    desc = [desc stringByAppendingFormat:@"expanded: %s\n",self.expanded ? "yes" : "no"];
+    desc = [desc stringByAppendingFormat:@"expanded: %s\n",self.expandedPeekedSheet ? "yes" : "no"];
     desc = [desc stringByAppendingFormat:@"peeked width: %f\n",self.peekedWidth];
     desc = [desc stringByAppendingFormat:@"display shadow: %s\n",self.displayShadow ? "yes" : "no"];
     desc = [desc stringByAppendingFormat:@"layout type: %i\n",self.layoutType];

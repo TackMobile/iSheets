@@ -38,20 +38,8 @@ __strong static SheetLayoutModel *_sharedInstance;
 + (SheetLayoutModel *) sharedInstance {
     if (_sharedInstance == nil) {
         _sharedInstance = [[self alloc] init];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(resetSharedInstance)
-                                                     name:@"logout"
-                                                   object:nil];
     }
     return _sharedInstance;
-}
-
-+ (void) resetSharedInstance {
-    if ([_sharedInstance respondsToSelector:@selector(resetSharedInstance)]) {
-        [_sharedInstance performSelector:@selector(resetSharedInstance)];
-    }
-    _sharedInstance = nil;
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark Width calculations
@@ -126,7 +114,7 @@ __strong static SheetLayoutModel *_sharedInstance;
         width = [self navControllerWidth];
         CGFloat xPos = [self initX:navItem];
         width -= xPos;
-        
+
     } else if (layoutType == kSheetLayoutDefault) {
         
         if (USE_HARD_CODED_WIDTHS) {
@@ -274,7 +262,7 @@ __strong static SheetLayoutModel *_sharedInstance;
 
 + (BOOL)shouldShowLeftNavItem:(SheetNavigationItem *)navItem {
     if (navItem.layoutType == kSheetLayoutFullScreen ||
-        navItem.layoutType == kSheetLayoutPeeked) {
+        navItem.expandedPeekedSheet == YES) {
         return NO;
     }
     return YES;

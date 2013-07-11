@@ -99,8 +99,14 @@ typedef enum {
     if (self) {
         if (peekedViewController) {
             self.peekedSheetController = [[SheetController alloc] initWithContentViewController:peekedViewController maximumWidth:NO];
-            self.peekedSheetController.view.frameX = [self overallWidth];
+            CGRect frame = self.peekedSheetController.view.frame;
+            frame.origin.x = [self overallWidth];
+            self.peekedSheetController.view.frame = frame;
             
+            float initXPos = self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
+            self.peekedSheetController.sheetNavigationItem.initialViewPosition = CGPointMake(initXPos, 0.0);
+            frame.size.width = [[SheetLayoutModel sharedInstance] desiredWidthForContent:peekedViewController navItem:self.peekedSheetController.sheetNavigationItem];
+            self.peekedSheetController.sheetNavigationItem.currentViewPosition = CGPointMake(frame.origin.x, 0.0);
             [self addPeekedSheetPanGesture];
         }
     }
@@ -197,28 +203,30 @@ typedef enum {
 - (void)layoutPeekedViewControllers {
     
     SheetStackState sheetStackState = [[SheetLayoutModel sharedInstance] stackState];
+    
     if (sheetStackState == kSheetStackStateDefault) {
         if ([self.peekedSheetController isViewLoaded]) {
-            if (!self.peekedSheetController.sheetNavigationItem.expanded) {
-                if (wantsDefaultPeekedSheet(self.topSheetContentViewController)) {
-                    SheetNavigationItem *navItem = self.topSheetContentViewController.sheetNavigationItem;
-                    float duration = navItem.showingPeeked  ? 0.5 : 0.0;
-                    [UIView animateWithDuration:duration
-                                          delay:0
-                                        options: SHEET_ADDING_ANIMATION_OPTION
-                                     animations:^{
-                                         self.peekedSheetController.view.frame = [self peekedFrameForSheetController:self.peekedSheetController];
-                                     }
-                                     completion:nil];
-                    
-                } else {
-                    NSLog(@"no frame specified for peeked sheet [%i]",__LINE__);
-                }
+            if ([self shouldLayoutPeekedSheet]) {
+                SheetNavigationItem *navItem = self.topSheetContentViewController.sheetNavigationItem;
+                float duration = navItem.showingPeeked  ? 0.5 : 0.0;
+                [UIView animateWithDuration:duration
+                                      delay:0
+                                    options: SHEET_ADDING_ANIMATION_OPTION
+                                 animations:^{
+                                     self.peekedSheetController.view.frame = [self peekedFrameForSheetController:self.peekedSheetController];
+                                 }
+                                 completion:nil];
+                
             } else {
                 self.peekedSheetController.view.frameX = [self overallWidth];
             }
         }
     }
+}
+
+- (BOOL)shouldLayoutPeekedSheet {
+    BOOL notExpanded = !self.peekedSheetController.sheetNavigationItem.expandedPeekedSheet;
+    return notExpanded && wantsDefaultPeekedSheet(self.topSheetContentViewController);
 }
 
 - (CGRect)frameForDefaultPeeked {
@@ -246,6 +254,7 @@ typedef enum {
     f.size.height = CGRectGetHeight(self.view.bounds);
     
     if (sheetController.maximumWidth) {
+        
         // standard sheet, no special layout rules
         // just make it full-width minus its offset from left
         navItem.width = CGRectGetWidth(self.view.bounds) - navItem.initialViewPosition.x;
@@ -321,7 +330,7 @@ typedef enum {
 - (CGRect)offscreenFrameForNavItem:(SheetNavigationItem *)navItem withOnscreenFrame:(CGRect)onscreenFrame {
     CGRect frame = CGRectZero;
     CGFloat offScreenX = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
-    if (navItem.expanded) {
+    if (navItem.expandedPeekedSheet) {
         // offset it left to match initial x of peeked sheet
         offScreenX -= [self getPeekedWidth:navItem.sheetController.contentViewController];
     }
@@ -384,13 +393,13 @@ typedef enum {
     
     CGFloat xLoc = CGRectGetMaxX(self.view.bounds);
     
-    if (vc.sheetNavigationItem.expanded) {
+    if (vc.sheetNavigationItem.expandedPeekedSheet) {
         xLoc -= vc.sheetNavigationItem.peekedWidth;
     }
     
     BOOL isFullscreen = vc.sheetNavigationItem.layoutType == kSheetLayoutFullScreen ? YES : NO;
     BOOL wantsDefaultPeekedSheet = wantsDefaultPeekedSheet(self.firstStackedController.contentViewController);
-    BOOL isPeekedSheet = vc.sheetNavigationItem.expanded;
+    BOOL isPeekedSheet = vc.sheetNavigationItem.expandedPeekedSheet;
     BOOL animateOutAndInDefaultPeekedSheet = wantsDefaultPeekedSheet && isFullscreen && !isPeekedSheet;
     
     if (isPeekedSheet) {
@@ -409,7 +418,7 @@ typedef enum {
         [self removeSheetFromViewHeirarchy:vc];
         
         if (isPeekedSheet) {
-            vc.sheetNavigationItem.expanded = NO;
+            vc.sheetNavigationItem.expandedPeekedSheet= NO;
             [self addPeekedSheetPanGesture];
             if ([contentVC respondsToSelector:@selector(didGetUnpeeked)]) {
                 [(id<SheetStackPeeking>)contentVC didGetUnpeeked];
@@ -442,7 +451,7 @@ typedef enum {
                              if (isPeekedSheet) {
                                  vc.view.frame = [self peekedFrameForSheetController:vc];
                              } else if (animateOutAndInDefaultPeekedSheet) {
-                                 NSLog(@"%i for overallwidth pos",__LINE__);
+                                 //NSLog(@"%i for overallwidth pos",__LINE__);
                                  self.peekedSheetController.view.frameX = [self overallWidth];
                                  vc.view.frame = goAwayFrame;
                              } else {
@@ -526,7 +535,7 @@ typedef enum {
     
     [[SheetLayoutModel sharedInstance] updateNavItem:navItem];
 
-    if (navItem.expanded) {
+    if (navItem.expandedPeekedSheet) {
         float expandedW = [[SheetLayoutModel sharedInstance] availableWidthForOffset:navItem.initialViewPosition.x];
         newSheetController.contentViewController.view.frameWidth = expandedW;
         [newSheetController.contentViewController.view setNeedsLayout];
@@ -693,7 +702,13 @@ typedef enum {
 }
 
 - (SheetNavigationItem *)sheetNavigationItemForSheet:(UIViewController *)vc {
-    return [[self sheetControllerOf:vc] sheetNavigationItem];
+    SheetNavigationItem *navItem = [[self sheetControllerOf:vc] sheetNavigationItem];
+    if (!navItem) {
+        if ([vc isEqual:self.peekedSheetController.contentViewController]) {
+            navItem = self.peekedSheetController.sheetNavigationItem;
+        }
+    }
+    return navItem;
 }
 
 - (UIViewController *)sheetAtIndex:(int)index {
@@ -916,7 +931,7 @@ typedef enum {
             if (navItem.offset == 1) {
                 
                 xTranslation = overallWidth - myPos.x;
-                if (vc.sheetNavigationItem.expanded) {
+                if (vc.sheetNavigationItem.expandedPeekedSheet) {
                     xTranslation -= [self getPeekedWidth:vc.contentViewController];
                 }
                 [self willRemoveSheet];
@@ -1128,18 +1143,16 @@ typedef enum {
     const CGFloat navViewWidth = vc.sheetNavigationController.view.bounds.size.width;
     
     CGFloat peekedWidth = 0.0;
-    if (navItem.expanded) {
+    if (navItem.expandedPeekedSheet) {
         peekedWidth = navItem.peekedWidth;
     }
     
     if (bounded) {
-        //NSLog(@"move view %f pixels to %f, navItem initial view position x: %f",origXTranslation,(vc.view.frame.origin.x + origXTranslation),initPos.x);
         /* apply translation to navigation item position first and then apply to view */
         CGRect f = vc.view.frame;
         f.origin = navItem.currentViewPosition;
         f.origin.x += origXTranslation;
         
-        //NSLog(@"if (%f <= %f)",f.origin.x,initPos.x);
         if (f.origin.x <= initPos.x) {
             f.origin.x = initPos.x;
         }
@@ -1228,7 +1241,7 @@ typedef enum {
     
     [self pushViewController:peekedVC inFrontOf:self.topSheetContentViewController maximumWidth:peekedFrame.size.width animated:animated configuration:^(SheetNavigationItem *navItem){
         
-        navItem.expanded = YES;
+        navItem.expandedPeekedSheet = YES;
         navItem.peekedWidth = oldNavItem.peekedWidth;
     }];
 }
@@ -1261,7 +1274,6 @@ typedef enum {
 }
 
 - (void)peekViewController:(SheetController *)sheetController animated:(BOOL)animated {
-    sheetController.sheetNavigationItem.layoutType = kSheetLayoutPeeked;
     
     if ([sheetController respondsToSelector:@selector(isPeeking:onTopOfSheet:)]) {
         [(id<SheetStackPeeking>)sheetController isPeeking:YES onTopOfSheet:self.topSheetContentViewController];
@@ -1321,7 +1333,7 @@ typedef enum {
 - (BOOL)peekedSheetTouched:(UIView *)touchedView {
     SheetController *topPeekedSheet = self.peekedSheetController;
     BOOL controllerContentIsPeekedSheet = [touchedView isDescendantOfView:topPeekedSheet.view];
-    BOOL isExpandedPeekedSheet = [[self topSheetController] sheetNavigationItem].expanded;
+    BOOL isExpandedPeekedSheet = [[self topSheetController] sheetNavigationItem].expandedPeekedSheet;
     return controllerContentIsPeekedSheet && !isExpandedPeekedSheet;
 }
 
@@ -1336,7 +1348,7 @@ typedef enum {
             
             SheetController *topPeekedSheet = self.peekedSheetController;
             BOOL controllerContentIsPeekedSheet = [touchedView isDescendantOfView:topPeekedSheet.view];
-            BOOL isExpandedPeekedSheet = [[self topSheetController] sheetNavigationItem].expanded;
+            BOOL isExpandedPeekedSheet = [[self topSheetController] sheetNavigationItem].expandedPeekedSheet;
             if ([self peekedSheetTouched:touchedView]){
                 [self expandPeekedSheet:YES];
             } else {
@@ -1382,14 +1394,25 @@ typedef enum {
     
     switch (gestureRecognizer.state) {
         case UIGestureRecognizerStatePossible: {
-            
         }
             break;
             
         case UIGestureRecognizerStateBegan: {
+
+            if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(sheetNavigationController:willMoveController:)]) {
+                [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController sheetNavigationController:self willMoveController:self.peekedSheetController];
+            }
+            
+            CGFloat overallWidth = [self overallWidth];
+            CGFloat offset = self.topSheetContentViewController.sheetNavigationItem.initialViewPosition.x;
+            CGFloat nextDist = self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
+            CGFloat targetW = overallWidth - offset - nextDist;
+            
             peekedFrame = [self peekedFrameForSheetController:self.peekedSheetController];
             
-            UIView *touchedView = [gestureRecognizer.view hitTest:[gestureRecognizer locationInView:gestureRecognizer.view] withEvent:nil];
+            self.peekedSheetController.contentViewController.view.frameWidth = targetW;
+            [self.peekedSheetController.contentViewController.view setNeedsLayout];
+            
         }
             break;
             
@@ -1400,16 +1423,15 @@ typedef enum {
             CGFloat xTranslation = [gestureRecognizer translationInView:gestureRecognizer.view].x;
             CGFloat velocity = [gestureRecognizer velocityInView:gestureRecognizer.view].x;
             
-            
             const CGPoint myPos = gestureRecognizer.view.frame.origin;
             const CGPoint myInitPos = CGPointMake(initPosX, 0.0);
             
-            //NSLog(@"xTranslation: %f",xTranslation);
             BOOL movedPastHalfOwnWidth = (xTranslation+myPos.x) < initPosX - (peekedFrame.size.width*0.5);
             const BOOL boundedMove  = (xTranslation+myPos.x) > initPosX || (xTranslation+myPos.x) < 0.0;
             
-            //NSLog(@"movedPastHalfOwnWidth: %s",movedPastHalfOwnWidth?"YES":"NO");
-            //NSLog(@"boundedMove: %s",boundedMove?"YES":"NO");
+            //NSLog(@"x Translation: %f",xTranslation);
+            //NSLog(@"moved Past Half Own Width: %s",movedPastHalfOwnWidth?"YES":"NO");
+            //NSLog(@"bounded Move: %s",boundedMove?"YES":"NO");
             
             if (!boundedMove) {
                 self.peekedSheetController.view.frameX += xTranslation;
@@ -1498,14 +1520,6 @@ typedef enum {
             
             UIView *touchedView = [gestureRecognizer.view hitTest:[gestureRecognizer locationInView:gestureRecognizer.view] withEvent:nil];
             self.firstTouchedView = touchedView;
-            
-//            if (self.peekedSheetController) {
-//                CGPoint touch = [gestureRecognizer locationInView:gestureRecognizer.view];
-//                if (touch.x > CGRectGetMinX(self.peekedSheetController.view.frame)) {
-//                    NSLog(@"touching peeked sheet");
-//                    
-//                }
-//            }
             
             if ([self peekedSheetTouched:touchedView]) {
                 self.firstTouchedController = self.peekedSheetController;
@@ -1654,7 +1668,7 @@ typedef enum {
     }
     [self removeSheetFromHistory:vc];
     [self removeSheetFromViewHeirarchy:vc];
-    BOOL isExpandedPeeked = vc.sheetNavigationItem.expanded;
+    BOOL isExpandedPeeked = vc.sheetNavigationItem.expandedPeekedSheet;
     if (isExpandedPeeked){
         [self peekViewController:self.peekedSheetController animated:NO];
         [self addPeekedSheetPanGesture];
@@ -1676,7 +1690,7 @@ typedef enum {
 - (BOOL)animateOutAndInDefaultPeekedSheet:(SheetController *)vc {
     BOOL isFullscreen = vc.sheetNavigationItem.layoutType == kSheetLayoutFullScreen ? YES : NO;
     BOOL wantsDefaultPeekedSheet = wantsDefaultPeekedSheet(self.topSheetContentViewController);
-    BOOL isPeekedSheet = vc.sheetNavigationItem.expanded;
+    BOOL isPeekedSheet = vc.sheetNavigationItem.expandedPeekedSheet;
     BOOL hasDefaultPeekedSheet = self.peekedSheetController ? YES : NO;
     return wantsDefaultPeekedSheet && isFullscreen && !isPeekedSheet && hasDefaultPeekedSheet;
 }
