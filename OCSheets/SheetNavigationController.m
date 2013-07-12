@@ -30,10 +30,10 @@ typedef enum {
 } SnappingPointsMethod;
 
 @interface SheetNavigationController () {
-    // flags to capture user gesture intent
-    BOOL willDismissTopSheet;
-    BOOL willPopToRootSheet;
-    BOOL willExpandedPeeked;
+    // flag to capture user gesture intent
+    BOOL _willExpandedPeeked;
+    BOOL _willDismissTopSheet;
+    BOOL _willPopToRootSheet;
     
     CGRect peekedFrame;
 }
@@ -41,7 +41,8 @@ typedef enum {
 @property (nonatomic, strong) UITapGestureRecognizer            *tapGR;
 @property (nonatomic, readwrite, strong) UIPanGestureRecognizer *panGR;
 @property (nonatomic, readwrite, strong) UIPanGestureRecognizer *peekedPanGR;
-@property (nonatomic) BOOL dropLayersWhenPulledRight;
+
+@property (nonatomic, assign) BOOL dropLayersWhenPulledRight;
 
 @property (nonatomic, strong) NSMutableArray                    *sheetViewControllers;
 @property (nonatomic, weak) UIViewController                    *outOfBoundsViewController;
@@ -967,13 +968,13 @@ typedef enum {
             
             switch (method) {
                 case SnappingPointsMethodNearest: {
-                    if (rightSnappingEdgeNearest || willDismissTopSheet) {
+                    if (rightSnappingEdgeNearest || _willDismissTopSheet) {
                         /* right snapping point is nearest */
                         /* and right snapping point is >= to nav width */
                         doRightSnapping();
                     } else {
                         /* left snapping point is nearest */
-                        if (!willDismissTopSheet) {
+                        if (!_willDismissTopSheet) {
                             doLeftSnapping();
                         }
                     }
@@ -988,12 +989,12 @@ typedef enum {
                     break;
                 }
                 default: {
-                    if (willDismissTopSheet) {
+                    if (_willDismissTopSheet) {
                         doRightSnapping();
                     }
                 }
             }
-        } else if (willDismissTopSheet) {
+        } else if (_willDismissTopSheet) {
             doRightSnapping();
         } else {
             doLeftSnapping();
@@ -1069,13 +1070,13 @@ typedef enum {
             float initPosX = meNavItem.initialViewPosition.x;
             BOOL movedPastHalfOwnWidth = (xTranslation+meNavItem.currentViewPosition.x) > (meNavItem.width*0.5) + initPosX;
             if (movedPastHalfOwnWidth) {
-                willDismissTopSheet = YES;
+                _willDismissTopSheet = YES;
             } else if (abs(velocity) > kSheetSnappingVelocityThreshold) {
                 if (velocity > 0) {
-                    willDismissTopSheet = YES;
+                    _willDismissTopSheet = YES;
                 }
             } else {
-                willDismissTopSheet = NO;
+                _willDismissTopSheet = NO;
             }
         }
         
@@ -1168,7 +1169,7 @@ typedef enum {
             }
         }
         
-        if (CGRectGetMaxX(f) > [self overallWidth] && navItem.offset == 2 && willDismissTopSheet) {
+        if (CGRectGetMaxX(f) > [self overallWidth] && navItem.offset == 2 && _willDismissTopSheet) {
             f.origin.x = [self overallWidth] - f.size.width;
         }
         
@@ -1444,11 +1445,11 @@ typedef enum {
             }
             //NSLog(@"velocity %f",velocity);
             if (movedPastHalfOwnWidth) {
-                willExpandedPeeked = YES;
+                _willExpandedPeeked = YES;
             } else if (abs(velocity) > kSheetSnappingVelocityThreshold) {
-                willExpandedPeeked = YES;
+                _willExpandedPeeked = YES;
             } else {
-                willExpandedPeeked = NO;
+                _willExpandedPeeked = NO;
             }
             
             [gestureRecognizer setTranslation:CGPointZero inView:gestureRecognizer.view];
@@ -1458,14 +1459,14 @@ typedef enum {
         case UIGestureRecognizerStateEnded: {
             const CGFloat velocity = [gestureRecognizer velocityInView:self.view].x;
             
-            if (willExpandedPeeked) {
+            if (_willExpandedPeeked) {
                 [(id<SheetStackPage>)self.topSheetContentViewController beingUnstacked:0.0];
                 [(id<SheetStackPage>)[self.sheetViewControllers lastObject] beingUnstacked:0.0];
             }
             
-            if (willExpandedPeeked && velocity > kSheetSnappingVelocityThreshold) {
+            if (_willExpandedPeeked && velocity > kSheetSnappingVelocityThreshold) {
                 [self expandPeekedSheet:YES];
-                willExpandedPeeked = NO;
+                _willExpandedPeeked = NO;
                 return;
             } else {
                 
@@ -1483,9 +1484,9 @@ typedef enum {
                     duration = defaultSpeed;
                 }
                 
-                CGPoint destinationPoint = willExpandedPeeked ? CGPointMake(0.0, 0.0) : peekedFrame.origin;
+                CGPoint destinationPoint = _willExpandedPeeked ? CGPointMake(0.0, 0.0) : peekedFrame.origin;
                 SheetNavigationItem *navItem = self.peekedSheetController.sheetNavigationItem;
-                if (willExpandedPeeked) {
+                if (_willExpandedPeeked) {
                     destinationPoint.x += self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
                 }
                 
@@ -1495,9 +1496,9 @@ typedef enum {
                                      view.frameX = destinationPoint.x;
                                  }
                                  completion:^(BOOL finished){
-                                     if (willExpandedPeeked && finished) {
+                                     if (_willExpandedPeeked && finished) {
                                          [self expandPeekedSheet:NO];
-                                         willExpandedPeeked = NO;
+                                         _willExpandedPeeked = NO;
                                      } else {
                                          [[self topSheetController] performSelector:@selector(didGetUnstacked)];
                                      }
@@ -1506,7 +1507,7 @@ typedef enum {
         }
             break;
         case UIGestureRecognizerStateFailed: {
-            willExpandedPeeked = NO;
+            _willExpandedPeeked = NO;
         }
             break;
         default:
@@ -1569,14 +1570,14 @@ typedef enum {
             }
             self.firstStackedController = firstStacked;
             
-            willPopToRootSheet = gestureRecognizer.numberOfTouches == 2;
+            _willPopToRootSheet = gestureRecognizer.numberOfTouches == 2;
             
             break;
         }
             
         case UIGestureRecognizerStateChanged: {
             
-            if (willPopToRootSheet) {
+            if (_willPopToRootSheet) {
                 return;
             }
             
@@ -1614,10 +1615,10 @@ typedef enum {
             
             const CGFloat velocity = [gestureRecognizer velocityInView:self.view].x;
             //NSLog(@"willPopToRootSheet: %s",willPopToRootSheet?"yes":"no");
-            if (willPopToRootSheet && velocity > kSheetSnappingVelocityThreshold) {
+            if (_willPopToRootSheet && velocity > kSheetSnappingVelocityThreshold) {
                 //NSLog(@"%i -----  %s",gestureRecognizer.numberOfTouches,willPopToRootSheet ? "yes" : "no");
                 [self popToRootViewControllerAnimated:YES];
-                willPopToRootSheet = NO;
+                _willPopToRootSheet = NO;
                 return;
             }
             
@@ -1654,8 +1655,8 @@ typedef enum {
                                  
                                  self.firstTouchedView = nil;
                                  self.firstTouchedController = nil;
-                                 willDismissTopSheet = NO;
-                                 willPopToRootSheet = NO;
+                                 _willDismissTopSheet = NO;
+                                 _willPopToRootSheet = NO;
                              }];
             
             break;
@@ -1808,6 +1809,10 @@ typedef enum {
     
     SheetController *vc = [self firstStackedOnSheetController];
     [(id<SheetStackPage>)vc willBeUnstacked];
+    
+    if ([self.topSheetContentViewController respondsToSelector:@selector(willBeDismissed)]) {
+        [(id<SheetStackPage>)self.topSheetContentViewController willBeDismissed];
+    }
     
     self.firstStackedController = vc;
 }

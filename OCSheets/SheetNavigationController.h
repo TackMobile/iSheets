@@ -74,8 +74,22 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 // determines overall layout during stacking
 - (SheetLayoutType)sheetType;
 
+/**
+ Sheet will be popped or dragged off the top of the stack
+ */
+- (void)willBeDismissed;
+
+/**
+ Sheet's content will be dropped out of memory and archived
+ */
 - (void)willBeDropped;
+
+/**
+ Sheet's content did get dropped out of memory and archived
+ */
 - (void)didGetDropped;
+
+#pragma mark - Appearance callbacks for first stacked-on sheet
 
 - (void)willBeStacked;
 - (void)didGetStacked;
@@ -83,6 +97,8 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 - (void)willBeUnstacked;
 - (void)beingUnstacked:(CGFloat)percentUnstacked;
 - (void)didGetUnstacked;
+
+#pragma mark -
 
 /**
  Allow it to be dropped for memory purposes
