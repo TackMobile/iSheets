@@ -26,6 +26,7 @@ block(); \
 
 @interface SheetController () {
     BOOL _peeking;
+    BOOL _showsLeftNavButton;
     NSMutableArray *keyValueObserving;
 }
 
@@ -60,32 +61,6 @@ block(); \
 
 - (BOOL)shouldAutomaticallyForwardRotationMethods {
     return YES;
-}
-
-- (void)addObservers {
-    if ([SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem]) {
-        [self observeKeyPathForNavItem:@"offset"];
-        [self observeKeyPathForNavItem:@"leftButtonView"];
-        
-        self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
-        if (!self.leftNavButtonItem) {
-            self.leftNavButtonItem = [self.sheetNavigationItem leftButtonView];
-        }
-        self.leftNavButtonItem.alpha = 1.0;
-        [self.view addSubview:self.leftNavButtonItem];
-    }
-    [self observeKeyPathForNavItem:@"showingPeeked"];
-}
-
-- (void)observeKeyPathForNavItem:(NSString *)keyPath {
-    [keyValueObserving addObject:keyPath];
-    [self.sheetNavigationItem addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:NULL];
-}
-
-- (void)removeObservers {
-    for (NSString *keyPath in keyValueObserving) {
-        [self.sheetNavigationItem removeObserver:self forKeyPath:keyPath];
-    }
 }
 
 - (void)dealloc {
@@ -275,7 +250,18 @@ block(); \
         }
     }
     
+    _showsLeftNavButton = [SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem];
+    
     [self addObservers];
+    
+    if (_showsLeftNavButton) {
+        self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
+        if (!self.leftNavButtonItem) {
+            self.leftNavButtonItem = [self.sheetNavigationItem leftButtonView];
+        }
+        self.leftNavButtonItem.alpha = 1.0;
+        [self.view addSubview:self.leftNavButtonItem];
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -443,7 +429,27 @@ block(); \
     }
 }
 
-#pragma mark KVO
+#pragma mark - KVO
+
+- (void)addObservers {
+    if (_showsLeftNavButton) {
+        [self observeKeyPath:@"offset" forItem:self.sheetNavigationItem];
+        [self observeKeyPath:@"leftButtonView" forItem:self.sheetNavigationItem];
+        [self observeKeyPath:@"hidden" forItem:self.sheetNavigationItem];
+    }
+    [self observeKeyPath:@"showingPeeked" forItem:self.sheetNavigationItem];
+}
+
+- (void)observeKeyPath:(NSString *)keyPath forItem:(NSObject *)object {
+    [keyValueObserving addObject:keyPath];
+    [object addObserver:self forKeyPath:keyPath options:NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld context:NULL];
+}
+
+- (void)removeObservers {
+    for (NSString *keyPath in keyValueObserving) {
+        [self.sheetNavigationItem removeObserver:self forKeyPath:keyPath];
+    }
+}
 
 - (void)observeValueForKeyPath:(NSString *)keyPath
                       ofObject:(id)object
@@ -460,11 +466,17 @@ block(); \
             self.leftNavButtonItem.alpha = 1.0;
             [self.view addSubview:self.leftNavButtonItem];
         }
+    } else if ([keyPath isEqualToString:@"hidden"]) {
+        BOOL hidden = [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
+        NSLog(@"hidden: %s",hidden?"YES":"NO");
+        [self.leftNavButtonItem setHidden:hidden];
     } else if ([keyPath isEqualToString:@"showingPeeked"]) {
         
         [self.sheetNavigationController layoutPeekedViewControllers];
     }
 }
+
+#pragma mark -
 
 - (void)updateLeftNavButton:(NSDictionary *)change {
     

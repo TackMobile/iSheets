@@ -50,7 +50,7 @@ __strong static SheetLayoutModel *_sharedInstance;
 
 - (CGFloat)desiredWidthForContent:(UIViewController *)viewController navItem:(SheetNavigationItem *)navItem {
     
-    CGFloat desiredWidth = 0.0;//navItem.width;
+    CGFloat desiredWidth = 0.0;
     SheetStackPosition position = -1;
     switch (navItem.offset) {
         case 1:

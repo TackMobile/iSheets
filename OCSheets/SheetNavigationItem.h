@@ -34,20 +34,28 @@
  */
 @property (nonatomic, readonly) NSUInteger offset;
 
-#pragma mark -
+#pragma mark - Peeked sheet
+
 /**
  * Expanded state of a peeked sheet (is open and interactive)
  */
 @property (nonatomic, assign) BOOL expandedPeekedSheet;
+
 /**
  * How much of a sheet you see in in its non-interactive peeked state
  */
 @property (nonatomic, assign) CGFloat peekedWidth;
+
 /**
  * Whether a sheet with a peeked sheet on top of it 
  is currently hiding or showing it 
  */
 @property (nonatomic, getter=isShowingPeeked) BOOL showingPeeked;
+
+/**
+ Set visibility of left navigation button
+ */
+@property (nonatomic, assign) BOOL hidden;
 
 #pragma mark - FRLayeredNavigationItem properties
 /**

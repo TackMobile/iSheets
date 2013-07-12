@@ -21,6 +21,5 @@
 
 - (id)initWithContentViewController:(UIViewController *)contentViewController  maximumWidth:(BOOL)maxWidth;
 - (void)dumpContentViewController;
-- (void)peekedBeingUnstacked:(CGFloat)percentUnstacked;
 
 @end
