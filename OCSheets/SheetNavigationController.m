@@ -207,7 +207,7 @@ typedef enum {
     SheetStackState sheetStackState = [[SheetLayoutModel sharedInstance] stackState];
     
     if (sheetStackState == kSheetStackStateDefault) {
-        if ([self.peekedSheetController isViewLoaded]) {
+        if ([self.peekedSheetController.contentViewController isViewLoaded]) {
             if ([self shouldLayoutPeekedSheet]) {
                 SheetNavigationItem *navItem = self.topSheetContentViewController.sheetNavigationItem;
                 float duration = navItem.showingPeeked  ? 0.5 : 0.0;
@@ -215,8 +215,9 @@ typedef enum {
                                       delay:0
                                     options: SHEET_ADDING_ANIMATION_OPTION
                                  animations:^{
-                                     self.peekedSheetController.view.frame = [self peekedFrameForSheetController:self.peekedSheetController];
-                                 }
+                                     CGRect frameForPeeked = [self peekedFrameForSheetController:self.peekedSheetController];
+                                     self.peekedSheetController.view.frame = frameForPeeked;
+                                  }
                                  completion:nil];
                 
             } else {
