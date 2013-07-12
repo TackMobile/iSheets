@@ -859,7 +859,6 @@ typedef enum {
 - (void)forwardUnstackingPercentage:(CGFloat)percentComplete {
     // only top two sheets need to update their ui's during gestures and popping
     [(id<SheetStackPage>)self.firstStackedController beingUnstacked:percentComplete];
-    [(id<SheetStackPage>)[self.sheetViewControllers lastObject] beingUnstacked:percentComplete];
     
 }
 
