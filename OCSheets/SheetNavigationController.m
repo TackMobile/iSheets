@@ -1241,6 +1241,7 @@ typedef enum {
     peekedVC.view.frameX = 0.0;
     peekedVC.view.frameY = 0.0;
     
+    [self.peekedSheetController.view removeGestureRecognizer:self.peekedPanGR];
     [self.peekedPanGR removeTarget:self action:NULL];
     self.peekedPanGR.delegate = nil;
     self.peekedPanGR = nil;
@@ -1723,10 +1724,12 @@ typedef enum {
 }
 
 - (void)detachGestureRecognizers {
+    [self.view removeGestureRecognizer:self.tapGR];
     [self.tapGR removeTarget:self action:NULL];
     self.tapGR.delegate = nil;
     self.tapGR = nil;
     
+    [self.view removeGestureRecognizer:self.panGR];
     [self.panGR removeTarget:self action:NULL];
     self.panGR.delegate = nil;
     self.panGR = nil;
