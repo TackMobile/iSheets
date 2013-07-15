@@ -1021,7 +1021,7 @@ typedef enum {
     //BOOL hasPeekedViewControllers = self.peekedSheetController ? YES : NO;
     
     for (SheetController *me in [self.sheetViewControllers reverseObjectEnumerator]) {
-        if (rootVC == me) {
+        if (rootVC == me || ![self sheetShouldPan:me]) {
             break;
         }
         
@@ -1354,10 +1354,9 @@ typedef enum {
             self.firstTouchedView = touchedView;
             
             SheetController *topPeekedSheet = self.peekedSheetController;
-            BOOL controllerContentIsPeekedSheet = [touchedView isDescendantOfView:topPeekedSheet.view];
-            BOOL isExpandedPeekedSheet = [[self topSheetController] sheetNavigationItem].expandedPeekedSheet;
             if ([self peekedSheetTouched:touchedView]){
                 [self expandPeekedSheet:YES];
+                break;
             } else {
                 for (SheetController *controller in [self.sheetViewControllers reverseObjectEnumerator]) {
                     
@@ -1376,11 +1375,10 @@ typedef enum {
                 }
             }
             
-            if ([self.delegate respondsToSelector:@selector(sheetNavigationController:willMoveController:)]) {
-                [self.delegate sheetNavigationController:self willMoveController:self.firstTouchedController];
-            }
-            
             if (self.firstTouchedController) {
+                if ([self.delegate respondsToSelector:@selector(sheetNavigationController:willMoveController:)]) {
+                    [self.delegate sheetNavigationController:self willMoveController:self.firstTouchedController];
+                }
                 if (![[self.sheetViewControllers lastObject] isEqual:[self sheetControllerOf:self.firstTouchedController]]) {
                     [self popViewControllerAnimated:YES];
                 }
@@ -1736,7 +1734,7 @@ typedef enum {
 }
 
 - (BOOL)sheetShouldPan:(UIViewController *)viewController {
-    BOOL isDraggable = NO;
+    BOOL isDraggable = YES;
     if ([viewController respondsToSelector:@selector(isDraggableSheet)]) {
         isDraggable = [(id<SheetStackPage>)viewController isDraggableSheet];
     }
