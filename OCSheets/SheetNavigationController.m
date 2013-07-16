@@ -1021,7 +1021,7 @@ typedef enum {
     //BOOL hasPeekedViewControllers = self.peekedSheetController ? YES : NO;
     
     for (SheetController *me in [self.sheetViewControllers reverseObjectEnumerator]) {
-        if (rootVC == me || ![self sheetShouldPan:me]) {
+        if (rootVC == me) {
             break;
         }
         

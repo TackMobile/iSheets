@@ -468,7 +468,6 @@ block(); \
         }
     } else if ([keyPath isEqualToString:@"hidden"]) {
         BOOL hidden = [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
-        NSLog(@"hidden: %s",hidden?"YES":"NO");
         [self.leftNavButtonItem setHidden:hidden];
     } else if ([keyPath isEqualToString:@"showingPeeked"]) {
         
