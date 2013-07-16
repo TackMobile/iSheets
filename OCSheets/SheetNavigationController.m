@@ -1353,6 +1353,18 @@ typedef enum {
             UIView *touchedView = [gestureRecognizer.view hitTest:[gestureRecognizer locationInView:gestureRecognizer.view] withEvent:nil];
             self.firstTouchedView = touchedView;
             
+            CGPoint pointInView = [gestureRecognizer locationInView:gestureRecognizer.view];
+            UIButton *navButton = (UIButton *)[[[self topSheetController] sheetNavigationItem] leftButtonView];
+            CGPoint correctedPoint = [[self topSheetController].view convertPoint:pointInView fromView:self.view];
+            if (CGRectContainsPoint(navButton.frame, correctedPoint)) {
+                if ([navButton isKindOfClass:[UIButton class]]) {
+                    [navButton sendActionsForControlEvents: UIControlEventTouchUpInside];
+                    [gestureRecognizer setEnabled:NO];
+                    [gestureRecognizer setEnabled:YES];
+                    break;
+                }
+            }
+            
             SheetController *topPeekedSheet = self.peekedSheetController;
             if ([self peekedSheetTouched:touchedView]){
                 [self expandPeekedSheet:YES];
@@ -1376,6 +1388,7 @@ typedef enum {
             }
             
             if (self.firstTouchedController) {
+                
                 if ([self.delegate respondsToSelector:@selector(sheetNavigationController:willMoveController:)]) {
                     [self.delegate sheetNavigationController:self willMoveController:self.firstTouchedController];
                 }
