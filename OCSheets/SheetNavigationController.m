@@ -1358,9 +1358,13 @@ typedef enum {
             CGPoint correctedPoint = [[self topSheetController].view convertPoint:pointInView fromView:self.view];
             if (CGRectContainsPoint(navButton.frame, correctedPoint)) {
                 if ([navButton isKindOfClass:[UIButton class]]) {
-                    [navButton sendActionsForControlEvents: UIControlEventTouchUpInside];
-                    [gestureRecognizer setEnabled:NO];
-                    [gestureRecognizer setEnabled:YES];
+                    // if outside bounds of sheet controller view
+                    // call the button's touch up inside handler
+                    if (!CGRectContainsPoint([self topSheetController].view.bounds, correctedPoint)) {
+                        [navButton sendActionsForControlEvents: UIControlEventTouchUpInside];
+                        [gestureRecognizer setEnabled:NO];
+                        [gestureRecognizer setEnabled:YES];
+                    }
                     break;
                 }
             }
