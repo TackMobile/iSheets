@@ -163,6 +163,8 @@ block(); \
     }
 }
 
+
+
 #pragma mark - internal methods
 
 - (void)doViewLayout
@@ -316,6 +318,9 @@ block(); \
         /* did just detach */
         [self.contentViewController removeFromParentViewController];
     }
+    
+    float w = [[SheetLayoutModel sharedInstance] desiredWidthForContent:self.contentViewController navItem:self.sheetNavigationItem];
+    self.view.frameWidth = w;
 }
 
 - (void)rasterizeAndSnapshot {
