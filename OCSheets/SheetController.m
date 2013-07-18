@@ -211,7 +211,6 @@ block(); \
         [self addShadow:self.contentView];
     }
     
-    //BOOL animated = (navItem.index > 0 && navItem.index < kFirstStackedSheet+1) ? YES : NO;
     BOOL animated = (navItem.index > 0 && navItem.offset <= 3);
     float duration = 0.5;
     if (animated) {
@@ -234,6 +233,7 @@ block(); \
 {
     self.view = [[UIView alloc] init];
     self.view.backgroundColor = [UIColor whiteColor];
+    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin;
     
     if (self.contentView == nil && self.contentViewController.parentViewController == self) {
         /* when loaded again after a low memory view removal */

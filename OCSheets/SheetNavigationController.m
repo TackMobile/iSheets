@@ -1094,16 +1094,6 @@ typedef enum {
              * THEN: apply the translation
              */
             const BOOL outOfBoundsMove = [self viewController:me xTranslation:xTranslation bounded:boundedMove];
-            //if (movePeekedVC) {
-            //                for (UIViewController *peekedViewController in self.peekedViewControllers) {
-            //                    if ([peekedViewController isEqual:self.defaultPeekedViewController]) {
-            //                        continue;
-            //                    }
-            //                    CGFloat peekedWidth = [self getPeekedWidth:peekedViewController];
-            //                    CGFloat peekedXPos = CGRectGetMaxX(me.view.frame) - peekedWidth;
-            //                    peekedViewController.view.frameX = peekedXPos;
-            //                }
-            //}
             
             if (outOfBoundsMove) {
                 /* this move was out of bounds */
@@ -1349,7 +1339,7 @@ typedef enum {
     switch (gestureRecognizer.state) {
             
         case UIGestureRecognizerStateEnded: {
-            
+
             UIView *touchedView = [gestureRecognizer.view hitTest:[gestureRecognizer locationInView:gestureRecognizer.view] withEvent:nil];
             self.firstTouchedView = touchedView;
             
@@ -1378,7 +1368,8 @@ typedef enum {
                     
                     if ([touchedView isDescendantOfView:controller.view]) {
                         BOOL controllerContentIsTopSheet = [controller.contentViewController isEqual:[self topSheetContentViewController]];
-                        if (!controllerContentIsTopSheet) {
+                        //BOOL isSubviewOfRoot = controller.sheetNavigationItem.index == 0 ? YES : NO;
+                        if (!controllerContentIsTopSheet) {// && !isSubviewOfRoot) {
                             BOOL isDroppedSheet = !controller.contentViewController;
                             if (isDroppedSheet) {
                                 [self restoreSheetContentAtIndex:[self.sheetViewControllers indexOfObject:controller]];
@@ -1386,7 +1377,7 @@ typedef enum {
                             
                             self.firstTouchedController = controller.contentViewController;
                             break;
-                        }
+                        } 
                     }
                 }
             }
