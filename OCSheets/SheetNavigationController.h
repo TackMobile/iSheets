@@ -177,7 +177,7 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 @optional
 
 /**
- An expanded peeked sheet was return to its peeked state
+ An expanded peeked sheet was returned to its peeked state
  */
 - (void)didGetUnpeeked;
 - (CGFloat)peekedWidth;

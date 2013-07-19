@@ -116,10 +116,12 @@ typedef enum {
     return self;
 }
 
+
+
 - (void)addPeekedSheetPanGesture {
     self.peekedPanGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePeekedPanGesture:)];
-    self.peekedPanGR.maximumNumberOfTouches = 2;
-    self.peekedPanGR.delegate = self;
+    self.peekedPanGR.maximumNumberOfTouches = 1;
+    //self.peekedPanGR.delegate = self;
     [self.peekedSheetController.view addGestureRecognizer:self.peekedPanGR];
 }
 
@@ -509,7 +511,6 @@ typedef enum {
     
     SheetNavigationItem *navItem = newSheetController.sheetNavigationItem;
     
-    
     if (contentViewController.parentViewController.parentViewController == self) {
         /* no animation if the new content view controller is already a child of self */
         [self popToViewController:anchorViewController animated:NO];
@@ -527,7 +528,7 @@ typedef enum {
     if (configuration) {
         configuration(newSheetController.sheetNavigationItem);
     }
-    
+        
     if (newCount>=2) {
         SheetController *currentTop = [self.sheetViewControllers lastObject];
         [currentTop.sheetNavigationItem setCount:newCount];
@@ -542,6 +543,7 @@ typedef enum {
         float expandedW = [[SheetLayoutModel sharedInstance] availableWidthForOffset:navItem.initialViewPosition.x];
         newSheetController.contentViewController.view.frameWidth = expandedW;
         [newSheetController.contentViewController.view setNeedsLayout];
+        
         [(id<SheetStackPage>)[self.sheetViewControllers lastObject]  beingUnstacked:0.0]; // it needs to be darkened
         
     }
@@ -1232,6 +1234,7 @@ typedef enum {
     peekedVC.view.frameY = 0.0;
     
     [self.peekedSheetController.view removeGestureRecognizer:self.peekedPanGR];
+    
     [self.peekedPanGR removeTarget:self action:NULL];
     self.peekedPanGR.delegate = nil;
     self.peekedPanGR = nil;
@@ -1280,7 +1283,7 @@ typedef enum {
     [sheetController.view removeFromSuperview];
     [sheetController removeFromParentViewController];
     [self addChildViewController:sheetController];
-    
+
     CGRect onscreenFrame = [self peekedFrameForSheetController:sheetController];
     
     [self.view addSubview:sheetController.view];
@@ -1295,7 +1298,6 @@ typedef enum {
     };
     
     if (animated) {
-        //NSLog(@"%i for overallwidth pos",__LINE__);
         sheetController.view.frameX = [self overallWidth];
         [UIView animateWithDuration:0.5
                               delay:0

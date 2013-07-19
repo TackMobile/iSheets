@@ -261,8 +261,7 @@ __strong static SheetLayoutModel *_sharedInstance;
 #pragma mark - Helpers/Rules
 
 + (BOOL)shouldShowLeftNavItem:(SheetNavigationItem *)navItem {
-    if (navItem.layoutType == kSheetLayoutFullScreen ||
-        navItem.expandedPeekedSheet == YES) {
+    if (navItem.layoutType == kSheetLayoutFullScreen) {
         return NO;
     }
     return YES;
