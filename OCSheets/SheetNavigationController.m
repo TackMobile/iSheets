@@ -554,6 +554,8 @@ typedef enum {
     CGRect offscreenFrame = [self offscreenFrameForNavItem:navItem withOnscreenFrame:onscreenFrame];
     
     newSheetController.view.frame = offscreenFrame;
+    contentViewController.view.frameWidth = navItem.width;
+    [contentViewController.view layoutSubviews];
     
     [self.sheetViewControllers addObject:newSheetController];
     if ([self isProtectedSheet:contentViewController]) {
