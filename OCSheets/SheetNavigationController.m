@@ -305,14 +305,14 @@ typedef enum {
     
     BOOL shouldShow = [self shouldShowDefaultPeeked];
     
-    //const CGFloat peekWidthTopSheet = [self getPeekedWidth:self.topSheetContentViewController];
-    CGFloat xPos = [self overallWidth];
+    CGFloat width = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
+    CGFloat dWidth = [[SheetLayoutModel sharedInstance] desiredWidthForContent:sheetController.contentViewController navItem:sheetController.sheetNavigationItem];
     if (shouldShow) {
-        xPos -= peekWidth;
+        width -= peekWidth;
     }
-    return CGRectMake(xPos,
+    return CGRectMake(width,
                       0.0,
-                      sheetController.contentViewController.view.frameWidth,
+                      dWidth,
                       [self overallHeight]);
 }
 
