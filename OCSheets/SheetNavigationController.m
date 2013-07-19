@@ -1517,10 +1517,7 @@ typedef enum {
             }
         }
             break;
-        case UIGestureRecognizerStateFailed: {
-            _willExpandedPeeked = NO;
-        }
-            break;
+        
         default:
             break;
     }
