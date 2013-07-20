@@ -256,7 +256,7 @@ block(); \
     
     [self addObservers];
     
-    if (_showsLeftNavButton) {
+    if (_showsLeftNavButton || _peeking) {
         self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
         if (!self.leftNavButtonItem) {
             self.leftNavButtonItem = [self.sheetNavigationItem leftButtonView];
@@ -264,12 +264,14 @@ block(); \
         self.leftNavButtonItem.alpha = 1.0;
         [self.view addSubview:self.leftNavButtonItem];
     }
+    
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:YES];
     
-    self.leftNavButtonItem.alpha = self.sheetNavigationItem.offset == 1 ? 1.0 : 00.;
+    BOOL isTop = self.sheetNavigationItem.offset == 1;
+    self.leftNavButtonItem.alpha = (isTop || _peeking) ? 1.0 : 00.;
 }
 
 - (void)viewWillLayoutSubviews {
