@@ -209,31 +209,14 @@ typedef enum {
     SheetNavigationItem *navItem = self.topSheetContentViewController.sheetNavigationItem;
     [navItem setFullscreen:fullscreen];
     [[SheetLayoutModel sharedInstance] updateNavItem:navItem];
-    if (fullscreen) {
-        [UIView animateWithDuration:0.2
-                         animations:^{
-                             
-                             [self layoutSheetController:[self sheetControllerOf:self.topSheetContentViewController]];
-                         }
-                         completion:^(BOOL finished){
-                             if (completion) completion();
-                         }];
-    } else {
-        [UIView animateWithDuration:0.2
-                         animations:^{
-                             topController.view.frameX = navItem.initialViewPosition.x;
-                         }
-                         completion:^(BOOL finished){
-                             [UIView animateWithDuration:0.2
-                                              animations:^{
-                                                  [self layoutSheetController:[self sheetControllerOf:self.topSheetContentViewController]];
-                                              }
-                                              completion:^(BOOL finished){
-                                                  if (completion) completion();
-                                              }];
-                         }];
-
-    }  
+    [UIView animateWithDuration:0.2
+                     animations:^{
+                         
+                         [self layoutSheetController:topController];
+                     }
+                     completion:^(BOOL finished){
+                         if (completion) completion();
+                     }];
 }
 
 - (void)layoutPeekedViewControllers {
