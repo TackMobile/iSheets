@@ -29,7 +29,7 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 - (id)initWithRootViewController:(UIViewController *)rootViewController peekedViewController:(UIViewController *)peekedViewController configuration:(SheetNavigationConfigBlock)configuration;
 
 - (UIViewController *)peekedSheet;
-
+- (void)setSheetFullscreen:(BOOL)fullscreen completion:(void(^)())completion;
 - (void)preloadDefaultPeekedViewController;
 - (void)peekDefaultViewController;
 - (void)layoutPeekedViewControllers;

@@ -108,7 +108,7 @@ __strong static SheetLayoutModel *_sharedInstance;
     CGFloat availableWidthPerc = 0.0;
     
     
-    if (layoutType == kSheetLayoutFullScreen) {
+    if (layoutType == kSheetLayoutFullScreen || navItem.isFullscreened) {
         width = [self navControllerWidth];
     } else if (layoutType == kSheetLayoutFullAvailable) {
         width = [self navControllerWidth];

@@ -53,6 +53,11 @@
 @property (nonatomic, getter=isShowingPeeked) BOOL showingPeeked;
 
 /**
+ * Whether a sheet with non-fullscreen layout has been set temporarily fullscreen
+ */
+@property (nonatomic, getter=isFullscreened) BOOL fullscreen;
+
+/**
  Set visibility of left navigation button
  */
 @property (nonatomic, assign) BOOL hidden;
