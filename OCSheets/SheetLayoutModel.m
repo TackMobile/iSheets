@@ -191,7 +191,7 @@ __strong static SheetLayoutModel *_sharedInstance;
 - (CGFloat)navControllerWidth {
     CGFloat screenWidth = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
     CGFloat navControllerWidth = self.controller.view.bounds.size.width > 0 ? self.controller.view.bounds.size.width : screenWidth;
-    if (navControllerWidth > screenWidth) {
+    if (navControllerWidth < screenWidth) {
         navControllerWidth = screenWidth;
     }
     return navControllerWidth;
