@@ -438,7 +438,6 @@ typedef enum {
                                     CGRectGetWidth(vc.view.frame),
                                     CGRectGetHeight(vc.view.frame));
     
-    UIViewController *contentVC = vc.contentViewController;
     void (^completeViewRemoval)(BOOL) = ^(BOOL finished) {
         
         UIViewController *contentVC = vc.contentViewController;
@@ -1271,9 +1270,6 @@ typedef enum {
 }
 
 - (void)preloadDefaultPeekedViewController {
-    
-    SheetNavigationItem *topNavItem = self.topSheetContentViewController.sheetNavigationItem;
-    
     UIViewController *topSheet = self.topSheetContentViewController;
     if ([self.peekedSheetController respondsToSelector:@selector(isPeeking:onTopOfSheet:)]) {
         [(id<SheetStackPeeking>)self.peekedSheetController isPeeking:YES onTopOfSheet:topSheet];
@@ -1385,7 +1381,6 @@ typedef enum {
                 }
             }
             
-            SheetController *topPeekedSheet = self.peekedSheetController;
             if ([self peekedSheetTouched:touchedView]){
                 [self expandPeekedSheet:YES];
                 break;
@@ -1443,7 +1438,6 @@ typedef enum {
             CGFloat overallWidth = [self overallWidth];
             CGFloat offset = self.topSheetContentViewController.sheetNavigationItem.initialViewPosition.x;
             CGFloat nextDist = self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
-            CGFloat targetW = overallWidth - offset - nextDist;
             
             peekedFrame = [self peekedFrameForSheetController:self.peekedSheetController];
             
@@ -1458,7 +1452,6 @@ typedef enum {
             CGFloat velocity = [gestureRecognizer velocityInView:gestureRecognizer.view].x;
             
             const CGPoint myPos = gestureRecognizer.view.frame.origin;
-            const CGPoint myInitPos = CGPointMake(initPosX, 0.0);
             
             BOOL movedPastHalfOwnWidth = (xTranslation+myPos.x) < initPosX - (peekedFrame.size.width*0.5);
             const BOOL boundedMove  = (xTranslation+myPos.x) > initPosX || (xTranslation+myPos.x) < 0.0;
@@ -1466,7 +1459,6 @@ typedef enum {
             //NSLog(@"x Translation: %f",xTranslation);
             //NSLog(@"moved Past Half Own Width: %s",movedPastHalfOwnWidth?"YES":"NO");
             //NSLog(@"bounded Move: %s",boundedMove?"YES":"NO");
-            SheetNavigationItem *navItem = self.peekedSheetController.sheetNavigationItem;
             CGFloat rightEdge = [self overallWidth] - 24.0 - 50.0;
             float currPos = initPosX - myPos.x;
             CGFloat percComplete = (currPos/rightEdge);
@@ -1518,7 +1510,6 @@ typedef enum {
                 }
                 
                 CGPoint destinationPoint = _willExpandedPeeked ? CGPointMake(0.0, 0.0) : peekedFrame.origin;
-                SheetNavigationItem *navItem = self.peekedSheetController.sheetNavigationItem;
                 if (_willExpandedPeeked) {
                     destinationPoint.x += self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
                 }
