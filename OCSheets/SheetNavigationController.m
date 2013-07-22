@@ -116,7 +116,14 @@ typedef enum {
     return self;
 }
 
-
+- (void) forceCleanup {
+    [self viewDidUnload];
+    [self detachGestureRecognizers];
+    self.peekedSheetController = nil;
+    [self.historyManager removeAllHistory];
+    [self.sheetViewControllers removeAllObjects];
+    [SheetLayoutModel sharedInstance].controller = nil;
+}
 
 - (void)addPeekedSheetPanGesture {
     self.peekedPanGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePeekedPanGesture:)];

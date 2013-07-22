@@ -39,7 +39,8 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 - (void)popToViewController:(UIViewController *)viewController animated:(BOOL)animated;
 - (void)pushViewController:(UIViewController *)contentViewController inFrontOf:(UIViewController *)anchorViewController maximumWidth:(BOOL)maxWidth animated:(BOOL)animated;
 - (void)pushViewController:(UIViewController *)viewController inFrontOf:(UIViewController *)anchorViewController configuration:(SheetNavigationConfigBlock)configuration;
-
+- (void) forceCleanup;
+    
 - (SheetController *)sheetControllerAtIndex:(NSUInteger)index;
 - (UIViewController *)sheetAtIndex:(int)index;
 - (BOOL)sheetIsAtBottom:(UIViewController *)sheet;

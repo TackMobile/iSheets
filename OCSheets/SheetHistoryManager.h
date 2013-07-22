@@ -23,5 +23,6 @@
 - (void)popHistoryItem;
 - (NSUInteger)count;
 - (UIViewController *)restoredViewControllerForIndex:(NSUInteger)index;
-
+- (void) removeAllHistory;
+    
 @end

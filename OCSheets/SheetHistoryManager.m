@@ -19,6 +19,10 @@
     return self;
 }
 
+- (void) removeAllHistory {
+    [_history removeAllObjects];
+}
+
 - (NSMutableDictionary *)historyItemAtIndex:(NSUInteger)index {
     return [_history objectAtIndex:index];
 }
