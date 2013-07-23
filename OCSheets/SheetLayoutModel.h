@@ -60,7 +60,7 @@ typedef enum {
 - (CGFloat)desiredWidthForContent:(UIViewController *)viewController navItem:(SheetNavigationItem *)navItem;
 - (CGFloat)widthForNavItem:(SheetNavigationItem *)navItem;
 - (CGFloat)availableWidthForOffset:(CGFloat)offset;
-
+- (CGFloat)availableWidthForOffset:(CGFloat)offset orientation:(UIInterfaceOrientation)orientation;
 + (CGFloat)stickingEdgeForNavItem:(SheetNavigationItem *)navItem;
 + (CGRect)getScreenBoundsForCurrentOrientation;
 + (SheetLayoutType)layoutTypeForSheetController:(SheetController *)sheetController;

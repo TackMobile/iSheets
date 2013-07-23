@@ -39,6 +39,15 @@
     return kStandardSheetWidth;
 }
 
+- (CGFloat)desiredWidthForSheetPosition:(SheetStackPosition)position navItem:(SheetNavigationItem *)navItem orientation:(UIInterfaceOrientation)orientation {
+    SheetLayoutType type = navItem ? navItem.layoutType : kStandardSheetWidth;
+    if (type == kSheetLayoutFullScreen || type == kSheetLayoutFullAvailable) {
+        return [[SheetLayoutModel sharedInstance] availableWidthForOffset:navItem.initialViewPosition.x orientation:orientation];
+    }
+    
+    return kStandardSheetWidth;
+}
+
 - (BOOL)isDraggableSheet {
     return YES;
 }
@@ -96,6 +105,10 @@
     UIView *view = [[UIView alloc] initWithFrame:circleImage.bounds];
     [view addSubview:circleImage];
     return view;
+}
+
+- (float)availableContentWidthForOrientation:(UIInterfaceOrientation)orientation {
+    return [self desiredWidthForSheetPosition:kSheetStackTop navItem:self.sheetNavigationItem orientation:orientation];
 }
 
 - (float)availableContentWidth {

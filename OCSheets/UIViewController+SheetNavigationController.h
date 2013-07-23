@@ -41,6 +41,10 @@
     SheetNavigationItem *navItem = [self.sheetNavigationController sheetNavigationItemForSheet:self];
     if (navItem) {
         return navItem;
+    } else {
+        if ([self.parentViewController isKindOfClass:[SheetController class]]) {
+            return [(SheetController *)self.parentViewController sheetNavigationItem];
+        }
     }
     
     return nil;

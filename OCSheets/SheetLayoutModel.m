@@ -180,6 +180,11 @@ __strong static SheetLayoutModel *_sharedInstance;
     return kSheetNextItemDefaultDistance;
 }
 
+- (CGFloat)availableWidthForOffset:(CGFloat)offset orientation:(UIInterfaceOrientation)orientation {
+    CGFloat width = [SheetLayoutModel getScreenBoundsForOrientation:orientation].size.width - offset;
+    return floorf(width);
+}
+
 - (CGFloat)availableWidthForOffset:(CGFloat)offset {
     CGFloat width = [self navControllerWidth] - offset;
     if (width <= 0.0) {

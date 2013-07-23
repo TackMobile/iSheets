@@ -99,16 +99,19 @@ typedef enum {
     self = [self initWithRootViewController:rootViewController configuration:configuration];
     if (self) {
         if (peekedViewController) {
+            
             self.peekedSheetController = [[SheetController alloc] initWithContentViewController:peekedViewController maximumWidth:NO];
+            SheetNavigationItem *navItem = self.peekedSheetController.sheetNavigationItem;
+            float initXPos = self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
+            navItem.initialViewPosition = CGPointMake(initXPos, 0.0);
+            
             CGRect frame = self.peekedSheetController.view.frame;
             frame.origin.x = [self overallWidth];
-            self.peekedSheetController.view.frame = frame;
-            
-            float initXPos = self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
-            self.peekedSheetController.sheetNavigationItem.initialViewPosition = CGPointMake(initXPos, 0.0);
-            frame.size.width = [[SheetLayoutModel sharedInstance] desiredWidthForContent:peekedViewController navItem:self.peekedSheetController.sheetNavigationItem];
+            frame.size.width = [[SheetLayoutModel sharedInstance] desiredWidthForContent:peekedViewController navItem:navItem];
             frame.size.height = [self overallHeight];
-            self.peekedSheetController.sheetNavigationItem.currentViewPosition = CGPointMake(frame.origin.x, 0.0);
+            
+            navItem.currentViewPosition = CGPointMake(frame.origin.x, 0.0);
+            self.peekedSheetController.view.frame = frame;
             [self addPeekedSheetPanGesture];
         }
     }
@@ -128,7 +131,6 @@ typedef enum {
 - (void)addPeekedSheetPanGesture {
     self.peekedPanGR = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handlePeekedPanGesture:)];
     self.peekedPanGR.maximumNumberOfTouches = 1;
-    //self.peekedPanGR.delegate = self;
     [self.peekedSheetController.view addGestureRecognizer:self.peekedPanGR];
 }
 
