@@ -355,7 +355,11 @@ block(); \
         return;
     }
     self.coverView.alpha = kCoverOpacity*(1-percentUnstacked);
-    [self.view addSubview:self.coverView];
+    if (self.leftNavButtonItem) {
+        [self.view insertSubview:self.coverView belowSubview:self.leftNavButtonItem];
+    } else {
+        [self.view addSubview:self.coverView];
+    }
     
     if ([self.contentViewController respondsToSelector:@selector(beingUnstacked:)]) {
         [(id<SheetStackPage>)self.contentViewController beingUnstacked:percentUnstacked];
@@ -395,11 +399,27 @@ block(); \
 }
 
 - (void)didGetStacked {
-    if (self.sheetNavigationItem.offset == 2) {
-        //[self rasterizeAndSnapshot];
+    
+    if ([self.leftNavButtonItem isKindOfClass:[UIButton class]]) {
+        BOOL highlighted = self.sheetNavigationItem.offset == 1 ? NO : YES;
+        [(UIButton *)self.leftNavButtonItem setHighlighted:highlighted];
     }
+    [self updateLeftNav];
+    
     if ([self.contentViewController respondsToSelector:@selector(didGetStacked)]) {
         [(id<SheetStackPage>)self.contentViewController didGetStacked];
+    }
+}
+
+- (void)updateLeftNav {
+    if ([self.leftNavButtonItem isKindOfClass:[UIButton class]]) {
+        BOOL highlighted = self.sheetNavigationItem.offset == 1 ? NO : YES;
+        [(UIButton *)self.leftNavButtonItem setHighlighted:highlighted];
+    }
+    if (self.sheetNavigationItem.offset == 1) {
+        [self.view addSubview:self.leftNavButtonItem];
+    } else {
+        [self.view insertSubview:self.leftNavButtonItem aboveSubview:self.coverView];
     }
 }
 
