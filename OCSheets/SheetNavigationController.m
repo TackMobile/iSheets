@@ -15,7 +15,7 @@
 #import "UIViewController+SheetNavigationController.h"
 #import <QuartzCore/QuartzCore.h>
 
-const CGFloat kSheetSnappingVelocityThreshold   = 340.0;
+
 
 #define SHEET_REMOVAL_ANIMATION_OPTION          UIViewAnimationOptionCurveLinear
 #define SHEET_ADDING_ANIMATION_OPTION           UIViewAnimationOptionCurveEaseOut
@@ -64,6 +64,11 @@ typedef enum {
 
 - (UIViewController *)peekedSheet{
     return self.peekedSheetController.contentViewController;
+}
+
+- (CGFloat)snappingVelocityThreshold {
+    UIInterfaceOrientation orientation = [UIApplication sharedApplication].statusBarOrientation;
+    return UIInterfaceOrientationIsLandscape(orientation) ? 875.0 : 340.0;
 }
 
 - (id)initWithRootViewController:(UIViewController *)rootViewController
@@ -911,7 +916,7 @@ typedef enum {
     const CGFloat velocity = [g velocityInView:self.view].x;
     SnappingPointsMethod method;
     
-    if (abs(velocity) > kSheetSnappingVelocityThreshold) {
+    if (abs(velocity) > [self snappingVelocityThreshold]) {
         if (velocity > 0) {
             method = SnappingPointsMethodExpand;
         } else {
@@ -1040,7 +1045,7 @@ typedef enum {
     // ref to sheet above, if any
     SheetNavigationItem *parentNavItem = nil;
     CGPoint parentOldPos = CGPointZero;
-    
+    float threshold = [self snappingVelocityThreshold];
     //NSLog(@"xTranslationGesture: %f",xTranslationGesture);
     
     BOOL descendentOfTouched = NO;
@@ -1098,7 +1103,7 @@ typedef enum {
             BOOL movedPastHalfOwnWidth = (xTranslation+meNavItem.currentViewPosition.x) > (meNavItem.width*0.5) + initPosX;
             if (movedPastHalfOwnWidth) {
                 _willDismissTopSheet = YES;
-            } else if (abs(velocity) > kSheetSnappingVelocityThreshold) {
+            } else if (abs(velocity) > threshold) {
                 if (velocity > 0) {
                     _willDismissTopSheet = YES;
                 }
@@ -1473,7 +1478,7 @@ typedef enum {
             //NSLog(@"velocity %f",velocity);
             if (movedPastHalfOwnWidth) {
                 _willExpandedPeeked = YES;
-            } else if (abs(velocity) > kSheetSnappingVelocityThreshold) {
+            } else if (abs(velocity) > [self snappingVelocityThreshold]) {
                 _willExpandedPeeked = YES;
             } else {
                 _willExpandedPeeked = NO;
@@ -1491,7 +1496,7 @@ typedef enum {
                 [(id<SheetStackPage>)[self.sheetViewControllers lastObject] beingUnstacked:0.0];
             }
             
-            if (_willExpandedPeeked && velocity > kSheetSnappingVelocityThreshold) {
+            if (_willExpandedPeeked && velocity > [self snappingVelocityThreshold]) {
                 [self expandPeekedSheet:YES];
                 _willExpandedPeeked = NO;
                 return;
@@ -1638,7 +1643,7 @@ typedef enum {
             
             const CGFloat velocity = [gestureRecognizer velocityInView:self.view].x;
             //NSLog(@"willPopToRootSheet: %s",willPopToRootSheet?"yes":"no");
-            if (_willPopToRootSheet && velocity > kSheetSnappingVelocityThreshold) {
+            if (_willPopToRootSheet && velocity > [self snappingVelocityThreshold]) {
                 //NSLog(@"%i -----  %s",gestureRecognizer.numberOfTouches,willPopToRootSheet ? "yes" : "no");
                 [self popToRootViewControllerAnimated:YES];
                 _willPopToRootSheet = NO;
