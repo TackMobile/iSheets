@@ -400,6 +400,10 @@ block(); \
 
 - (void)didGetStacked {
     
+    if (self.sheetNavigationItem.nextItemDistance < self.leftNavButtonItem.frameWidth) {
+        [self.sheetNavigationItem setHidden:YES];
+    }
+    
     if ([self.leftNavButtonItem isKindOfClass:[UIButton class]]) {
         BOOL highlighted = self.sheetNavigationItem.offset == 1 ? NO : YES;
         [(UIButton *)self.leftNavButtonItem setHighlighted:highlighted];

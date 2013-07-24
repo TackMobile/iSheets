@@ -20,6 +20,13 @@ extern const CGFloat kSheetMenuWidth;
 extern const CGFloat kStandardSheetWidth;
 extern const CGFloat kSheetNotificationWidth;
 
+/**
+ Fullscreen: takes up full width and height of screen
+ Full available: takes full height, & as much width as possible while obeying next item distance of sheet below
+ Default: comes in at 600px in top sheet position, then moves left when stacked on top of
+ Peeked: peeks in at right, then expands to desired width when tapped
+ */
+
 typedef enum {
     kSheetLayoutFullScreen,
     kSheetLayoutFullAvailable,
