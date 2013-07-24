@@ -584,7 +584,7 @@ typedef enum {
     newSheetController.view.frame = offscreenFrame;
     contentViewController.view.frameWidth = navItem.width;
     contentViewController.view.frameHeight = self.view.frameHeight;
-    [contentViewController.view setNeedsLayout];
+    contentViewController.view.frameHeight = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.height;
     
     [self.sheetViewControllers addObject:newSheetController];
     if ([self isProtectedSheet:contentViewController]) {
