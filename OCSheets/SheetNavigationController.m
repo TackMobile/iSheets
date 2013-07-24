@@ -1376,7 +1376,8 @@ typedef enum {
             CGPoint pointInView = [gestureRecognizer locationInView:gestureRecognizer.view];
             UIButton *navButton = (UIButton *)[[[self topSheetController] sheetNavigationItem] leftButtonView];
             CGPoint correctedPoint = [[self topSheetController].view convertPoint:pointInView fromView:self.view];
-            if (CGRectContainsPoint(navButton.frame, correctedPoint)) {
+            BOOL isInsideNavButton = [navButton pointInside:correctedPoint withEvent:nil];
+            if (isInsideNavButton) {
                 if ([navButton isKindOfClass:[UIButton class]]) {
                     // if outside bounds of sheet controller view
                     // call the button's touch up inside handler
