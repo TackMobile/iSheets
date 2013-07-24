@@ -172,7 +172,13 @@ block(); \
     if (self.leftNavButtonItem) {
         CGRect frame = self.leftNavButtonItem.bounds;
         self.leftNavButtonItem.frameX = -floorf(frame.size.width*0.5);
-        self.leftNavButtonItem.frameY = 7.0;
+        
+        if (self.sheetNavigationItem.offsetY == -1.0) {
+            self.leftNavButtonItem.frameY = 7.0;
+        } else {
+            float originY = self.sheetNavigationItem.offsetY;
+            self.leftNavButtonItem.frameY = originY;
+        }
     }
     
     CGRect contentFrame = CGRectZero;
@@ -467,6 +473,7 @@ block(); \
         [self observeKeyPath:@"offset" forItem:self.sheetNavigationItem];
         [self observeKeyPath:@"leftButtonView" forItem:self.sheetNavigationItem];
         [self observeKeyPath:@"hidden" forItem:self.sheetNavigationItem];
+        [self observeKeyPath:@"offsetY" forItem:self.sheetNavigationItem];
     }
     [self observeKeyPath:@"showingPeeked" forItem:self.sheetNavigationItem];
 }
@@ -488,6 +495,7 @@ block(); \
                        context:(void *)context {
     if ([keyPath isEqualToString:@"offset"]) {
         [self updateLeftNavButton:change];
+    
     } else if ([keyPath isEqualToString:@"leftButtonView"]) {
         if ([self.sheetNavigationItem.leftButtonView isEqual:self.leftNavButtonItem]) {
             self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
@@ -497,12 +505,17 @@ block(); \
             self.leftNavButtonItem.alpha = 1.0;
             [self.view addSubview:self.leftNavButtonItem];
         }
+    
     } else if ([keyPath isEqualToString:@"hidden"]) {
         BOOL hidden = [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
         [self.leftNavButtonItem setHidden:hidden];
+   
     } else if ([keyPath isEqualToString:@"showingPeeked"]) {
-        
         [self.sheetNavigationController layoutPeekedViewControllers];
+    
+    } else if ([keyPath isEqualToString:@"offsetY"]) {
+        NSNumber *offsetY = [change objectForKey:NSKeyValueChangeNewKey];
+        self.leftNavButtonItem.frameY = offsetY.floatValue;
     }
 }
 

@@ -1274,6 +1274,7 @@ typedef enum {
         
         navItem.expandedPeekedSheet = YES;
         navItem.peekedWidth = oldNavItem.peekedWidth;
+        navItem.offsetY = oldNavItem.offsetY;
     }];
 }
 

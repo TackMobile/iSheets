@@ -62,6 +62,11 @@
  */
 @property (nonatomic, assign) BOOL hidden;
 
+/**
+ Set position Y of left navigation button
+ */
+@property (nonatomic, assign) float offsetY;
+
 #pragma mark - FRLayeredNavigationItem properties
 /**
  * All remaining properties below are documented in FRLayeredNavigationItem
