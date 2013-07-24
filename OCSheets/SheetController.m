@@ -378,9 +378,9 @@ block(); \
 
 - (void)didGetUnstacked {
     [self removeView:self.coverView];
-    if (self.sheetNavigationItem.offset == 1) {
+    //if (self.sheetNavigationItem.offset == 1) {
         //[self unrasterizeAndUnsnapshot];
-    }
+    //}
     
     if ([self.contentViewController respondsToSelector:@selector(didGetUnstacked)]) {
         [(id<SheetStackPage>)self.contentViewController didGetUnstacked];
@@ -400,7 +400,7 @@ block(); \
 
 - (void)didGetStacked {
     
-    if (self.sheetNavigationItem.nextItemDistance < self.leftNavButtonItem.frameWidth) {
+    if (self.sheetNavigationItem.nextItemDistance <= self.leftNavButtonItem.frameWidth) {
         [self.sheetNavigationItem setHidden:YES];
     }
     
