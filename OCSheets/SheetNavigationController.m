@@ -602,7 +602,7 @@ typedef enum {
     [self.view addSubview:newSheetController.view];
     
     if (!navItem.expandedPeekedSheet) {
-        parentLayerController.coverView.alpha = 0.0;
+        [parentLayerController prepareCoverViewForNewSheetWithCurrentAlpha:NO];
     }
     [parentLayerController animateInCoverView];
     
@@ -1398,6 +1398,7 @@ typedef enum {
                 if (self.firstStackedController == nil) {
                     self.firstStackedController = [self.sheetViewControllers objectAtIndex:0];
                 }
+                [self.firstStackedController prepareCoverViewForNewSheetWithCurrentAlpha:NO];
                 [self.firstStackedController animateInCoverView];
                 [self expandPeekedSheet:YES];
                 break;
@@ -1507,6 +1508,7 @@ typedef enum {
             const CGFloat velocity = [gestureRecognizer velocityInView:self.view].x;
             
             if (_willExpandedPeeked) {
+                [self.firstStackedController prepareCoverViewForNewSheetWithCurrentAlpha:YES];
                 [self.firstStackedController animateInCoverView];
             }
             

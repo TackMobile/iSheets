@@ -406,11 +406,18 @@ block(); \
     
     self.coverView.backgroundColor = [UIColor blackColor];
     [self.view addSubview:self.coverView];
-    //[self revealView:self.coverView withDelay:0.0];
     
     if ([self.contentViewController respondsToSelector:@selector(willBeStacked)]) {
         [(id<SheetStackPage>)self.contentViewController willBeStacked];
     }
+}
+
+- (void)prepareCoverViewForNewSheetWithCurrentAlpha:(BOOL)current {
+    if (!current) {
+        self.coverView.alpha = 0.0;
+    }
+    [self.view addSubview:self.coverView];
+    self.coverView.frame = self.view.bounds;
 }
 
 - (void)didGetStacked {
