@@ -8,6 +8,10 @@
 
 #import "BasicSheetViewController.h"
 
+@interface BasicSheetViewController()
+@property (nonatomic, assign) BOOL disallowFuturePeek;
+@end
+
 @implementation BasicSheetViewController
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
@@ -59,7 +63,14 @@
 
 - (void)setPeekedHidden:(BOOL)hidden {
     self.sheetNavigationItem.showingPeeked = !hidden;
+    self.sheetNavigationItem.showingPeeked = !_disallowFuturePeek ? !hidden : NO;
 }
+
+- (void)setPeekedHidden:(BOOL)hidden disallowingFuturePeek:(BOOL)peekDisallowed {
+    _disallowFuturePeek = peekDisallowed;
+    [self setPeekedHidden:!_disallowFuturePeek ? hidden : YES];
+}
+
 
 /*
  Call this method to perform additional UI work
