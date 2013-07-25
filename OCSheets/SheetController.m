@@ -325,7 +325,7 @@ block(); \
     } else {
         // peeked content vc's get passed around a lot, we don't
         // want to nil it's parent vc ref
-        if (!self.sheetNavigationItem.expandedPeekedSheet) {
+        if (!self.sheetNavigationItem.isPeekedSheet) {
             /* did just detach */
             [self.contentViewController removeFromParentViewController];
         }

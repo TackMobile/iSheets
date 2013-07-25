@@ -67,6 +67,11 @@
  */
 @property (nonatomic, assign) float offsetY;
 
+/**
+ Whether sheet is a peeked sheet
+ */
+@property (nonatomic, assign) BOOL isPeekedSheet;
+
 #pragma mark - FRLayeredNavigationItem properties
 /**
  * All remaining properties below are documented in FRLayeredNavigationItem

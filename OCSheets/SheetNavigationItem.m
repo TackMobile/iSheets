@@ -28,6 +28,7 @@
         self.nextItemDistance = -1;
         self.offsetY = -1;
         _expandedPeekedSheet = NO;
+        _isPeekedSheet = NO;
         _count = 0;
     }
     
@@ -74,6 +75,7 @@
     desc = [desc stringByAppendingFormat:@"current view position: %@\n",NSStringFromCGPoint(self.currentViewPosition)];
     desc = [desc stringByAppendingFormat:@"next item distance: %f\n",self.nextItemDistance];
     desc = [desc stringByAppendingFormat:@"fullscreened: %s\n",self.fullscreen ? "yes" : "no"];
+    desc = [desc stringByAppendingFormat:@"is peeked sheet: %s\n",self.isPeekedSheet ? "yes" : "no"];
     desc = [desc stringByAppendingFormat:@"offset Y: %f\n",self.offsetY];
     
     return desc;

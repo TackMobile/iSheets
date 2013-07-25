@@ -109,6 +109,7 @@ typedef enum {
             SheetNavigationItem *navItem = self.peekedSheetController.sheetNavigationItem;
             float initXPos = self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
             navItem.initialViewPosition = CGPointMake(initXPos, 0.0);
+            navItem.isPeekedSheet = YES;
             
             CGRect frame = self.peekedSheetController.view.frame;
             frame.origin.x = [self overallWidth];
@@ -1262,7 +1263,7 @@ typedef enum {
     self.peekedPanGR = nil;
     
     [self pushViewController:peekedVC inFrontOf:self.topSheetContentViewController maximumWidth:peekedFrame.size.width animated:animated configuration:^(SheetNavigationItem *navItem){
-        
+        navItem.isPeekedSheet = YES;
         navItem.expandedPeekedSheet = YES;
         navItem.peekedWidth = oldNavItem.peekedWidth;
         navItem.offsetY = oldNavItem.offsetY;
@@ -1730,11 +1731,13 @@ typedef enum {
 - (void)didRemoveSheetWithGesture {
     
     SheetController *vc = (SheetController *)[self.sheetViewControllers lastObject];
+    [self removeSheetFromHistory:vc];
+    [self removeSheetFromViewHeirarchy:vc];
+    
     if ([vc.contentViewController respondsToSelector:@selector(didGetUnpeeked)]) {
         [(id<SheetStackPeeking>)vc.contentViewController didGetUnpeeked];
     }
-    [self removeSheetFromHistory:vc];
-    [self removeSheetFromViewHeirarchy:vc];
+    
     BOOL isExpandedPeeked = vc.sheetNavigationItem.expandedPeekedSheet;
     if (isExpandedPeeked){
         [self peekViewController:self.peekedSheetController animated:NO];
