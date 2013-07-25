@@ -498,7 +498,11 @@ block(); \
 
 - (void)removeObservers {
     for (NSString *keyPath in keyValueObserving) {
-        [self.sheetNavigationItem removeObserver:self forKeyPath:keyPath];
+        @try {
+            [self.sheetNavigationItem removeObserver:self forKeyPath:keyPath];
+        } @catch ( NSException *e ) {
+            NSLog(@"missing observer for keyPath: %@", keyPath);
+        }
     }
 }
 
