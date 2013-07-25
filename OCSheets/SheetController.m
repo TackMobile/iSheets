@@ -355,6 +355,14 @@ block(); \
     }
 }
 
+- (void)animateInCoverView {
+    [UIView animateWithDuration:0.4
+                     animations:^{
+                         self.coverView.alpha = kCoverOpacity;
+                     }
+                     completion:nil];
+}
+
 - (void)beingUnstacked:(CGFloat)percentUnstacked {
     if (percentUnstacked == 1.0 && self.coverView.alpha == kCoverOpacity) {
         [self hideView:self.coverView withDuration:[SheetLayoutModel animateOffDuration] withDelay:0.0];
@@ -384,9 +392,6 @@ block(); \
 
 - (void)didGetUnstacked {
     [self removeView:self.coverView];
-    //if (self.sheetNavigationItem.offset == 1) {
-        //[self unrasterizeAndUnsnapshot];
-    //}
     
     if ([self.contentViewController respondsToSelector:@selector(didGetUnstacked)]) {
         [(id<SheetStackPage>)self.contentViewController didGetUnstacked];
@@ -394,10 +399,14 @@ block(); \
 }
 
 - (void)willBeStacked {
+    SheetStackState state = [[SheetLayoutModel sharedInstance] stackState];
+    if (state == kSheetStackStateDefault) {
+        self.coverView.alpha = 0.0;
+    } 
     
-    [self.view addSubview:self.coverView];
     self.coverView.backgroundColor = [UIColor blackColor];
-    [self revealView:self.coverView withDelay:0.0];
+    [self.view addSubview:self.coverView];
+    //[self revealView:self.coverView withDelay:0.0];
     
     if ([self.contentViewController respondsToSelector:@selector(willBeStacked)]) {
         [(id<SheetStackPage>)self.contentViewController willBeStacked];
@@ -406,9 +415,9 @@ block(); \
 
 - (void)didGetStacked {
     
-    if (self.sheetNavigationItem.nextItemDistance <= self.leftNavButtonItem.frameWidth) {
-        [self.sheetNavigationItem setHidden:YES];
-    }
+//    if (self.sheetNavigationItem.nextItemDistance <= self.leftNavButtonItem.frameWidth) {
+//        [self.sheetNavigationItem setHidden:YES];
+//    }
     
     if ([self.leftNavButtonItem isKindOfClass:[UIButton class]]) {
         BOOL highlighted = self.sheetNavigationItem.offset == 1 ? NO : YES;
@@ -568,7 +577,8 @@ block(); \
 }
 
 - (void)revealView:(UIView *)view withDelay:(float)delay {
-    view.alpha = 0.0;
+    NSLog(@"revealing view %i %@",view.tag,self.sheetNavigationItem);
+    //view.alpha = 0.0;
     void(^show)(void) = ^{
         [UIView animateWithDuration:0.5
                          animations:^{

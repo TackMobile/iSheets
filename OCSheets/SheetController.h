@@ -21,5 +21,5 @@
 
 - (id)initWithContentViewController:(UIViewController *)contentViewController  maximumWidth:(BOOL)maxWidth;
 - (void)dumpContentViewController;
-
+- (void)animateInCoverView;
 @end
