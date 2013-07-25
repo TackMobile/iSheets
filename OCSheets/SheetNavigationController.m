@@ -1312,7 +1312,7 @@ typedef enum {
     [sheetController.view removeFromSuperview];
     [sheetController removeFromParentViewController];
     [self addChildViewController:sheetController];
-
+    
     CGRect onscreenFrame = [self peekedFrameForSheetController:sheetController];
     
     [self.view addSubview:sheetController.view];
@@ -1450,11 +1450,14 @@ typedef enum {
         case UIGestureRecognizerStateBegan: {
             //NSLog(@"p dragging begun");
             
-            self.firstStackedController = [self firstStackedOnSheetController];
+            self.firstStackedController = [self topSheetController];
             if (self.firstStackedController == nil) {
                 self.firstStackedController = [self.sheetViewControllers objectAtIndex:0];
-                [self.firstStackedController performSelector:@selector(willBeStacked)];
             }
+            
+            [self.firstStackedController performSelector:@selector(willBeStacked)];
+            
+            [(SheetController *)self.firstStackedController prepareCoverViewForNewSheetWithCurrentAlpha:NO];
             
             CGFloat overallWidth = [self overallWidth];
             CGFloat offset = self.topSheetContentViewController.sheetNavigationItem.initialViewPosition.x;

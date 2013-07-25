@@ -39,7 +39,7 @@
 
 - (SheetNavigationItem *)sheetNavigationItem {
     SheetNavigationItem *navItem = [self.sheetNavigationController sheetNavigationItemForSheet:self];
-    if (navItem) {
+    if (navItem != nil) {
         return navItem;
     } else {
         if ([self.parentViewController isKindOfClass:[SheetController class]]) {

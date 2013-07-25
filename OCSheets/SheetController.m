@@ -323,8 +323,13 @@ block(); \
         /* just attached to parent view controller */
         [self.contentViewController didMoveToParentViewController:self];
     } else {
-        /* did just detach */
-        [self.contentViewController removeFromParentViewController];
+        // peeked content vc's get passed around a lot, we don't
+        // want to nil it's parent vc ref
+        if (!self.sheetNavigationItem.expandedPeekedSheet) {
+            /* did just detach */
+            [self.contentViewController removeFromParentViewController];
+        }
+        
     }
     
     float w = [[SheetLayoutModel sharedInstance] desiredWidthForContent:self.contentViewController navItem:self.sheetNavigationItem];
@@ -410,16 +415,13 @@ block(); \
     if (!current) {
         self.coverView.alpha = 0.0;
     }
+    self.coverView.hidden = NO;
     [self.view addSubview:self.coverView];
     [self.view addSubview:self.leftNavButtonItem];
     self.coverView.frame = self.view.bounds;
 }
 
 - (void)didGetStacked {
-    
-//    if (self.sheetNavigationItem.nextItemDistance <= self.leftNavButtonItem.frameWidth) {
-//        [self.sheetNavigationItem setHidden:YES];
-//    }
     
     if ([self.leftNavButtonItem isKindOfClass:[UIButton class]]) {
         BOOL highlighted = self.sheetNavigationItem.offset == 1 ? NO : YES;
