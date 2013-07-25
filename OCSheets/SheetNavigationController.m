@@ -601,9 +601,7 @@ typedef enum {
     [self addChildViewController:newSheetController];
     [self.view addSubview:newSheetController.view];
     
-    if (!navItem.expandedPeekedSheet) {
-        [parentLayerController prepareCoverViewForNewSheetWithCurrentAlpha:NO];
-    }
+    [parentLayerController prepareCoverViewForNewSheetWithCurrentAlpha:navItem.expandedPeekedSheet];
     [parentLayerController animateInCoverView];
     
     void (^doNewFrameMove)() = ^() {

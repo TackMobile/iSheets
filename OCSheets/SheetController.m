@@ -411,6 +411,7 @@ block(); \
         self.coverView.alpha = 0.0;
     }
     [self.view addSubview:self.coverView];
+    [self.view addSubview:self.leftNavButtonItem];
     self.coverView.frame = self.view.bounds;
 }
 
