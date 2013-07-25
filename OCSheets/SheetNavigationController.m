@@ -388,9 +388,12 @@ typedef enum {
 }
 
 - (void)popToViewController:(UIViewController *)vc animated:(BOOL)animated {
-    UIViewController *currentVc;
+    UIViewController *currentVc = [self.sheetViewControllers lastObject];
     
-    while ((currentVc = [self.sheetViewControllers lastObject])) {
+    NSInteger *currentVcIndex = [self.sheetViewControllers indexOfObject:currentVc];
+    NSInteger *endingVcIndex = [self.sheetViewControllers indexOfObject:vc];
+    
+    while (currentVcIndex > endingVcIndex) {
         BOOL currentVCisSheetController = [currentVc class] == [SheetController class];
         BOOL sheetControllerContentisVC = [(SheetController *)currentVc contentViewController] == vc;
         BOOL currentVCisNotSheetControllerClass = [currentVc class] != [SheetController class];
@@ -405,6 +408,9 @@ typedef enum {
         }
         
         [self popViewControllerAnimated:animated];
+        
+        currentVc = [self.sheetViewControllers lastObject];
+        currentVcIndex = [self.sheetViewControllers indexOfObject:currentVc];
     }
 }
 
@@ -1663,10 +1669,18 @@ typedef enum {
             //NSLog(@"willPopToRootSheet: %s",willPopToRootSheet?"yes":"no");
             if (_willPopToRootSheet && velocity > [self snappingVelocityThreshold]) {
                 //NSLog(@"%i -----  %s",gestureRecognizer.numberOfTouches,willPopToRootSheet ? "yes" : "no");
-                [self popToRootViewControllerAnimated:YES];
+                if ([self.sheetViewControllers count] > 2) {
+                    SheetController *vc = self.sheetViewControllers[1];
+                    [self popToViewController:vc animated:YES];
+                }
+                else {
+                    [self popToRootViewControllerAnimated:YES];
+                }
+                
                 _willPopToRootSheet = NO;
                 return;
             }
+            
             
             NSTimeInterval defaultSpeed = [SheetLayoutModel animateOffDuration];
             NSTimeInterval duration = defaultSpeed;
