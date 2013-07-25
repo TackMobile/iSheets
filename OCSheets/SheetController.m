@@ -356,14 +356,17 @@ block(); \
 }
 
 - (void)animateInCoverView {
+    [self.view addSubview:self.leftNavButtonItem];
     [UIView animateWithDuration:0.4
                      animations:^{
                          self.coverView.alpha = kCoverOpacity;
+            
                      }
                      completion:nil];
 }
 
 - (void)beingUnstacked:(CGFloat)percentUnstacked {
+    int offset = self.sheetNavigationItem.offset;
     if (percentUnstacked == 1.0 && self.coverView.alpha == kCoverOpacity) {
         [self hideView:self.coverView withDuration:[SheetLayoutModel animateOffDuration] withDelay:0.0];
         return;
@@ -378,16 +381,7 @@ block(); \
     if ([self.contentViewController respondsToSelector:@selector(beingUnstacked:)]) {
         [(id<SheetStackPage>)self.contentViewController beingUnstacked:percentUnstacked];
     }
-    
-    if (self.leftNavButtonItem && self.sheetNavigationItem.offset == 1) {
-        [UIView animateWithDuration:0.5
-                              delay:0
-                            options: UIViewAnimationOptionCurveLinear
-                         animations:^{
-                             self.leftNavButtonItem.alpha = 1-percentUnstacked;
-                         }
-                         completion:nil];
-    }
+
 }
 
 - (void)didGetUnstacked {

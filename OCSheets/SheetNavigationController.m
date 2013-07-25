@@ -1450,7 +1450,7 @@ typedef enum {
             break;
             
         case UIGestureRecognizerStateBegan: {
-            NSLog(@"p dragging begun");
+            //NSLog(@"p dragging begun");
             
             self.firstStackedController = [self firstStackedOnSheetController];
             if (self.firstStackedController == nil) {
@@ -1468,7 +1468,7 @@ typedef enum {
             break;
             
         case UIGestureRecognizerStateChanged: {
-            NSLog(@"p dragging changed");
+            //NSLog(@"p dragging changed");
             float initPosX = peekedFrame.origin.x;
             
             CGFloat xTranslation = [gestureRecognizer translationInView:gestureRecognizer.view].x;
