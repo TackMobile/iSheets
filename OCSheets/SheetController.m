@@ -77,7 +77,7 @@ block(); \
     };
     
     // TODO: move this into basic sheet OR hook sheetcontroller into
-    // willGetStacked and didGetStacked
+    // willGetStacked and sheetDidGetStacked
     if (DEBUG_DROPPED_SHEETS) {
         animationsComplete();
         self.view.backgroundColor = [UIColor redColor];
@@ -261,11 +261,6 @@ block(); \
     
     [self addObservers];
     
-    if (_showsLeftNavButton || _peeking) {
-        //[self.view addSubview:self.leftNavButtonItem];
-        //NSLog(@"left nav btn alpha set to %f %i",_leftNavButtonItem.alpha,__LINE__);
-    }
-    
 }
 
 - (UIView *)leftNavButtonItem {
@@ -356,9 +351,9 @@ block(); \
 
 #pragma mark Sheet stack page
 
-- (void)willBeUnstacked {
-    if ([self.contentViewController respondsToSelector:@selector(willBeUnstacked)]) {
-        [(id<SheetStackPage>)self.contentViewController willBeUnstacked];
+- (void)sheetWillBeUnstacked {
+    if ([self.contentViewController respondsToSelector:@selector(sheetWillBeUnstacked)]) {
+        [(id<SheetStackPage>)self.contentViewController sheetWillBeUnstacked];
     }
 }
 
@@ -372,7 +367,7 @@ block(); \
                      completion:nil];
 }
 
-- (void)beingUnstacked:(CGFloat)percentUnstacked {
+- (void)sheetBeingUnstacked:(CGFloat)percentUnstacked {
     int offset = self.sheetNavigationItem.offset;
     if (percentUnstacked == 1.0 && self.coverView.alpha == kCoverOpacity) {
         [self hideView:self.coverView withDuration:[SheetLayoutModel animateOffDuration] withDelay:0.0];
@@ -385,21 +380,21 @@ block(); \
         [self.view addSubview:self.coverView];
     }
     
-    if ([self.contentViewController respondsToSelector:@selector(beingUnstacked:)]) {
-        [(id<SheetStackPage>)self.contentViewController beingUnstacked:percentUnstacked];
+    if ([self.contentViewController respondsToSelector:@selector(sheetBeingUnstacked:)]) {
+        [(id<SheetStackPage>)self.contentViewController sheetBeingUnstacked:percentUnstacked];
     }
 
 }
 
-- (void)didGetUnstacked {
+- (void)sheetDidGetUnstacked {
     [self removeView:self.coverView];
     
-    if ([self.contentViewController respondsToSelector:@selector(didGetUnstacked)]) {
-        [(id<SheetStackPage>)self.contentViewController didGetUnstacked];
+    if ([self.contentViewController respondsToSelector:@selector(sheetDidGetUnstacked)]) {
+        [(id<SheetStackPage>)self.contentViewController sheetDidGetUnstacked];
     }
 }
 
-- (void)willBeStacked {
+- (void)sheetWillBeStacked {
     SheetStackState state = [[SheetLayoutModel sharedInstance] stackState];
     if (state == kSheetStackStateDefault) {
         self.coverView.alpha = 0.0;
@@ -408,8 +403,8 @@ block(); \
     self.coverView.backgroundColor = [UIColor blackColor];
     [self.view addSubview:self.coverView];
     
-    if ([self.contentViewController respondsToSelector:@selector(willBeStacked)]) {
-        [(id<SheetStackPage>)self.contentViewController willBeStacked];
+    if ([self.contentViewController respondsToSelector:@selector(sheetWillBeStacked)]) {
+        [(id<SheetStackPage>)self.contentViewController sheetWillBeStacked];
     }
 }
 
@@ -423,7 +418,7 @@ block(); \
     self.coverView.frame = self.view.bounds;
 }
 
-- (void)didGetStacked {
+- (void)sheetDidGetStacked {
     
     if ([self.leftNavButtonItem isKindOfClass:[UIButton class]]) {
         BOOL highlighted = self.sheetNavigationItem.offset == 1 ? NO : YES;
@@ -431,8 +426,8 @@ block(); \
     }
     [self updateLeftNav];
     
-    if ([self.contentViewController respondsToSelector:@selector(didGetStacked)]) {
-        [(id<SheetStackPage>)self.contentViewController didGetStacked];
+    if ([self.contentViewController respondsToSelector:@selector(sheetDidGetStacked)]) {
+        [(id<SheetStackPage>)self.contentViewController sheetDidGetStacked];
     }
 }
 
@@ -473,7 +468,7 @@ block(); \
 
 - (void)setPercentDragged:(float)percentDragged {
     
-    if (_showsLeftNavButton) {
+    if (_showsLeftNavButton && !self.sheetNavigationItem.isPeekedSheet) {
         
         if (self.leftNavButtonItem) {
             float percVisible = 1.0 - percentDragged;

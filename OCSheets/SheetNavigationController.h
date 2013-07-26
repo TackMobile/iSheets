@@ -78,26 +78,46 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 /**
  Sheet will be popped or dragged off the top of the stack
  */
-- (void)willBeDismissed;
+- (void)sheetWillBeDismissed;
 
 /**
  Sheet's content will be dropped out of memory and archived
  */
-- (void)willBeDropped;
+- (void)sheetWillBeDropped;
 
 /**
  Sheet's content did get dropped out of memory and archived
  */
-- (void)didGetDropped;
+- (void)sheetDidGetDropped;
 
 #pragma mark - Appearance callbacks for first stacked-on sheet
 
-- (void)willBeStacked;
-- (void)didGetStacked;
+/**
+ Top sheet will be covered (will have offset 2)
+ */
+- (void)sheetWillBeStacked;
 
-- (void)willBeUnstacked;
-- (void)beingUnstacked:(CGFloat)percentUnstacked;
-- (void)didGetUnstacked;
+/**
+ Top sheet did get covered (now has offset 2)
+ */
+- (void)sheetDidGetStacked;
+
+/**
+ A stacked sheet (offset 2) will be uncovered ie returned to top position (offset 1). Generally 
+ only UI updates should be peformed here. The user could still cancel their panning 
+ gesture, after which the sheet will still be stacked on top of
+ */
+- (void)sheetWillBeUnstacked;
+
+/**
+ Stacked sheet is being uncovered
+ */
+- (void)sheetBeingUnstacked:(CGFloat)percentUnstacked;
+
+/**
+ Stacked sheet did get uncovered
+ */
+- (void)sheetDidGetUnstacked;
 
 #pragma mark -
 
@@ -105,30 +125,38 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
  Allow it to be dropped for memory purposes
 */
 - (BOOL)isProtectedSheet;
+
 /**
- Allow it to be dragged on its own or
- attached to a dragging sheet above it
+ Allow it to be dragged on its own or attached to a dragging sheet above it
  */
 - (BOOL)isDraggableSheet;
+
 /**
  Shouldn't really behave like a sheet, other than
  sitting in the sheet stack
  */
 - (BOOL)isNonInteractiveSheet;
 
-- (UIView *)leftButtonViewForTopPosition;
-- (UIView *)leftButtonViewForStackedPosition;
+- (UIView *)leftButtonViewForTopSheet;
+- (UIView *)leftButtonViewForStackedSheet;
 
-// implement if different sheets need different offsets (ie gutters) from the left of the sheet
+/**
+ implement if different sheets need different offsets (ie gutters) from the left of the sheet
+ */
 - (CGFloat)nextItemDistanceForSheetClass:(NSString *)sheetClass;
 
-// implement if the sheet's content should be a specific width for different stacking positions
-// and it's not subclassed from BasicSheetViewController.
-// default is to stretch to fullscreen
+/**
+ implement if the sheet's content should be a specific width for different stacking positions
+ and it's not subclassed from BasicSheetViewController.
+ default is to stretch to fullscreen
+  */
 - (CGFloat)desiredWidthForSheetPosition:(SheetStackPosition)position navItem:(SheetNavigationItem *)navItem;
 
-// encode any data necessary for restoration of the sheet if dropped
+/**
+ save any data necessary for restoration of the sheet if dropped
+ */
 - (NSMutableDictionary *)encodeRestorableState;
+
 /**
  unencode previous state for restoration of the sheet
   */

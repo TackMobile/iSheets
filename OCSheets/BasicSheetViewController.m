@@ -76,31 +76,31 @@
  Call this method to perform additional UI work
  when a sheet is about to be stacked on top of for the first time
  */
-- (void)willBeStacked {
+- (void)sheetWillBeStacked {
     // The default implementation of this method is .... empty.
 }
 
-- (void)didGetStacked {
+- (void)sheetDidGetStacked {
     // The default implementation of this method is .... empty.
 }
 
-- (void)willBeUnstacked {
+- (void)sheetWillBeUnstacked {
     // The default implementation of this method is .... empty.
 }
 
-- (void)beingUnstacked:(CGFloat)percentUnstacked {
+- (void)sheetBeingUnstacked:(CGFloat)percentUnstacked {
     // The default implementation of this method is .... empty.
 }
 
-- (void)didGetUnstacked {
+- (void)sheetDidGetUnstacked {
     // The default implementation of this method is .... empty.
 }
 
-- (void)willBeDropped {
+- (void)sheetWillBeDropped {
     // The default implementation of this method is .... empty.
 }
 
-- (void)didGetDropped {
+- (void)sheetDidGetDropped {
     // The default implementation of this method is .... empty.
 }
 
@@ -112,7 +112,7 @@
  
 }
 
-- (UIView *)leftButtonViewForStackedPosition {
+- (UIView *)leftButtonViewForStackedSheet {
     UIImageView *circleImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"sheetsCircleStacked"]];
     UIView *view = [[UIView alloc] initWithFrame:circleImage.bounds];
     [view addSubview:circleImage];

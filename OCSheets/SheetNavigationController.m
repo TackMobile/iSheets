@@ -379,9 +379,9 @@ typedef enum {
 #pragma mark - Public API
 
 - (void)peekViewController:(SheetController *)viewController {
-    [(id<SheetStackPage>)[self topSheetController] willBeStacked];
+    [(id<SheetStackPage>)[self topSheetController] sheetWillBeStacked];
     [self peekViewController:viewController animated:YES];
-    [(id<SheetStackPage>)[self topSheetController] didGetUnstacked];
+    [(id<SheetStackPage>)[self topSheetController] sheetDidGetUnstacked];
 }
 
 - (void)popToRootViewControllerAnimated:(BOOL)animated {
@@ -877,14 +877,14 @@ typedef enum {
         [archiveDict addEntriesFromDictionary:archiveDictForContent];
     }
     
-    if ([contentViewController respondsToSelector:@selector(willBeDropped)]) {
-        [contentViewController performSelector:@selector(willBeDropped)];
+    if ([contentViewController respondsToSelector:@selector(sheetWillBeDropped)]) {
+        [contentViewController performSelector:@selector(sheetWillBeDropped)];
     }
     
     [vc dumpContentViewController];
     
-    if ([contentViewController respondsToSelector:@selector(willBeDropped)]) {
-        [contentViewController performSelector:@selector(didGetDropped)];
+    if ([contentViewController respondsToSelector:@selector(sheetWillBeDropped)]) {
+        [contentViewController performSelector:@selector(sheetDidGetDropped)];
     }
     
     return archiveDict;
@@ -900,7 +900,7 @@ typedef enum {
 
 - (void)forwardUnstackingPercentage:(CGFloat)percentComplete {
     // only top two sheets need to update their ui's during gestures and popping
-    [(id<SheetStackPage>)self.firstStackedController beingUnstacked:percentComplete];
+    [(id<SheetStackPage>)self.firstStackedController sheetBeingUnstacked:percentComplete];
     
     const NSInteger startVcIdx = [self.sheetViewControllers count]-1;
     SheetController *startVc = [self.sheetViewControllers objectAtIndex:startVcIdx];
@@ -1335,7 +1335,7 @@ typedef enum {
     };
     void(^frameMoveComplete)(void) = ^{
         [sheetController didMoveToParentViewController:self];
-        [(id<SheetStackPage>)[self topSheetController] didGetStacked];
+        [(id<SheetStackPage>)[self topSheetController] sheetDidGetStacked];
         [sheetController.view setNeedsLayout];
         
         if (sheetController.sheetNavigationItem) {
@@ -1473,7 +1473,7 @@ typedef enum {
                 self.firstStackedController = [self.sheetViewControllers objectAtIndex:0];
             }
             
-            [self.firstStackedController performSelector:@selector(willBeStacked)];
+            [self.firstStackedController performSelector:@selector(sheetWillBeStacked)];
             
             [(SheetController *)self.firstStackedController prepareCoverViewForNewSheetWithCurrentAlpha:NO];
             
@@ -1505,7 +1505,7 @@ typedef enum {
             float currPos = initPosX - myPos.x;
             CGFloat percComplete = (currPos/rightEdge);
             
-            [(id<SheetStackPage>)self.firstStackedController beingUnstacked:1.0-percComplete];
+            [(id<SheetStackPage>)self.firstStackedController sheetBeingUnstacked:1.0-percComplete];
             
             if (!boundedMove && percComplete < 1.0) {
                 self.peekedSheetController.view.frameX += xTranslation;
@@ -1566,7 +1566,7 @@ typedef enum {
                                          [self expandPeekedSheet:NO];
                                          _willExpandedPeeked = NO;
                                      } else {
-                                         [self.firstStackedController performSelector:@selector(didGetUnstacked)];
+                                         [self.firstStackedController performSelector:@selector(sheetDidGetUnstacked)];
                                      }
                                      self.firstStackedController = nil;
                                  }];
@@ -1631,7 +1631,7 @@ typedef enum {
             }
             
             SheetController *firstStacked =  [self firstStackedOnSheetController];
-            [(id<SheetStackPage>)firstStacked performSelector:@selector(willBeUnstacked)];
+            [(id<SheetStackPage>)firstStacked performSelector:@selector(sheetWillBeUnstacked)];
             [self restoreFirstEmptySheetContentUnder:firstStacked];
             if ([firstStacked.contentViewController respondsToSelector:@selector(sheetNavigationControllerWillPanSheet)]) {
                 [(id<SheetStackPage>)firstStacked.contentViewController sheetNavigationControllerWillPanSheet];
@@ -1870,14 +1870,14 @@ typedef enum {
 - (void)willAddSheet {
     [[SheetLayoutModel sharedInstance] setStackState:kSheetStackStateAdding];
     
-    [(id<SheetStackPage>)[self topSheetController] willBeStacked];
+    [(id<SheetStackPage>)[self topSheetController] sheetWillBeStacked];
     
     self.firstStackedController = [self topSheetController];
 }
 
 - (void)didAddSheet {
     if (self.firstStackedController) {
-        [(id<SheetStackPage>)self.firstStackedController didGetStacked];
+        [(id<SheetStackPage>)self.firstStackedController sheetDidGetStacked];
     }
     
     self.firstStackedController = nil;
@@ -1888,10 +1888,10 @@ typedef enum {
     [[SheetLayoutModel sharedInstance] setStackState:kSheetStackStateRemoving];
     
     SheetController *vc = [self firstStackedOnSheetController];
-    [(id<SheetStackPage>)vc willBeUnstacked];
+    [(id<SheetStackPage>)vc sheetWillBeUnstacked];
     
-    if ([self.topSheetContentViewController respondsToSelector:@selector(willBeDismissed)]) {
-        [(id<SheetStackPage>)self.topSheetContentViewController willBeDismissed];
+    if ([self.topSheetContentViewController respondsToSelector:@selector(sheetWillBeDismissed)]) {
+        [(id<SheetStackPage>)self.topSheetContentViewController sheetWillBeDismissed];
     }
     
     self.firstStackedController = vc;
@@ -1899,8 +1899,8 @@ typedef enum {
 
 - (void)didRemoveSheet {
     if (self.firstStackedController) {
-        if ([self.firstStackedController respondsToSelector:@selector(didGetUnstacked)]) {
-            [(id<SheetStackPage>)self.firstStackedController didGetUnstacked];
+        if ([self.firstStackedController respondsToSelector:@selector(sheetDidGetUnstacked)]) {
+            [(id<SheetStackPage>)self.firstStackedController sheetDidGetUnstacked];
         }
     }
     

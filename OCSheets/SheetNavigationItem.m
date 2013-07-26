@@ -46,12 +46,12 @@
 
 - (UIView *)leftButtonView {
     if (self.offset == 1) {
-        if ([self.sheetController.contentViewController respondsToSelector:@selector(leftButtonViewForTopPosition)]) {
-            return [(id<SheetStackPage>)self.sheetController.contentViewController leftButtonViewForTopPosition];
+        if ([self.sheetController.contentViewController respondsToSelector:@selector(leftButtonViewForTopSheet)]) {
+            return [(id<SheetStackPage>)self.sheetController.contentViewController leftButtonViewForTopSheet];
         }
     } else {
-        if ([self.sheetController.contentViewController respondsToSelector:@selector(leftButtonViewForStackedPosition)]) {
-            return [(id<SheetStackPage>)self.sheetController.contentViewController leftButtonViewForStackedPosition];
+        if ([self.sheetController.contentViewController respondsToSelector:@selector(leftButtonViewForStackedSheet)]) {
+            return [(id<SheetStackPage>)self.sheetController.contentViewController leftButtonViewForStackedSheet];
         }
     }
     // if sheet content vc didn't provide a new one, use existing
