@@ -1331,6 +1331,10 @@ typedef enum {
         [sheetController didMoveToParentViewController:self];
         [(id<SheetStackPage>)[self topSheetController] didGetStacked];
         [sheetController.view setNeedsLayout];
+        
+        if (sheetController.sheetNavigationItem) {
+            sheetController.sheetNavigationItem.expandedPeekedSheet = NO;
+        } 
     };
     
     if (animated) {
