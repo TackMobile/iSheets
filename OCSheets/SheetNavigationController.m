@@ -577,9 +577,6 @@ typedef enum {
     if (navItem.expandedPeekedSheet) {
         float expandedW = [[SheetLayoutModel sharedInstance] availableWidthForOffset:navItem.initialViewPosition.x];
         newSheetController.contentViewController.view.frameWidth = expandedW;
-        [newSheetController.contentViewController.view setNeedsLayout];
-        //[newSheetController.contentViewController.view setNeedsLayout];
-                
     }
     
     const CGFloat overallWidth = [self overallWidth];
@@ -592,6 +589,8 @@ typedef enum {
     contentViewController.view.frameHeight = self.view.frameHeight;
     contentViewController.view.frameHeight = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.height;
     
+    [newSheetController.view setNeedsLayout];
+    [newSheetController.contentViewController.view setNeedsLayout];
     [self.sheetViewControllers addObject:newSheetController];
     if ([self isProtectedSheet:contentViewController]) {
         [[SheetLayoutModel sharedInstance] incrementProtectedCount];

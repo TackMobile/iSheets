@@ -242,6 +242,9 @@ block(); \
     self.view.backgroundColor = [UIColor whiteColor];
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin;
     
+    _showsLeftNavButton = [SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem];
+    [self addObservers];
+    
     if (self.contentView == nil && self.contentViewController.parentViewController == self) {
         /* when loaded again after a low memory view removal */
         self.contentView = self.contentViewController.view;
@@ -257,10 +260,12 @@ block(); \
         }
     }
     
-    _showsLeftNavButton = [SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem];
     
-    [self addObservers];
-    
+    if (_showsLeftNavButton) {
+        if ([self.contentViewController respondsToSelector:@selector(leftButtonViewForTopSheet)]) {
+            self.sheetNavigationItem.leftButtonView = [(id<SheetStackPage>)self.contentViewController leftButtonViewForTopSheet];
+        }
+    }
 }
 
 - (UIView *)leftNavButtonItem {
@@ -392,6 +397,10 @@ block(); \
     if ([self.contentViewController respondsToSelector:@selector(sheetDidGetUnstacked)]) {
         [(id<SheetStackPage>)self.contentViewController sheetDidGetUnstacked];
     }
+    
+    if ([self.leftNavButtonItem isKindOfClass:[UIButton class]]) {
+        [(UIButton *)self.leftNavButtonItem setHighlighted:NO];
+    }
 }
 
 - (void)sheetWillBeStacked {
@@ -406,6 +415,14 @@ block(); \
     if ([self.contentViewController respondsToSelector:@selector(sheetWillBeStacked)]) {
         [(id<SheetStackPage>)self.contentViewController sheetWillBeStacked];
     }
+    
+    if (_showsLeftNavButton) {
+        if ([self.contentViewController respondsToSelector:@selector(leftButtonViewForStackedSheet)]) {
+            // will trigger KVO notification and update self.leftNavButtonItem
+            self.sheetNavigationItem.leftButtonView = [(id<SheetStackPage>)self.contentViewController leftButtonViewForStackedSheet];
+        }
+    }
+        
 }
 
 - (void)prepareCoverViewForNewSheetWithCurrentAlpha:(BOOL)current {
@@ -523,15 +540,12 @@ block(); \
         [self updateLeftNavButton:change];
     
     } else if ([keyPath isEqualToString:@"leftButtonView"]) {
-        if ([self.sheetNavigationItem.leftButtonView isEqual:self.leftNavButtonItem]) {
-            self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
-        } else {
-            [self.leftNavButtonItem removeFromSuperview];
-            self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
-            self.leftNavButtonItem.alpha = 1.0;
-            [self.view addSubview:self.leftNavButtonItem];
-        }
-    
+        [self.leftNavButtonItem removeFromSuperview];
+        self.leftNavButtonItem = nil;
+        self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
+        self.leftNavButtonItem.alpha = 1.0;
+        [self.view addSubview:self.leftNavButtonItem];
+
     } else if ([keyPath isEqualToString:@"hidden"]) {
         BOOL hidden = [[change objectForKey:NSKeyValueChangeNewKey] boolValue];
         [self.leftNavButtonItem setHidden:hidden];
