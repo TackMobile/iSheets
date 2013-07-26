@@ -18,11 +18,12 @@
 @property (nonatomic, readonly) BOOL maximumWidth;
 @property (nonatomic, readonly) BOOL isRestored;
 @property (nonatomic, strong) UIView *coverView;
+@property (nonatomic, assign) float percentDragged;
+@property (nonatomic, strong) UIView *leftNavButtonItem;
 
 - (id)initWithContentViewController:(UIViewController *)contentViewController  maximumWidth:(BOOL)maxWidth;
 - (void)dumpContentViewController;
 
 - (void)animateInCoverView;
 - (void)prepareCoverViewForNewSheetWithCurrentAlpha:(BOOL)current;
-
 @end

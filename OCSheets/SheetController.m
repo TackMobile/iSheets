@@ -33,7 +33,6 @@ block(); \
 @property (nonatomic, readwrite, strong) SheetNavigationItem *sheetNavigationItem;
 @property (nonatomic, readwrite) BOOL maximumWidth;
 @property (nonatomic, strong) UIView *borderView;
-@property (nonatomic, strong) UIView *leftNavButtonItem;
 @property (nonatomic, weak) UIView *contentView;
 
 @end
@@ -263,21 +262,24 @@ block(); \
     [self addObservers];
     
     if (_showsLeftNavButton || _peeking) {
-        self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
-        if (!self.leftNavButtonItem) {
-            self.leftNavButtonItem = [self.sheetNavigationItem leftButtonView];
-        }
-        self.leftNavButtonItem.alpha = 1.0;
-        [self.view addSubview:self.leftNavButtonItem];
+        //[self.view addSubview:self.leftNavButtonItem];
+        //NSLog(@"left nav btn alpha set to %f %i",_leftNavButtonItem.alpha,__LINE__);
     }
     
+}
+
+- (UIView *)leftNavButtonItem {
+    if (!_leftNavButtonItem) {
+        _leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
+    }
+    return _leftNavButtonItem;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:YES];
     
     BOOL isTop = self.sheetNavigationItem.offset == 1;
-    self.leftNavButtonItem.alpha = (isTop || _peeking) ? 1.0 : 00.;
+    self.leftNavButtonItem.alpha = (isTop || _peeking) ? 1.0 : 0.0;
 }
 
 - (void)viewWillLayoutSubviews {
@@ -469,6 +471,18 @@ block(); \
     return _peeking;
 }
 
+- (void)setPercentDragged:(float)percentDragged {
+    
+    if (_showsLeftNavButton) {
+        
+        if (self.leftNavButtonItem) {
+            float percVisible = 1.0 - percentDragged;
+            self.leftNavButtonItem.alpha = percVisible;
+            float v = self.leftNavButtonItem.alpha;
+        }
+    }
+}
+
 - (void)updateViewForPeeking {
     if (_peeking) {
         [self.view addSubview:self.coverView];
@@ -547,10 +561,10 @@ block(); \
     BOOL justHidden = oldOffset.intValue == 2 && newOffset.intValue == 3;
     
     if (justRevealed || newOffset.intValue < 3) {
-        [self.leftNavButtonItem removeFromSuperview];
-        self.leftNavButtonItem = [self.sheetNavigationItem leftButtonView];
-        self.leftNavButtonItem.alpha = 1.0;
-        [self.view addSubview:self.leftNavButtonItem];
+        [_leftNavButtonItem removeFromSuperview];
+        _leftNavButtonItem = [self.sheetNavigationItem leftButtonView];
+        _leftNavButtonItem.alpha = 1.0;
+        [self.view addSubview:_leftNavButtonItem];
     } else if (justHidden) {
         [UIView animateWithDuration:0.4
                               delay:0.25

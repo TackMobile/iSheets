@@ -902,6 +902,10 @@ typedef enum {
     // only top two sheets need to update their ui's during gestures and popping
     [(id<SheetStackPage>)self.firstStackedController beingUnstacked:percentComplete];
     
+    const NSInteger startVcIdx = [self.sheetViewControllers count]-1;
+    SheetController *startVc = [self.sheetViewControllers objectAtIndex:startVcIdx];
+    [startVc setPercentDragged:percentComplete];
+    
 }
 
 - (BOOL)shouldAutomaticallyForwardRotationMethods  {
@@ -991,6 +995,8 @@ typedef enum {
         
         void(^doLeftSnapping)(void) = ^{
             xTranslation = initDiff - curDiff;
+            
+            [self forwardUnstackingPercentage:0.0];
         };
         
         BOOL hasMoved = floatNotEqual(curDiff, initDiff);
@@ -1386,20 +1392,21 @@ typedef enum {
             self.firstTouchedView = touchedView;
             
             CGPoint pointInView = [gestureRecognizer locationInView:gestureRecognizer.view];
-            UIButton *navButton = (UIButton *)[[[self topSheetController] sheetNavigationItem] leftButtonView];
+            UIView *navButtonView = [[self topSheetController] leftNavButtonItem];
             CGPoint correctedPoint = [[self topSheetController].view convertPoint:pointInView fromView:self.view];
-            BOOL isInsideNavButton = [navButton pointInside:correctedPoint withEvent:nil];
-            if (isInsideNavButton) {
-                if ([navButton isKindOfClass:[UIButton class]]) {
+            BOOL touchInsideNavButton = [navButtonView pointInside:correctedPoint withEvent:nil];
+            if (touchInsideNavButton) {
+                
+                [gestureRecognizer setEnabled:NO];
+                [gestureRecognizer setEnabled:YES];
+                    
+                if ([navButtonView isKindOfClass:[UIButton class]]) {
                     // if outside bounds of sheet controller view
                     // call the button's touch up inside handler
-                    if (!CGRectContainsPoint([self topSheetController].view.bounds, correctedPoint)) {
-                        [navButton sendActionsForControlEvents: UIControlEventTouchUpInside];
-                        [gestureRecognizer setEnabled:NO];
-                        [gestureRecognizer setEnabled:YES];
-                    }
-                    break;
+                    [(UIButton *)navButtonView sendActionsForControlEvents: UIControlEventTouchUpInside];
                 }
+                
+                break;
             }
             
             if ([self peekedSheetTouched:touchedView]){
@@ -1579,6 +1586,10 @@ typedef enum {
     switch (gestureRecognizer.state) {
         case UIGestureRecognizerStatePossible: {
             //NSLog(@"UIGestureRecognizerStatePossible");
+            break;
+        }
+        case UIGestureRecognizerStateCancelled: {
+            NSLog(@"UIGestureRecognizerStateCancelled");
             break;
         }
             
