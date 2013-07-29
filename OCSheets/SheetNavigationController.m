@@ -1072,7 +1072,11 @@ typedef enum {
         }
         
         SheetNavigationItem *meNavItem = me.sheetNavigationItem;
-        //BOOL movePeekedVC = hasPeekedViewControllers && meNavItem.index == 1 ? YES : NO;
+        
+        BOOL shouldPan = [self sheetShouldPan:me.contentViewController];
+        if (!shouldPan) {
+            continue;
+        }
         
         const CGPoint myPos = meNavItem.currentViewPosition;
         const CGPoint myInitPos = meNavItem.initialViewPosition;
@@ -1605,19 +1609,14 @@ typedef enum {
                 for (SheetController *controller in [self.sheetViewControllers reverseObjectEnumerator]) {
                     if ([touchedView isDescendantOfView:controller.view]) {
                         
-                        // if it's protected and it's NOT being panned because it's visible in
-                        // the gutter, cancel it
                         BOOL shouldPan = [self sheetShouldPan:controller.contentViewController];
                         BOOL isGutter = [self isGutter:controller.contentViewController];
                         if (!shouldPan && !isGutter) {
                             // kill the gesture
                             [gestureRecognizer setEnabled:NO];
                             [gestureRecognizer setEnabled:YES];
-                        } else {
-                            if (isGutter) {
-                                self.firstTouchedController = [self topSheetContentViewController];
-                            }
-                            self.firstTouchedController = controller.contentViewController;
+                        } else if (isGutter) {
+                            self.firstTouchedController = [self topSheetContentViewController];
                         }
                         
                         break;
