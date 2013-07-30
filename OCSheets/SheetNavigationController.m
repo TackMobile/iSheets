@@ -249,6 +249,10 @@ typedef enum {
                                  animations:^{
                                      CGRect frameForPeeked = [self peekedFrameForSheetController:self.peekedSheetController];
                                      self.peekedSheetController.view.frame = frameForPeeked;
+                                     
+                                     BOOL showNavButton = self.topSheetContentViewController.sheetNavigationItem.showingPeeked;
+                                     self.peekedSheetController.leftNavButtonItem.hidden = !showNavButton;
+
                                   }
                                  completion:nil];
                 

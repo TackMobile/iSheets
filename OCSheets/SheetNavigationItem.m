@@ -22,11 +22,12 @@
 - (id)initWithType:(SheetLayoutType)layoutType
 {
     if ((self = [super init])) {
-        self.layoutType = layoutType;
-        self.displayShadow = YES;
-        self.width = -1;
-        self.nextItemDistance = -1;
-        self.offsetY = -1;
+        _layoutType = layoutType;
+        _displayShadow = YES;
+        _width = -1;
+        _nextItemDistance = -1;
+        _offsetY = -1;
+        _showingPeeked = YES;
         _expandedPeekedSheet = NO;
         _isPeekedSheet = NO;
         _count = 0;
