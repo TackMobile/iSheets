@@ -634,7 +634,10 @@ typedef enum {
         if (self.peekedSheetController) {
             if (wantsDefaultPeekedSheet(contentViewController) && !isDefaultPeekedSheet(contentViewController)) {
                 //NSLog(@"%i for overallwidth pos",__LINE__);
-                self.peekedSheetController.view.frame = [self frameForDefaultPeeked];
+                
+                CGRect offscreenPeekedFrame = [self frameForDefaultPeeked];
+                offscreenPeekedFrame.origin.x = [self overallWidth];
+                self.peekedSheetController.view.frame = offscreenPeekedFrame;
             }
         }
     };
