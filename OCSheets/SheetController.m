@@ -207,6 +207,7 @@ block(); \
     
     void(^doFrameMove)(void) = ^{
         self.contentView.frame = contentFrame;
+        self.coverView.frame = contentFrame;
     };
     void(^frameMoveComplete)(void) = ^{
         [self.contentView setNeedsLayout];

@@ -66,7 +66,7 @@
 }
 
 - (NSString *)sheetContentClass {
-    return NSStringFromClass([self.sheetController.contentViewController class]);
+    return [NSString stringWithFormat:@"%@[%i]",NSStringFromClass([self.sheetController.contentViewController class]),self.index];
 }
 
 //- (CGPoint)initialViewPosition {

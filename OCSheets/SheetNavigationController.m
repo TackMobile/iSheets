@@ -177,15 +177,44 @@ typedef enum {
     }
 }
 
-- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)orientation {
-    //NSLog(@"ORIENTATION, new size: %@", NSStringFromCGSize(self.view.bounds.size));
-    [super didRotateFromInterfaceOrientation:orientation];
-    [self doLayout];
+- (void)viewWillLayoutSubviews {
+
+    SheetStackState state = [[SheetLayoutModel sharedInstance] stackState];
+    if (state == kSheetStackStateAdding || state == kSheetStackStateRemoving) {
+        [self doLayout];
+    } else {
+        [self layoutPeekedViewControllers];
+    for (SheetController *sheetController in [self visibleSheets]) {
+            NSLog(@"laying out %@, %f",sheetController.sheetNavigationItem.sheetContentClass,[NSDate timeIntervalSinceReferenceDate]);
+            [self layoutSheetController:sheetController];
+        }
+    }
 }
 
-- (void)viewWillLayoutSubviews {
-    [super viewWillLayoutSubviews];
-    [self doLayout];
+
+- (NSMutableArray *)visibleSheets {
+    int count = self.sheetViewControllers.count;
+    if (count < 2) {
+        return [@[[self topSheetController]] mutableCopy];
+    }
+    NSMutableArray *visible = [[NSMutableArray alloc] initWithCapacity:count];
+    SheetNavigationItem *aboveNavItem = nil;
+    for (SheetController *sheetController in [self.sheetViewControllers reverseObjectEnumerator]) {
+        
+        if (aboveNavItem != nil) {
+            SheetNavigationItem *navItem = sheetController.sheetNavigationItem;
+            float visibleWidth = aboveNavItem.initialViewPosition.x - navItem.initialViewPosition.x;
+            if (visibleWidth > 0.0) {
+                [visible addObject:sheetController];
+            }
+        } else {
+            [visible addObject:[self topSheetController]];
+        }
+        
+        aboveNavItem = sheetController.sheetNavigationItem;
+    }
+    NSLog(@"%i visible sheets",visible.count);
+    return visible;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -210,7 +239,19 @@ typedef enum {
 
 #pragma mark Sheet layout
 
+- (void)doLayoutForOrientationChange {
+    
+    
+}
+
 - (void)doLayout {
+    
+//    NSArray *syms = [NSThread  callStackSymbols];
+//    if ([syms count] > 1) {
+//        NSLog(@"<%@ %p> %@ - caller: %@ ", [self class], self, NSStringFromSelector(_cmd),[syms objectAtIndex:1]);
+//    } else {
+//        NSLog(@"<%@ %p> %@", [self class], self, NSStringFromSelector(_cmd));
+//    }
     
     [self.sheetViewControllers enumerateObjectsUsingBlock:^(SheetController *vc, NSUInteger index, BOOL *stop){
         [self layoutSheetController:vc];
@@ -279,8 +320,8 @@ typedef enum {
 
 - (void)layoutSheetController:(SheetController *)sheetController {
     CGRect f = sheetController.view.frame;
-    
     SheetNavigationItem *navItem = sheetController.sheetNavigationItem;
+    
     
     // snap everything to its initial x pos
     if (navItem.currentViewPosition.x < navItem.initialViewPosition.x) {
@@ -1579,7 +1620,7 @@ typedef enum {
                     CGFloat currentX = abs(self.peekedSheetController.view.frame.origin.x);
                     CGFloat pointsX = [self overallWidth] - currentX;
                     duration = pointsX / abs(velocity);
-                    duration *= 0.9; // was too fast
+                    duration *= 1.2; // was too fast
                 }
                 /* but not too slow either */
                 if (duration > defaultSpeed) {
@@ -1667,6 +1708,7 @@ typedef enum {
                 [(id<SheetStackPage>)firstStacked.contentViewController sheetNavigationControllerWillPanSheet];
             }
             self.firstStackedController = firstStacked;
+            [self layoutSheetController:firstStacked];
             
             _willPopToRootSheet = gestureRecognizer.numberOfTouches == 2;
             
