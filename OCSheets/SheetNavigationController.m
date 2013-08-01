@@ -292,6 +292,19 @@ typedef enum {
     f.origin = navItem.currentViewPosition;
     f.size.height = CGRectGetHeight(self.view.bounds);
     
+    // sheet controller frame width (scf) is always sheet nav controller's frame (sncf)
+    // width, minus the distance from the sncf origin x to sheet controller's initial x pos
+    // content vc width is <= scf width (less, if sheet content vc implementation specifies a desired width)
+    /*********************************/
+    /*    sheet controller frame     */
+    /* ***********************       */
+    /*                       *       */
+    /*   content vc frame    *       */
+    /*                       *       */
+    /*                       *       */
+    /* ***********************       */
+    /*********************************/
+    
     if (sheetController.maximumWidth) {
         
         // standard sheet, no special layout rules
@@ -308,8 +321,12 @@ typedef enum {
     f.origin.x = floorf(f.origin.x);
     
     void(^stateChange)(void) = ^{
+        
         sheetController.view.frame = f;
         [sheetController.view setNeedsLayout];
+        
+        sheetController.contentViewController.view.frameWidth = navItem.width;
+        [sheetController.contentViewController.view setNeedsLayout];
     };
     
     SheetStackState state = [[SheetLayoutModel sharedInstance] stackState];
@@ -1094,7 +1111,7 @@ typedef enum {
         const CGPoint parentInitPos = parentNavItem.initialViewPosition;
         
         const CGFloat minDiff = parentInitPos.x - myInitPos.x;
-        CGFloat myWidth = CGRectGetWidth(me.view.frame);
+        CGFloat myWidth = meNavItem.width;
         if (myWidth <= minDiff) {
             myWidth = minDiff;
         }
@@ -1155,12 +1172,14 @@ typedef enum {
             if (outOfBoundsMove) {
                 /* this move was out of bounds */
                 self.outOfBoundsViewController = me;
+                
             } else if(!outOfBoundsMove && self.outOfBoundsViewController == me) {
                 /* I have been moved out of bounds some time ago but now I'm back in the bounds :-), so:
                  * - no one can be out of bounds now
                  * - I have to be reset to my initial position
                  * - discard the rest of the translation
                  */
+                
                 self.outOfBoundsViewController = nil;
                 [SheetNavigationController viewControllerToInitialPosition:me];
                 break; /* this discards the rest of the translation (i.e. stops the loop) */
@@ -1216,8 +1235,8 @@ typedef enum {
             }
         }
         
-        if (CGRectGetMaxX(f) > [self overallWidth] && navItem.offset == 2 && _willDismissTopSheet) {
-            f.origin.x = [self overallWidth] - f.size.width;
+        if (navItem.width+initPos.x > [self overallWidth] && navItem.offset == 2 && _willDismissTopSheet) {
+            f.origin.x = [self overallWidth] - navItem.width;
         }
         
         vc.view.frame = f;
@@ -1226,6 +1245,7 @@ typedef enum {
     } else {
         CGRect f = vc.view.frame;
         CGFloat xTranslation = 0.0;
+        
         if (f.origin.x < initPos.x || origXTranslation < 0) {
             /* if view already left from left bound and still moving left, half moving speed */
             xTranslation = 0.0;

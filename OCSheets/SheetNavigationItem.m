@@ -54,7 +54,7 @@
     desc = [desc stringByAppendingFormat:@"peeked width: %f\n",self.peekedWidth];
     desc = [desc stringByAppendingFormat:@"display shadow: %s\n",self.displayShadow ? "yes" : "no"];
     desc = [desc stringByAppendingFormat:@"layout type: %i\n",self.layoutType];
-    desc = [desc stringByAppendingFormat:@"class: %@\n",NSStringFromClass([self.sheetController.contentViewController class])];
+    desc = [desc stringByAppendingFormat:@"class: %@\n",[self sheetContentClass]];
     desc = [desc stringByAppendingFormat:@"init view postion: %@\n",NSStringFromCGPoint(self.initialViewPosition)];
     desc = [desc stringByAppendingFormat:@"current view position: %@\n",NSStringFromCGPoint(self.currentViewPosition)];
     desc = [desc stringByAppendingFormat:@"next item distance: %f\n",self.nextItemDistance];
@@ -63,6 +63,10 @@
     desc = [desc stringByAppendingFormat:@"offset Y: %f\n",self.offsetY];
     
     return desc;
+}
+
+- (NSString *)sheetContentClass {
+    return NSStringFromClass([self.sheetController.contentViewController class]);
 }
 
 //- (CGPoint)initialViewPosition {

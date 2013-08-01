@@ -72,6 +72,11 @@
  */
 @property (nonatomic, assign) BOOL isPeekedSheet;
 
+/**
+ Convenience to see content sheet class name
+ */
+@property (nonatomic, readonly) NSString *sheetContentClass;
+
 #pragma mark - FRLayeredNavigationItem properties
 /**
  * All remaining properties below are documented in FRLayeredNavigationItem
