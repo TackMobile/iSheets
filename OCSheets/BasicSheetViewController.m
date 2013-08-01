@@ -62,7 +62,6 @@
 }
 
 - (void)setPeekedHidden:(BOOL)hidden {
-    //BOOL showPeeked = !hidden;
     self.sheetNavigationItem.showingPeeked = !_disallowFuturePeek ? !hidden : NO;
 }
 

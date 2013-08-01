@@ -292,18 +292,21 @@ typedef enum {
     f.origin = navItem.currentViewPosition;
     f.size.height = CGRectGetHeight(self.view.bounds);
     
-    // sheet controller frame width (scf) is always sheet nav controller's frame (sncf)
-    // width, minus the distance from the sncf origin x to sheet controller's initial x pos
+    // sheet controller frame (scf) width is always sheet nav controller's frame (sncf)
+    // width - distance from sncf origin x to sheet controller's nav item's initialViewPosition (the gutter, show as /*-*/ below).
+    
     // content vc width is <= scf width (less, if sheet content vc implementation specifies a desired width)
-    /*********************************/
-    /*    sheet controller frame     */
-    /* ***********************       */
-    /*                       *       */
-    /*   content vc frame    *       */
-    /*                       *       */
-    /*                       *       */
-    /* ***********************       */
-    /*********************************/
+    // & align to left or right of containing vc (sheet controller)
+    
+    /*-*/ /*********************************/
+    /*-*/ /* ***********************       */
+    /*-*/ /*   ^ content vc frame  *       */
+    /*-*/ /*                       *       */
+    /*-*/ /*                       *       */
+    /*-*/ /*                       *       */
+    /*-*/ /* ***********************       */
+    /*-*/ /*********************************/
+    //         ^ sheet controller frame
     
     if (sheetController.maximumWidth) {
         
@@ -326,6 +329,7 @@ typedef enum {
         [sheetController.view setNeedsLayout];
         
         sheetController.contentViewController.view.frameWidth = navItem.width;
+        sheetController.contentViewController.view.frameHeight = f.size.height;
         [sheetController.contentViewController.view setNeedsLayout];
     };
     
@@ -1575,6 +1579,7 @@ typedef enum {
                     CGFloat currentX = abs(self.peekedSheetController.view.frame.origin.x);
                     CGFloat pointsX = [self overallWidth] - currentX;
                     duration = pointsX / abs(velocity);
+                    duration *= 0.9; // was too fast
                 }
                 /* but not too slow either */
                 if (duration > defaultSpeed) {

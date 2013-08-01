@@ -589,10 +589,8 @@ block(); \
 
 - (UIView *)coverView {
     if (!_coverView) {
-        _coverView = [[UIView alloc] initWithFrame:CGRectZero];
-        _coverView.alpha = 0.0;
+        _coverView = [[UIView alloc] initWithFrame:self.view.bounds];
         _coverView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-        [_coverView setFrame:self.view.bounds];
     }
     return _coverView;
 }
