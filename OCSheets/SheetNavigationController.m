@@ -184,13 +184,12 @@ typedef enum {
         [self doLayout];
     } else {
         [self layoutPeekedViewControllers];
-    for (SheetController *sheetController in [self visibleSheets]) {
-            NSLog(@"laying out %@, %f",sheetController.sheetNavigationItem.sheetContentClass,[NSDate timeIntervalSinceReferenceDate]);
+        for (SheetController *sheetController in [self visibleSheets]) {
+            //NSLog(@"laying out %@, %f",sheetController.sheetNavigationItem.sheetContentClass,[NSDate timeIntervalSinceReferenceDate]);
             [self layoutSheetController:sheetController];
         }
     }
 }
-
 
 - (NSMutableArray *)visibleSheets {
     int count = self.sheetViewControllers.count;
@@ -206,6 +205,9 @@ typedef enum {
             float visibleWidth = aboveNavItem.initialViewPosition.x - navItem.initialViewPosition.x;
             if (visibleWidth > 0.0) {
                 [visible addObject:sheetController];
+                sheetController.isVisible = YES;
+            } else {
+                sheetController.isVisible = NO;
             }
         } else {
             [visible addObject:[self topSheetController]];
@@ -239,20 +241,8 @@ typedef enum {
 
 #pragma mark Sheet layout
 
-- (void)doLayoutForOrientationChange {
-    
-    
-}
-
 - (void)doLayout {
-    
-//    NSArray *syms = [NSThread  callStackSymbols];
-//    if ([syms count] > 1) {
-//        NSLog(@"<%@ %p> %@ - caller: %@ ", [self class], self, NSStringFromSelector(_cmd),[syms objectAtIndex:1]);
-//    } else {
-//        NSLog(@"<%@ %p> %@", [self class], self, NSStringFromSelector(_cmd));
-//    }
-    
+
     [self.sheetViewControllers enumerateObjectsUsingBlock:^(SheetController *vc, NSUInteger index, BOOL *stop){
         [self layoutSheetController:vc];
     }];
@@ -1708,6 +1698,7 @@ typedef enum {
                 [(id<SheetStackPage>)firstStacked.contentViewController sheetNavigationControllerWillPanSheet];
             }
             self.firstStackedController = firstStacked;
+            self.firstStackedController.isVisible = YES;
             [self layoutSheetController:firstStacked];
             
             _willPopToRootSheet = gestureRecognizer.numberOfTouches == 2;
@@ -1944,12 +1935,20 @@ typedef enum {
     
     [(id<SheetStackPage>)[self topSheetController] sheetWillBeStacked];
     
+    if ([self.delegate respondsToSelector:@selector(sheetNavigationControllerWillAddSheet)]) {
+        [self.delegate sheetNavigationControllerWillAddSheet];
+    }
+    
     self.firstStackedController = [self topSheetController];
 }
 
 - (void)didAddSheet {
     if (self.firstStackedController) {
         [(id<SheetStackPage>)self.firstStackedController sheetDidGetStacked];
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(sheetNavigationControllerDidAddSheet)]) {
+        [self.delegate sheetNavigationControllerDidAddSheet];
     }
     
     self.firstStackedController = nil;
@@ -1974,6 +1973,10 @@ typedef enum {
         if ([self.firstStackedController respondsToSelector:@selector(sheetDidGetUnstacked)]) {
             [(id<SheetStackPage>)self.firstStackedController sheetDidGetUnstacked];
         }
+    }
+    
+    if ([self.delegate respondsToSelector:@selector(sheetNavigationControllerDidRemoveSheet)]) {
+        [self.delegate sheetNavigationControllerDidRemoveSheet];
     }
     
     self.firstStackedController = nil;

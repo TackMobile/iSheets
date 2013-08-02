@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UIViewController *contentViewController;
 @property (nonatomic, readonly) BOOL maximumWidth;
 @property (nonatomic, readonly) BOOL isRestored;
+@property (nonatomic, assign) BOOL isVisible;
 @property (nonatomic, strong) UIView *coverView;
 @property (nonatomic, assign) float percentDragged;
 @property (nonatomic, strong) UIView *leftNavButtonItem;

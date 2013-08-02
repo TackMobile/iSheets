@@ -59,6 +59,9 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 
 @optional
 
+- (void)sheetNavigationControllerWillAddSheet;
+- (void)sheetNavigationControllerDidAddSheet;
+- (void)sheetNavigationControllerDidRemoveSheet;
 - (void)sheetNavigationController:(SheetNavigationController*)controller
                  willMoveController:(UIViewController*)controller;
 - (void)sheetNavigationController:(SheetNavigationController*)controller

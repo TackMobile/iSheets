@@ -205,12 +205,25 @@ block(); \
         contentFrame.size.width = desiredWidth;
     }
     
+    if (navItem.offset == 1) {
+        self.coverView.alpha = 0.0;
+    }
+    
     void(^doFrameMove)(void) = ^{
         self.contentView.frame = contentFrame;
         self.coverView.frame = contentFrame;
     };
     void(^frameMoveComplete)(void) = ^{
-        [self.contentView setNeedsLayout];
+        if (self.isVisible && !self.sheetNavigationItem.isPeekedSheet) {
+            [self.contentView setNeedsLayout];
+            //NSLog(@"laying out %@",self.sheetNavigationItem.sheetContentClass);
+        } else if (self.sheetNavigationItem.isPeekedSheet) {
+            if (self.sheetNavigationItem.expandedPeekedSheet) {
+                //NSLog(@"laying out %@",self.sheetNavigationItem.sheetContentClass);
+            } else {
+                //NSLog(@"not laying out %@",self.sheetNavigationItem.sheetContentClass);
+            }
+        }
     };
     
     if (navItem.displayShadow ||
