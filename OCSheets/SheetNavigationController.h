@@ -62,12 +62,9 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 - (void)sheetNavigationControllerWillAddSheet;
 - (void)sheetNavigationControllerDidAddSheet;
 - (void)sheetNavigationControllerDidRemoveSheet;
-- (void)sheetNavigationController:(SheetNavigationController*)controller
-                 willMoveController:(UIViewController*)controller;
-- (void)sheetNavigationController:(SheetNavigationController*)controller
-               movingViewController:(UIViewController*)controller;
-- (void)sheetNavigationController:(SheetNavigationController*)controller
-                  didMoveController:(UIViewController*)controller;
+- (void)sheetNavigationController:(SheetNavigationController*)controller willMoveController:(UIViewController*)controller;
+- (void)sheetNavigationController:(SheetNavigationController*)controller movingViewController:(UIViewController*)controller percentMoved:(float)percentMoved;
+- (void)sheetNavigationController:(SheetNavigationController*)controller didMoveController:(UIViewController*)controller;
 
 @end
 

@@ -129,6 +129,8 @@ typedef enum {
     [self viewDidUnload];
     [self detachGestureRecognizers];
     self.peekedSheetController = nil;
+    self.firstStackedController = nil;
+    self.firstTouchedController = nil;
     [self.historyManager removeAllHistory];
     [self.sheetViewControllers removeAllObjects];
     [SheetLayoutModel sharedInstance].controller = nil;
@@ -1542,6 +1544,10 @@ typedef enum {
             
             [(SheetController *)self.firstStackedController prepareCoverViewForNewSheetWithCurrentAlpha:NO];
             
+            if ([self.delegate respondsToSelector:@selector(sheetNavigationController:willMoveController:)]) {
+                [self.delegate sheetNavigationController:self willMoveController:self.firstTouchedController];
+            }
+            
             CGFloat overallWidth = [self overallWidth];
             CGFloat offset = self.topSheetContentViewController.sheetNavigationItem.initialViewPosition.x;
             CGFloat nextDist = self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
@@ -1571,6 +1577,10 @@ typedef enum {
             CGFloat percComplete = (currPos/rightEdge);
             
             [(id<SheetStackPage>)self.firstStackedController sheetBeingUnstacked:1.0-percComplete];
+            
+            if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:percentMoved:)]) {
+                [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController percentMoved:percComplete];
+            }
             
             if (!boundedMove && percComplete < 1.0) {
                 self.peekedSheetController.view.frameX += xTranslation;
@@ -1722,16 +1732,17 @@ typedef enum {
             [self moveViewControllersXTranslation:xTranslation velocity:[gestureRecognizer velocityInView:self.view].x];
             
             const SheetNavigationItem *navItem = startVc.sheetNavigationItem;
+            CGFloat percComplete;
             if (navItem.offset == 1) {
                 CGFloat initX = navItem.initialViewPosition.x;
                 CGFloat rightEdge = (parentWidth-peekedWidth)-initX;
                 float currPos = startVc.view.frameX-initX;
-                CGFloat percComplete = currPos/rightEdge;
+                percComplete = currPos/rightEdge;
                 [self forwardUnstackingPercentage:percComplete];
             }
             
-            if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:)]) {
-                [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController];
+            if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:percentMoved:)]) {
+                [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController percentMoved:percComplete];
             }
             if ([self.firstStackedController.contentViewController respondsToSelector:@selector(sheetNavigationControllerPanningSheet)]) {
                 [(id<SheetStackPage>)self.firstStackedController.contentViewController sheetNavigationControllerPanningSheet];
