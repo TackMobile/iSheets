@@ -1327,7 +1327,6 @@ typedef enum {
 #pragma mark Peeked view controllers
 
 - (void)expandPeekedSheet:(BOOL)animated {
-    SheetStackState state = [[SheetLayoutModel sharedInstance] stackState];
     SheetController *peekedSheetController = self.peekedSheetController;
     
     if ([peekedSheetController respondsToSelector:@selector(isPeeking:onTopOfSheet:)]) {
@@ -1560,10 +1559,6 @@ typedef enum {
             if ([self.delegate respondsToSelector:@selector(sheetNavigationController:willMoveController:)]) {
                 [self.delegate sheetNavigationController:self willMoveController:self.firstTouchedController];
             }
-            
-            CGFloat overallWidth = [self overallWidth];
-            CGFloat offset = self.topSheetContentViewController.sheetNavigationItem.initialViewPosition.x;
-            CGFloat nextDist = self.topSheetContentViewController.sheetNavigationItem.nextItemDistance;
             
             peekedFrame = [self peekedFrameForSheetController:self.peekedSheetController];
             

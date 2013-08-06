@@ -385,7 +385,6 @@ block(); \
 }
 
 - (void)sheetBeingUnstacked:(CGFloat)percentUnstacked {
-    int offset = self.sheetNavigationItem.offset;
     if (percentUnstacked == 1.0 && self.coverView.alpha == kCoverOpacity) {
         [self hideView:self.coverView withDuration:[SheetLayoutModel animateOffDuration] withDelay:0.0];
         return;
@@ -502,7 +501,6 @@ block(); \
         if (self.leftNavButtonItem) {
             float percVisible = 1.0 - percentDragged;
             self.leftNavButtonItem.alpha = percVisible;
-            float v = self.leftNavButtonItem.alpha;
         }
     }
 }
