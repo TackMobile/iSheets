@@ -42,6 +42,11 @@ __strong static SheetLayoutModel *_sharedInstance;
     return _sharedInstance;
 }
 
++ (void) resetSharedInstance { 
+    _sharedInstance.controller = nil;
+    _sharedInstance = nil; 
+}
+
 #pragma mark Width calculations
 
 - (void)setStackState:(SheetStackState)stackState {

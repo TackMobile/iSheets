@@ -53,6 +53,7 @@ typedef enum {
 @interface SheetLayoutModel : NSObject
 
 + (SheetLayoutModel *) sharedInstance;
++ (void) resetSharedInstance;
 
 @property (nonatomic, strong) SheetNavigationController *controller;
 @property (nonatomic, assign) SheetStackState stackState;

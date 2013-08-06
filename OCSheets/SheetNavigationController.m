@@ -127,13 +127,26 @@ typedef enum {
 
 - (void) forceCleanup {
     [self viewDidUnload];
+    
+    [self popToRootViewControllerAnimated:NO];
+    
+    [self.topSheetContentViewController willMoveToParentViewController:nil];
+    [self.topSheetContentViewController.view removeFromSuperview];
+    [self.topSheetContentViewController removeFromParentViewController];
+    
+    [self.peekedSheetController willMoveToParentViewController:nil];
+    [self.peekedSheetController.contentViewController removeFromParentViewController];
+    [self.peekedSheetController.view removeFromSuperview];
+    [self.peekedSheetController removeFromParentViewController];
+
     [self detachGestureRecognizers];
     self.peekedSheetController = nil;
     self.firstStackedController = nil;
     self.firstTouchedController = nil;
     [self.historyManager removeAllHistory];
     [self.sheetViewControllers removeAllObjects];
-    [SheetLayoutModel sharedInstance].controller = nil;
+    
+    [SheetLayoutModel resetSharedInstance];
 }
 
 - (void)addPeekedSheetPanGesture {

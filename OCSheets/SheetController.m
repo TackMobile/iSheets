@@ -338,18 +338,16 @@ block(); \
     if (parent != nil) {
         /* just attached to parent view controller */
         [self.contentViewController didMoveToParentViewController:self];
+        float w = [[SheetLayoutModel sharedInstance] desiredWidthForContent:self.contentViewController navItem:self.sheetNavigationItem];
+        self.view.frameWidth = w;
     } else {
         // peeked content vc's get passed around a lot, we don't
-        // want to nil it's parent vc ref
+        // want to nil its parent vc ref
         if (!self.sheetNavigationItem.isPeekedSheet) {
             /* did just detach */
             [self.contentViewController removeFromParentViewController];
-        }
-        
+        } 
     }
-    
-    float w = [[SheetLayoutModel sharedInstance] desiredWidthForContent:self.contentViewController navItem:self.sheetNavigationItem];
-    self.view.frameWidth = w;
 }
 
 - (void)rasterizeAndSnapshot {
