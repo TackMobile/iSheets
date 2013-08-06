@@ -979,6 +979,9 @@ typedef enum {
     SheetController *startVc = [self.sheetViewControllers objectAtIndex:startVcIdx];
     [startVc setPercentDragged:percentComplete];
     
+    if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:percentMoved:)]) {
+        [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController percentMoved:percentComplete];
+    }
 }
 
 - (BOOL)shouldAutomaticallyForwardRotationMethods  {
@@ -1334,6 +1337,10 @@ typedef enum {
     }
     
     SheetNavigationItem *oldNavItem = peekedSheetController.sheetNavigationItem;
+
+    if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:percentMoved:)]) {
+        [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController percentMoved:1.0];
+    }
     
     [peekedSheetController removeFromParentViewController];
     [peekedSheetController.view removeFromSuperview];
@@ -1612,6 +1619,14 @@ typedef enum {
             if (_willExpandedPeeked) {
                 [self.firstStackedController prepareCoverViewForNewSheetWithCurrentAlpha:YES];
                 [self.firstStackedController animateInCoverView];
+                
+                if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:percentMoved:)]) {
+                    [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController percentMoved:1.0];
+                }
+            } else {
+                if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:percentMoved:)]) {
+                    [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController percentMoved:0.0];
+                }
             }
             
             if (_willExpandedPeeked && velocity > [self snappingVelocityThreshold]) {
@@ -1749,9 +1764,9 @@ typedef enum {
                 [self forwardUnstackingPercentage:percComplete];
             }
             
-            if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:percentMoved:)]) {
-                [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController percentMoved:percComplete];
-            }
+//            if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:percentMoved:)]) {
+//                [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController percentMoved:percComplete];
+//            }
             if ([self.firstStackedController.contentViewController respondsToSelector:@selector(sheetNavigationControllerPanningSheet)]) {
                 [(id<SheetStackPage>)self.firstStackedController.contentViewController sheetNavigationControllerPanningSheet];
             }
