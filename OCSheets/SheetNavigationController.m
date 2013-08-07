@@ -354,7 +354,7 @@ typedef enum {
     /*-*/ /*********************************/
     //         ^ sheet controller frame
     
-    if (sheetController.maximumWidth) {
+    if (sheetController.maximumWidth || navItem.fullscreen) {
         
         // standard sheet, no special layout rules
         // just make it full-width minus its offset from left
