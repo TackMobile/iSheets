@@ -678,7 +678,8 @@ typedef enum {
     [self addChildViewController:newSheetController];
     [self.view addSubview:newSheetController.view];
     
-    [parentLayerController prepareCoverViewForNewSheetWithCurrentAlpha:navItem.expandedPeekedSheet];
+    BOOL isExpanded = navItem.expandedPeekedSheet;
+    [parentLayerController prepareCoverViewForNewSheetWithCurrentAlpha:isExpanded];
     [parentLayerController animateInCoverView];
     
     void (^doNewFrameMove)() = ^() {
@@ -1591,8 +1592,9 @@ typedef enum {
             float currPos = initPosX - myPos.x;
             CGFloat percComplete = (currPos/rightEdge);
             
+            // note: not using [self forwardUnstackingPercentage:percComplete]
+            // intentionally because peeked sheet is different! 
             [(id<SheetStackPage>)self.firstStackedController sheetBeingUnstacked:1.0-percComplete];
-            
             if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:percentMoved:)]) {
                 [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController percentMoved:percComplete];
             }
@@ -1756,17 +1758,16 @@ typedef enum {
             
             const SheetNavigationItem *navItem = startVc.sheetNavigationItem;
             CGFloat percComplete;
+            NSLog(@"sheet offset = %i, peeked: %s",navItem.offset,navItem.isPeekedSheet ? "yes" : "no");
             if (navItem.offset == 1) {
                 CGFloat initX = navItem.initialViewPosition.x;
                 CGFloat rightEdge = (parentWidth-peekedWidth)-initX;
                 float currPos = startVc.view.frameX-initX;
                 percComplete = currPos/rightEdge;
+                NSLog(@"forwarding percentage %f",percComplete);
                 [self forwardUnstackingPercentage:percComplete];
             }
             
-//            if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:percentMoved:)]) {
-//                [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController percentMoved:percComplete];
-//            }
             if ([self.firstStackedController.contentViewController respondsToSelector:@selector(sheetNavigationControllerPanningSheet)]) {
                 [(id<SheetStackPage>)self.firstStackedController.contentViewController sheetNavigationControllerPanningSheet];
             }
