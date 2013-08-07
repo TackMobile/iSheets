@@ -623,7 +623,6 @@ block(); \
 }
 
 - (void)revealView:(UIView *)view withDelay:(float)delay {
-    NSLog(@"revealing view %i %@",view.tag,self.sheetNavigationItem);
     //view.alpha = 0.0;
     void(^show)(void) = ^{
         [UIView animateWithDuration:0.5
