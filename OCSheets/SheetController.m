@@ -497,7 +497,6 @@ block(); \
 - (void)setPercentDragged:(float)percentDragged {
     
     if (_showsLeftNavButton && !self.sheetNavigationItem.isPeekedSheet) {
-        
         if (self.leftNavButtonItem) {
             float percVisible = 1.0 - percentDragged;
             self.leftNavButtonItem.alpha = percVisible;
@@ -583,6 +582,7 @@ block(); \
         [_leftNavButtonItem removeFromSuperview];
         _leftNavButtonItem = [self.sheetNavigationItem leftButtonView];
         _leftNavButtonItem.alpha = 1.0;
+        [_leftNavButtonItem setHidden:NO];
         [self.view addSubview:_leftNavButtonItem];
     } else if (justHidden) {
         [UIView animateWithDuration:0.4
