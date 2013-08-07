@@ -28,6 +28,7 @@ block(); \
     BOOL _peeking;
     BOOL _showsLeftNavButton;
     NSMutableArray *keyValueObserving;
+    float _percentDragged;
 }
 
 @property (nonatomic, readwrite, strong) SheetNavigationItem *sheetNavigationItem;
@@ -205,7 +206,7 @@ block(); \
         contentFrame.size.width = desiredWidth;
     }
     
-    if (navItem.offset == 1) {
+    if (navItem.offset == 1 && _percentDragged == 0.0) {
         self.coverView.alpha = 0.0;
     }
     
@@ -385,11 +386,13 @@ block(); \
 }
 
 - (void)sheetBeingUnstacked:(CGFloat)percentUnstacked {
+    _percentDragged = percentUnstacked;
     if (percentUnstacked == 1.0 && self.coverView.alpha == kCoverOpacity) {
         [self hideView:self.coverView withDuration:[SheetLayoutModel animateOffDuration] withDelay:0.0];
         return;
     }
-    self.coverView.alpha = kCoverOpacity*(1-percentUnstacked);
+    float coverOpacity = kCoverOpacity*(1-percentUnstacked);
+    _coverView.alpha = kCoverOpacity*(1-percentUnstacked);
     if (self.leftNavButtonItem) {
         [self.view insertSubview:self.coverView belowSubview:self.leftNavButtonItem];
     } else {
@@ -495,7 +498,7 @@ block(); \
 }
 
 - (void)setPercentDragged:(float)percentDragged {
-    
+    _percentDragged = percentDragged;
     if (_showsLeftNavButton && !self.sheetNavigationItem.isPeekedSheet) {
         if (self.leftNavButtonItem) {
             float percVisible = 1.0 - percentDragged;
@@ -598,10 +601,13 @@ block(); \
 }
 
 - (UIView *)coverView {
+    
     if (!_coverView) {
         _coverView = [[UIView alloc] initWithFrame:self.view.bounds];
         _coverView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     }
+    
+    
     return _coverView;
 }
 
