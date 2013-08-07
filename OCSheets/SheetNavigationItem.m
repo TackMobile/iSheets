@@ -69,11 +69,4 @@
     return [NSString stringWithFormat:@"%@[%i]",NSStringFromClass([self.sheetController.contentViewController class]),self.index];
 }
 
-//- (CGPoint)initialViewPosition {
-//    if (self.layoutType == kSheetLayoutFullScreen) {
-//        return CGPointMake(0, 0);
-//    }
-//    return _initialViewPosition;
-//}
-
 @end

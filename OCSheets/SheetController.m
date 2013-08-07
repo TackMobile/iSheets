@@ -163,22 +163,30 @@ block(); \
     }
 }
 
+- (void)positionLeftNavButton {
+    CGPoint origin = [self leftNavOrigin];
+    self.leftNavButtonItem.frameX = origin.x;
+    self.leftNavButtonItem.frameY = origin.y;
+}
 
+- (CGPoint)leftNavOrigin {
+    CGRect frame = self.leftNavButtonItem.bounds;
+    float xPos = -floorf(frame.size.width*0.5);
+    float yPos = 0.0;
+    if (self.sheetNavigationItem.offsetY == -1.0) {
+        yPos = 7.0;
+    } else {
+        yPos = self.sheetNavigationItem.offsetY;
+    }
+    return CGPointMake(xPos, yPos);
+}
 
 #pragma mark - internal methods
 
 - (void)doViewLayout
 {
     if (self.leftNavButtonItem) {
-        CGRect frame = self.leftNavButtonItem.bounds;
-        self.leftNavButtonItem.frameX = -floorf(frame.size.width*0.5);
-        
-        if (self.sheetNavigationItem.offsetY == -1.0) {
-            self.leftNavButtonItem.frameY = 7.0;
-        } else {
-            float originY = self.sheetNavigationItem.offsetY;
-            self.leftNavButtonItem.frameY = originY;
-        }
+        [self positionLeftNavButton];
     }
     
     CGRect contentFrame = CGRectZero;
@@ -556,6 +564,7 @@ block(); \
         self.leftNavButtonItem = nil;
         self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
         self.leftNavButtonItem.alpha = 1.0;
+        [self positionLeftNavButton];
         [self.view addSubview:self.leftNavButtonItem];
 
     } else if ([keyPath isEqualToString:@"hidden"]) {
@@ -583,8 +592,8 @@ block(); \
     
     if (justRevealed || newOffset.intValue < 3) {
         [_leftNavButtonItem removeFromSuperview];
-        _leftNavButtonItem = [self.sheetNavigationItem leftButtonView];
-        _leftNavButtonItem.alpha = 1.0;
+        _leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
+         _leftNavButtonItem.alpha = 1.0;
         [_leftNavButtonItem setHidden:NO];
         [self.view addSubview:_leftNavButtonItem];
     } else if (justHidden) {
