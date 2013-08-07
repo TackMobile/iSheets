@@ -1759,13 +1759,11 @@ typedef enum {
             
             const SheetNavigationItem *navItem = startVc.sheetNavigationItem;
             CGFloat percComplete;
-            NSLog(@"sheet offset = %i, peeked: %s",navItem.offset,navItem.isPeekedSheet ? "yes" : "no");
             if (navItem.offset == 1) {
                 CGFloat initX = navItem.initialViewPosition.x;
                 CGFloat rightEdge = (parentWidth-peekedWidth)-initX;
                 float currPos = startVc.view.frameX-initX;
                 percComplete = currPos/rightEdge;
-                NSLog(@"forwarding percentage %f",percComplete);
                 [self forwardUnstackingPercentage:percComplete];
             }
             
