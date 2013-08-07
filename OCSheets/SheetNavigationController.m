@@ -364,6 +364,7 @@ typedef enum {
     } else {
         
         [[SheetLayoutModel sharedInstance] updateNavItem:navItem];
+        f.size.width = CGRectGetWidth(self.view.bounds) - navItem.initialViewPosition.x;
         f.origin = navItem.initialViewPosition;
     }
     
