@@ -230,7 +230,7 @@ typedef enum {
         
         aboveNavItem = sheetController.sheetNavigationItem;
     }
-    NSLog(@"%i visible sheets",visible.count);
+
     return visible;
 }
 
@@ -342,7 +342,7 @@ typedef enum {
     // width - distance from sncf origin x to sheet controller's nav item's initialViewPosition (the gutter, show as /*-*/ below).
     
     // content vc width is <= scf width (less, if sheet content vc implementation specifies a desired width)
-    // & align to left or right of containing vc (sheet controller)
+    // & aligns to left or right of containing vc (sheet controller)
     
     /*-*/ /*********************************/
     /*-*/ /* ***********************       */
@@ -353,7 +353,7 @@ typedef enum {
     /*-*/ /* ***********************       */
     /*-*/ /*********************************/
     //         ^ sheet controller frame
-    
+    SheetStackState state = [[SheetLayoutModel sharedInstance] stackState];
     if (sheetController.maximumWidth || navItem.fullscreen) {
         
         // standard sheet, no special layout rules
@@ -364,7 +364,12 @@ typedef enum {
     } else {
         
         [[SheetLayoutModel sharedInstance] updateNavItem:navItem];
-        f.size.width = CGRectGetWidth(self.view.bounds) - navItem.initialViewPosition.x;
+        
+        if (offset == 1) {
+            float controllerWidth = CGRectGetWidth(self.view.bounds) - navItem.initialViewPosition.x;
+            sheetController.view.frameWidth = controllerWidth;
+        }
+        
         f.origin = navItem.initialViewPosition;
     }
     
@@ -373,29 +378,21 @@ typedef enum {
     void(^stateChange)(void) = ^{
         
         sheetController.view.frame = f;
-        [sheetController.view setNeedsLayout];
-        
-        sheetController.contentViewController.view.frameWidth = navItem.width;
-        sheetController.contentViewController.view.frameHeight = f.size.height;
-        [sheetController.contentViewController.view setNeedsLayout];
     };
     
-    SheetStackState state = [[SheetLayoutModel sharedInstance] stackState];
     UIViewAnimationOptions curve = state == kSheetStackStateAdding ? SHEET_ADDING_ANIMATION_OPTION : SHEET_REMOVAL_ANIMATION_OPTION;
     float duration = state == kSheetStackStateAdding ? [SheetLayoutModel animateOnDuration] : [SheetLayoutModel animateOffDuration];
-    // animated if visible on top of stack and is not root
     
+    // animated if visible on top of stack and is not root
     BOOL animated = (offset > 0 && offset < kFirstStackedSheet+1) ? YES : NO;
     if (animated) {
         [UIView animateWithDuration:duration
                               delay:0
-                            options: curve
+                            options:curve
                          animations:^{
                              stateChange();
                          }
-                         completion:^(BOOL finished){
-                             
-                         }];
+                         completion:nil];
     } else {
         stateChange();
     }

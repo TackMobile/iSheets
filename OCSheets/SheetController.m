@@ -255,7 +255,7 @@ block(); \
 {
     self.view = [[UIView alloc] init];
     self.view.backgroundColor = [UIColor whiteColor];
-    self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin;
+    //self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth;
     
     _showsLeftNavButton = [SheetLayoutModel shouldShowLeftNavItem:self.sheetNavigationItem];
     [self addObservers];
