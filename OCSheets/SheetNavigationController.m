@@ -353,12 +353,15 @@ typedef enum {
     /*-*/ /* ***********************       */
     /*-*/ /*********************************/
     //         ^ sheet controller frame
+    
+    float controllerWidth = CGRectGetWidth(self.view.bounds) - navItem.initialViewPosition.x;
     SheetStackState state = [[SheetLayoutModel sharedInstance] stackState];
-    if (sheetController.maximumWidth || navItem.fullscreen) {
+
+    BOOL isFullscreen = sheetController.maximumWidth || navItem.fullscreen || navItem.layoutType == kSheetLayoutFullScreen;
+    if (isFullscreen) {
         
-        // standard sheet, no special layout rules
-        // just make it full-width minus its offset from left
-        navItem.width = CGRectGetWidth(self.view.bounds) - navItem.initialViewPosition.x;
+        navItem.width = controllerWidth;
+        sheetController.view.frameWidth = controllerWidth;
         f.size.width = navItem.width;
         
     } else {
@@ -366,12 +369,13 @@ typedef enum {
         [[SheetLayoutModel sharedInstance] updateNavItem:navItem];
         
         if (offset == 1) {
-            float controllerWidth = CGRectGetWidth(self.view.bounds) - navItem.initialViewPosition.x;
             sheetController.view.frameWidth = controllerWidth;
         }
         
         f.origin = navItem.initialViewPosition;
     }
+    
+    sheetController.contentViewController.view.frameWidth = navItem.width;
     
     f.origin.x = floorf(f.origin.x);
     
@@ -499,7 +503,7 @@ typedef enum {
     
     [self removeSheetFromHistory:vc];
     
-    [self layoutSheetController:[self.sheetViewControllers lastObject]];
+    
     
     CGFloat xLoc = CGRectGetMaxX(self.view.bounds);
     
@@ -862,6 +866,7 @@ typedef enum {
     if ([self isProtectedSheet:vc]) {
         [[SheetLayoutModel sharedInstance] decrementProtectedCount];
     }
+    [self layoutSheetController:[self.sheetViewControllers lastObject]];
 }
 
 - (void)removeSheetFromViewHeirarchy:(UIViewController *)vc {
@@ -1688,7 +1693,7 @@ typedef enum {
             break;
         }
         case UIGestureRecognizerStateCancelled: {
-            NSLog(@"UIGestureRecognizerStateCancelled");
+            //NSLog(@"UIGestureRecognizerStateCancelled");
             break;
         }
             
@@ -1719,6 +1724,7 @@ typedef enum {
                     }
                 }
             }
+            
             
             if ([self.delegate respondsToSelector:@selector(sheetNavigationController:willMoveController:)]) {
                 [self.delegate sheetNavigationController:self willMoveController:self.firstTouchedController];
@@ -1864,6 +1870,8 @@ typedef enum {
         [vc.sheetNavigationItem setCount:count];
         [vc.sheetNavigationItem setIndex:idx];
     }];
+    
+    
 }
 
 - (BOOL)animateOutAndInDefaultPeekedSheet:(SheetController *)vc {

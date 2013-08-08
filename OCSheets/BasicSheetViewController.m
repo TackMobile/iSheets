@@ -84,6 +84,7 @@
 
 - (void)sheetWillBeUnstacked {
     // The default implementation of this method is .... empty.
+    
 }
 
 - (void)sheetBeingUnstacked:(CGFloat)percentUnstacked {

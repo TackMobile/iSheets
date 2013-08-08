@@ -46,23 +46,40 @@
 }
 
 - (NSString *)description {
-    NSString *desc = [NSString stringWithFormat:@"\nindex: %i\n",self.index];
-    desc = [desc stringByAppendingFormat:@"count: %i\n",self.count];
-    desc = [desc stringByAppendingFormat:@"offset: %i\n",self.offset];
-    desc = [desc stringByAppendingFormat:@"width: %f\n",self.width];
-    desc = [desc stringByAppendingFormat:@"expanded: %s\n",self.expandedPeekedSheet ? "yes" : "no"];
-    desc = [desc stringByAppendingFormat:@"peeked width: %f\n",self.peekedWidth];
-    desc = [desc stringByAppendingFormat:@"display shadow: %s\n",self.displayShadow ? "yes" : "no"];
-    desc = [desc stringByAppendingFormat:@"layout type: %i\n",self.layoutType];
+    NSString *desc = [NSString stringWithFormat:@"\nsheet count: %i, nav item index: %i, offset: %i\n",self.count,self.index,self.offset];
+    desc = [desc stringByAppendingFormat:@"width: %f, peeked width: %f\n",self.width, self.peekedWidth];
+    desc = [desc stringByAppendingFormat:@"layout type: %@\n",[self layoutName]];
     desc = [desc stringByAppendingFormat:@"class: %@\n",[self sheetContentClass]];
+    desc = [desc stringByAppendingFormat:@"expanded: %s\n",self.expandedPeekedSheet ? "yes" : "no"];
+    desc = [desc stringByAppendingFormat:@"is peeked sheet: %s\n",self.isPeekedSheet ? "yes" : "no"];
     desc = [desc stringByAppendingFormat:@"init view postion: %@\n",NSStringFromCGPoint(self.initialViewPosition)];
     desc = [desc stringByAppendingFormat:@"current view position: %@\n",NSStringFromCGPoint(self.currentViewPosition)];
     desc = [desc stringByAppendingFormat:@"next item distance: %f\n",self.nextItemDistance];
     desc = [desc stringByAppendingFormat:@"fullscreened: %s\n",self.fullscreen ? "yes" : "no"];
-    desc = [desc stringByAppendingFormat:@"is peeked sheet: %s\n",self.isPeekedSheet ? "yes" : "no"];
+    desc = [desc stringByAppendingFormat:@"display shadow: %s\n",self.displayShadow ? "yes" : "no"];
     desc = [desc stringByAppendingFormat:@"offset Y: %f\n",self.offsetY];
     
     return desc;
+}
+
+- (NSString *)layoutName {
+    switch (self.layoutType) {
+        case kSheetLayoutFullScreen:
+            return @"FullScreen";
+            break;
+        case kSheetLayoutFullAvailable:
+            return @"FullAvailable";
+            break;
+        case kSheetLayoutDefault:
+            return @"Default";
+            break;
+        case kSheetLayoutPeeked:
+            return @"Peeked";
+            break;
+        default:
+            break;
+    }
+    return @"";
 }
 
 - (NSString *)sheetContentClass {

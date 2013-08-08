@@ -30,7 +30,6 @@ const CGFloat kSheetDefaultPeekedWidth      = 50.0;
 // Sheet rules
 const CGFloat kStandardSheetWidth           = 600.0;
 const CGFloat kSheetMenuWidth               = 200.0;
-const CGFloat kSheetDefaultStickingEdge     = 175.0;
 
 #define USE_HARD_CODED_WIDTHS YES
 
@@ -129,7 +128,12 @@ __strong static SheetLayoutModel *_sharedInstance;
                     width = desiredWidth;
                 }
             } else if (navItem.offset == 2) {
-                shouldTakeAvailableWidth = YES;
+                CGFloat desiredWidth = [self desiredWidthForContent:navItem.sheetController.contentViewController navItem:navItem];
+                if (desiredWidth != 0.0) {
+                    width = desiredWidth;
+                } else {
+                    width = kStandardSheetWidth;
+                }
             } else {
                 shouldTakeAvailableWidth = YES;
             }
@@ -295,10 +299,6 @@ __strong static SheetLayoutModel *_sharedInstance;
     } else {
         return 0.4*DurationMultiplier;
     }
-}
-
-+ (CGFloat)stickingEdgeForNavItem:(SheetNavigationItem *)navItem {
-    return kSheetDefaultStickingEdge;
 }
 
 + (SheetLayoutType)layoutTypeForSheetController:(SheetController *)sheetController {

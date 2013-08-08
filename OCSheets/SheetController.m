@@ -223,16 +223,11 @@ block(); \
         self.coverView.frame = contentFrame;
     };
     void(^frameMoveComplete)(void) = ^{
+        
         if (self.isVisible && !self.sheetNavigationItem.isPeekedSheet) {
             [self.contentView setNeedsLayout];
             //NSLog(@"laying out %@",self.sheetNavigationItem.sheetContentClass);
-        } else if (self.sheetNavigationItem.isPeekedSheet) {
-            if (self.sheetNavigationItem.expandedPeekedSheet) {
-                //NSLog(@"laying out %@",self.sheetNavigationItem.sheetContentClass);
-            } else {
-                //NSLog(@"not laying out %@",self.sheetNavigationItem.sheetContentClass);
-            }
-        }
+        } 
     };
     
     if (navItem.displayShadow ||
@@ -560,6 +555,7 @@ block(); \
         [self updateLeftNavButton:change];
     
     } else if ([keyPath isEqualToString:@"leftButtonView"]) {
+        
         [self.leftNavButtonItem removeFromSuperview];
         self.leftNavButtonItem = nil;
         self.leftNavButtonItem = self.sheetNavigationItem.leftButtonView;
