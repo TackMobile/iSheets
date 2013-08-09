@@ -354,36 +354,28 @@ typedef enum {
     /*-*/ /*********************************/
     //         ^ sheet controller frame
     
-    float controllerWidth = CGRectGetWidth(self.view.bounds) - navItem.initialViewPosition.x;
     SheetStackState state = [[SheetLayoutModel sharedInstance] stackState];
 
-    BOOL isFullscreen = sheetController.maximumWidth || navItem.fullscreen || navItem.layoutType == kSheetLayoutFullScreen;
-    if (isFullscreen) {
-        
-        navItem.width = controllerWidth;
-        sheetController.view.frameWidth = controllerWidth;
-        f.size.width = navItem.width;
-        
-    } else {
-        
-        [[SheetLayoutModel sharedInstance] updateNavItem:navItem];
-        
-//        if (offset == 1) {
-//            sheetController.view.frameWidth = controllerWidth;
-//        }
-        
-        f.origin = navItem.initialViewPosition;
-    }
+    [[SheetLayoutModel sharedInstance] updateNavItem:navItem];
     
+    float availableWidth = CGRectGetWidth(self.view.bounds) - navItem.initialViewPosition.x;
+    f.origin = navItem.initialViewPosition;
+    
+    // controller width needs to match the content's width when on top (offset 1)
+    // but when stacked it should stretch from navItem.initialViewPosition all the way
+    // to right side of the screen. We update these immediately– they never need animation
+    float controllerWidth = offset == 1 ? navItem.width : availableWidth;
+    sheetController.view.frameWidth = controllerWidth;
+    sheetController.view.frameHeight = f.size.height;
+    
+    // content width should respect layout rules of navItem
     sheetController.contentViewController.view.frameWidth = navItem.width;
-    
-    f.origin.x = floorf(f.origin.x);
-    
-    void(^stateChange)(void) = ^{
-        
-        sheetController.view.frame = f;
+            
+    void(^sheetPositionChange)(void) = ^{
+        // animates the entire position of the sheet, content is just along for the ride
+        sheetController.view.frameX = f.origin.x;
     };
-    
+
     UIViewAnimationOptions curve = state == kSheetStackStateAdding ? SHEET_ADDING_ANIMATION_OPTION : SHEET_REMOVAL_ANIMATION_OPTION;
     float duration = state == kSheetStackStateAdding ? [SheetLayoutModel animateOnDuration] : [SheetLayoutModel animateOffDuration];
     
@@ -394,11 +386,11 @@ typedef enum {
                               delay:0
                             options:curve
                          animations:^{
-                             stateChange();
+                             sheetPositionChange();
                          }
                          completion:nil];
     } else {
-        stateChange();
+        sheetPositionChange();
     }
 }
 
@@ -866,7 +858,6 @@ typedef enum {
     if ([self isProtectedSheet:vc]) {
         [[SheetLayoutModel sharedInstance] decrementProtectedCount];
     }
-    //[self layoutSheetController:[self.sheetViewControllers lastObject]];
 }
 
 - (void)removeSheetFromViewHeirarchy:(UIViewController *)vc {

@@ -22,6 +22,7 @@
 - (id)initWithType:(SheetLayoutType)layoutType
 {
     if ((self = [super init])) {
+        _index = 0;
         _layoutType = layoutType;
         _displayShadow = YES;
         _width = -1;

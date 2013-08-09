@@ -224,6 +224,9 @@ __strong static SheetLayoutModel *_sharedInstance;
 
 - (CGFloat)initX:(SheetNavigationItem *)navItem {
     // else offset from left
+    if (navItem.index == 0) {
+        return 0.0; // root sheet
+    }
     SheetController *parentLayerController = [self.controller sheetControllerAtIndex:navItem.index-1];
     UIViewController *parentVc = parentLayerController.contentViewController;
     SheetNavigationItem *parentNavItem = parentLayerController.sheetNavigationItem;
@@ -237,7 +240,7 @@ __strong static SheetLayoutModel *_sharedInstance;
                                    parentNavItem.nextItemDistance :
                                    kStandardSheetWidth);
     
-    return initX;
+    return floorf(initX);
 }
 
 - (CGFloat)desiredNextItemDistanceForParent:(UIViewController *)parent forChild:(UIViewController *)child {
