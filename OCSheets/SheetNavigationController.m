@@ -368,9 +368,9 @@ typedef enum {
         
         [[SheetLayoutModel sharedInstance] updateNavItem:navItem];
         
-        if (offset == 1) {
-            sheetController.view.frameWidth = controllerWidth;
-        }
+//        if (offset == 1) {
+//            sheetController.view.frameWidth = controllerWidth;
+//        }
         
         f.origin = navItem.initialViewPosition;
     }
@@ -866,7 +866,7 @@ typedef enum {
     if ([self isProtectedSheet:vc]) {
         [[SheetLayoutModel sharedInstance] decrementProtectedCount];
     }
-    [self layoutSheetController:[self.sheetViewControllers lastObject]];
+    //[self layoutSheetController:[self.sheetViewControllers lastObject]];
 }
 
 - (void)removeSheetFromViewHeirarchy:(UIViewController *)vc {
