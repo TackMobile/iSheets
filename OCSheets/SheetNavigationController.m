@@ -496,6 +496,7 @@ typedef enum {
     [self removeSheetFromHistory:vc];
     
     
+    [self layoutSheetController:[self.sheetViewControllers lastObject]];
     
     CGFloat xLoc = CGRectGetMaxX(self.view.bounds);
     
