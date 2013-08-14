@@ -224,7 +224,7 @@ __strong static SheetLayoutModel *_sharedInstance;
 
 - (CGFloat)initX:(SheetNavigationItem *)navItem {
     // else offset from left
-    if (navItem.index == 0) {
+    if (navItem.index == 0 || navItem.layoutType == kSheetLayoutFullScreen || navItem.isFullscreened) {
         return 0.0; // root sheet
     }
     SheetController *parentLayerController = [self.controller sheetControllerAtIndex:navItem.index-1];

@@ -1025,7 +1025,8 @@ typedef enum {
         BOOL isNotDraggable = ![self sheetShouldPan:vc.contentViewController];
         BOOL isNonInteractive = [self isNonInteractiveSheet:vc.contentViewController];
         BOOL isNotVisible = navItem.offset > 2;
-        if (isNotDraggable || isNonInteractive || isNotVisible) {
+        BOOL stackedFullscreen = (navItem.layoutType == kSheetLayoutFullScreen || navItem.isFullscreened) && navItem.offset > 1;
+        if (isNotDraggable || isNonInteractive || isNotVisible || stackedFullscreen) {
             return;
         }
         
@@ -1147,7 +1148,8 @@ typedef enum {
         SheetNavigationItem *meNavItem = me.sheetNavigationItem;
         
         BOOL shouldPan = [self sheetShouldPan:me.contentViewController];
-        if (!shouldPan) {
+        BOOL stackedFullscreen = (meNavItem.layoutType == kSheetLayoutFullScreen || meNavItem.isFullscreened) && meNavItem.offset > 1;
+        if (!shouldPan || stackedFullscreen) {
             continue;
         }
         
