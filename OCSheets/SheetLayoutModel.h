@@ -57,10 +57,15 @@ typedef enum {
 
 @property (nonatomic, strong) SheetNavigationController *controller;
 @property (nonatomic, assign) SheetStackState stackState;
-@property (nonatomic, readonly) NSUInteger protectedCount;
 
-- (void)incrementProtectedCount;
-- (void)decrementProtectedCount;
+/*
+ Sheets that are protected and non-draggable
+ Two finger swipes pop to these
+*/
+@property (nonatomic, readonly) NSUInteger tierCount;
+
+- (void)incrementTierCount;
+- (void)decrementTierCount;
 - (NSUInteger)thresholdForDroppingSheets;
 - (BOOL)shouldDropSheet;
 - (void)updateNavItem:(SheetNavigationItem *)navItem;
