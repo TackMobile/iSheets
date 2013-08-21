@@ -295,10 +295,6 @@ typedef enum {
                                  animations:^{
                                      CGRect frameForPeeked = [self peekedFrameForSheetController:self.peekedSheetController];
                                      self.peekedSheetController.view.frame = frameForPeeked;
-                                     
-                                     BOOL showNavButton = self.topSheetContentViewController.sheetNavigationItem.showingPeeked;
-                                     self.peekedSheetController.leftNavButtonItem.hidden = !showNavButton;
-
                                   }
                                  completion:nil];
                 
@@ -404,7 +400,9 @@ typedef enum {
     CGFloat dWidth = [[SheetLayoutModel sharedInstance] desiredWidthForContent:sheetController.contentViewController navItem:sheetController.sheetNavigationItem];
     if (shouldShow) {
         width -= peekWidth;
+        
     }
+    self.peekedSheetController.leftNavButtonItem.hidden = !shouldShow;
     return CGRectMake(width,
                       0.0,
                       dWidth,
@@ -723,6 +721,7 @@ typedef enum {
                                      if ([self peekedSheetReadyToPeek]) {
                                          //NSLog(@"%i: showing peeked at peeked position",__LINE__);
                                          self.peekedSheetController.view.frame = [self frameForDefaultPeeked];
+                                         
                                      }
                                      
                                  } completion:nil];
@@ -1375,7 +1374,7 @@ typedef enum {
     return NO;
 }
 
-- (void)preloadDefaultPeekedViewController {
+- (void)addDefaultPeekedViewController {
     UIViewController *topSheet = self.topSheetContentViewController;
     if ([self.peekedSheetController respondsToSelector:@selector(isPeeking:onTopOfSheet:)]) {
         [(id<SheetStackPeeking>)self.peekedSheetController isPeeking:YES onTopOfSheet:topSheet];
