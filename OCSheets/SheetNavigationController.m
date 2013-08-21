@@ -855,7 +855,8 @@ typedef enum {
         [vc.sheetNavigationItem setCount:count];
     }];
     
-    if ([self isTier:vc]) {
+    UIViewController *contentVC = [(SheetController *)vc contentViewController];
+    if ([self isTier:contentVC]) {
         [[SheetLayoutModel sharedInstance] decrementTierCount];
     }
 }
