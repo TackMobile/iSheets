@@ -94,7 +94,7 @@ typedef enum {
         
         [self addChildViewController:sheetRC];
         [sheetRC didMoveToParentViewController:self];
-        [[SheetLayoutModel sharedInstance] incrementTierCount];
+        [[SheetLayoutModel sharedInstance] incrementProtectedCount];
         
     }
     return self;
@@ -656,8 +656,8 @@ typedef enum {
     [newSheetController.view setNeedsLayout];
     [newSheetController.contentViewController.view setNeedsLayout];
     [self.sheetViewControllers addObject:newSheetController];
-    if ([self isTier:contentViewController]) {
-        [[SheetLayoutModel sharedInstance] incrementTierCount];
+    if ([self isProtectedSheet:contentViewController]) {
+        [[SheetLayoutModel sharedInstance] incrementProtectedCount];
     }
     
     [_historyManager addHistoryItemForSheetController:newSheetController];
@@ -855,9 +855,8 @@ typedef enum {
         [vc.sheetNavigationItem setCount:count];
     }];
     
-    UIViewController *contentVC = [(SheetController *)vc contentViewController];
-    if ([self isTier:contentVC]) {
-        [[SheetLayoutModel sharedInstance] decrementTierCount];
+    if ([self isProtectedSheet:vc]) {
+        [[SheetLayoutModel sharedInstance] decrementProtectedCount];
     }
 }
 
@@ -1719,6 +1718,7 @@ typedef enum {
                 }
             }
             
+            
             if ([self.delegate respondsToSelector:@selector(sheetNavigationController:willMoveController:)]) {
                 [self.delegate sheetNavigationController:self willMoveController:self.firstTouchedController];
             }
@@ -1778,9 +1778,14 @@ typedef enum {
             //NSLog(@"willPopToRootSheet: %s",willPopToRootSheet?"yes":"no");
             if (_willPopToRootSheet && velocity > [self snappingVelocityThreshold]) {
                 //NSLog(@"%i -----  %s",gestureRecognizer.numberOfTouches,willPopToRootSheet ? "yes" : "no");
-                int tierCount = [[SheetLayoutModel sharedInstance] tierCount];
-                SheetController *vc = self.sheetViewControllers[tierCount-1];
-                [self popToViewController:vc animated:YES];
+                if ([self.sheetViewControllers count] > 2) {
+                    SheetController *vc = self.sheetViewControllers[1];
+                    [self popToViewController:vc animated:YES];
+                }
+                else {
+                    [self popToRootViewControllerAnimated:YES];
+                }
+                
                 _willPopToRootSheet = NO;
                 return;
             }
@@ -1933,19 +1938,6 @@ typedef enum {
         isProtected = [(id<SheetStackPage>)viewController isProtectedSheet];
     }
     return isProtected;
-}
-
-/*
- Sheets that are protected and non-draggable
- Two finger swipes pop to the top-most of these
- */
-- (BOOL)isTier:(UIViewController *)viewController {
-    if ([self isProtectedSheet:viewController]) {
-        if (![self sheetShouldPan:viewController]) {
-            return YES;
-        }
-    }
-    return NO;
 }
 
 - (BOOL)sheetsInDropZone
