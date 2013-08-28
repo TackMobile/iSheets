@@ -656,7 +656,7 @@ typedef enum {
     [newSheetController.view setNeedsLayout];
     [newSheetController.contentViewController.view setNeedsLayout];
     [self.sheetViewControllers addObject:newSheetController];
-    if ([self isTier:contentViewController]) {
+    if (navItem.isTier) {
         [[SheetLayoutModel sharedInstance] incrementTierCount];
     }
     
@@ -855,8 +855,7 @@ typedef enum {
         [vc.sheetNavigationItem setCount:count];
     }];
     
-    UIViewController *contentVC = [(SheetController *)vc contentViewController];
-    if ([self isTier:contentVC]) {
+    if (vc.sheetNavigationItem.isTier) {
         [[SheetLayoutModel sharedInstance] decrementTierCount];
     }
 }
@@ -1020,13 +1019,14 @@ typedef enum {
     __block CGFloat xTranslation = 0;
     
     [self.sheetViewControllers enumerateObjectsUsingBlock:^(SheetController *vc, NSUInteger index, BOOL *stop){
-        
         SheetNavigationItem *navItem = vc.sheetNavigationItem;
+        NSLog(@"navItem %@ [%i]",navItem.sheetContentClass,navItem.offset);
+        
         BOOL isNotDraggable = ![self sheetShouldPan:vc.contentViewController];
         BOOL isNonInteractive = [self isNonInteractiveSheet:vc.contentViewController];
         BOOL isNotVisible = navItem.offset > 2;
-        BOOL stackedFullscreen = (navItem.layoutType == kSheetLayoutFullScreen || navItem.isFullscreened) && navItem.offset > 1;
-        if (isNotDraggable || isNonInteractive || isNotVisible || stackedFullscreen) {
+        BOOL isStackedFullscreen = (navItem.layoutType == kSheetLayoutFullScreen || navItem.isFullscreened) && navItem.offset > 1;
+        if (isNotDraggable || isNonInteractive || isNotVisible || isStackedFullscreen) {
             return;
         }
         
@@ -1042,6 +1042,9 @@ typedef enum {
         const CGPoint myInitPos = navItem.initialViewPosition;
         
         const CGFloat curDiff = myPos.x - lastNavItem.currentViewPosition.x;
+        if (curDiff == kSheetNextItemDefaultDistance && navItem.offset == 2) {
+            return;
+        }
         const CGFloat initDiff = myInitPos.x - lastNavItem.initialViewPosition.x;
         const CGFloat maxDiff = CGRectGetWidth(last.view.frame);
         const CGFloat overallWidth = [self overallWidth];
@@ -1859,7 +1862,6 @@ typedef enum {
         [vc.sheetNavigationItem setIndex:idx];
     }];
     
-    
 }
 
 - (BOOL)animateOutAndInDefaultPeekedSheet:(SheetController *)vc {
@@ -1929,27 +1931,16 @@ typedef enum {
 
 - (BOOL)isProtectedSheet:(UIViewController *)viewController {
     BOOL isProtected = NO;
+    if ([viewController isKindOfClass:[SheetController class]]) {
+        viewController = [(SheetController *)viewController contentViewController];
+    }
     if ([viewController respondsToSelector:@selector(isProtectedSheet)]) {
         isProtected = [(id<SheetStackPage>)viewController isProtectedSheet];
     }
     return isProtected;
 }
 
-/*
- Sheets that are protected and non-draggable
- Two finger swipes pop to the top-most of these
- */
-- (BOOL)isTier:(UIViewController *)viewController {
-    if ([self isProtectedSheet:viewController]) {
-        if (![self sheetShouldPan:viewController]) {
-            return YES;
-        }
-    }
-    return NO;
-}
-
-- (BOOL)sheetsInDropZone
-{
+- (BOOL)sheetsInDropZone {
     if ([self.sheetViewControllers count] > 1) {
         const SheetController *rootVC = [self.sheetViewControllers objectAtIndex:0];
         const SheetController *sheet1VC = [self.sheetViewControllers objectAtIndex:1];
@@ -2100,10 +2091,5 @@ typedef enum {
     return inflatedViewControllers.count;
 }
 
-- (void)logViewController:(SheetController *)controller {
-    NSLog(@"content vc class: %@",controller.contentViewController);
-    NSLog(@"nav item index: %i count:%i",controller.sheetNavigationItem.index,controller.sheetNavigationItem.count);
-    NSLog(@"content vc is nil: %s",controller.contentViewController == nil ? "yes" : "no");
-}
 
 @end

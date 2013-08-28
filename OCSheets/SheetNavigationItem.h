@@ -30,6 +30,12 @@
 @property (nonatomic, assign) SheetLayoutType layoutType;
 
 /**
+ * Sheet content acts as tier that can be two-finger swiped back to
+ * Alternate way to pop multiple sheets (other than just the familiar pop-to-root)
+ */
+@property (getter = isTier, assign) BOOL tier;
+
+/**
  * Offset from top of stack. Non-zero indexed (1 means sheet is on top)
  */
 @property (nonatomic, readonly) NSUInteger offset;
