@@ -83,15 +83,15 @@ __strong static SheetLayoutModel *_sharedInstance;
     return desiredWidth;
 }
 
-- (void)incrementProtectedCount {
-    _protectedCount += 1;
+- (void)incrementTierCount {
+    _tierCount += 1;
 }
 
-- (void)decrementProtectedCount {
-    if (_protectedCount == 0) {
+- (void)decrementTierCount {
+    if (_tierCount == 0) {
         return;
     }
-    _protectedCount --;
+    _tierCount --;
 }
 
 - (void)updateNavItem:(SheetNavigationItem *)navItem {
@@ -164,7 +164,7 @@ __strong static SheetLayoutModel *_sharedInstance;
 
 - (NSUInteger)thresholdForDroppingSheets {
     //NSLog(@"%i + %i",kInflatedSheetCountMax,[self protectedCount]);
-    return kInflatedSheetCountMax + [self protectedCount];
+    return kInflatedSheetCountMax + [self tierCount];
 }
 
 - (BOOL)shouldDropSheet {
