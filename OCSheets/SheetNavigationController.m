@@ -1020,7 +1020,6 @@ typedef enum {
     
     [self.sheetViewControllers enumerateObjectsUsingBlock:^(SheetController *vc, NSUInteger index, BOOL *stop){
         SheetNavigationItem *navItem = vc.sheetNavigationItem;
-        NSLog(@"navItem %@ [%i]",navItem.sheetContentClass,navItem.offset);
         
         BOOL isNotDraggable = ![self sheetShouldPan:vc.contentViewController];
         BOOL isNonInteractive = [self isNonInteractiveSheet:vc.contentViewController];
