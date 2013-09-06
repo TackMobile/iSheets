@@ -39,8 +39,6 @@ typedef enum {
 }
 
 @property (nonatomic, strong) UITapGestureRecognizer            *tapGR;
-@property (nonatomic, readwrite, strong) UIPanGestureRecognizer *panGR;
-@property (nonatomic, readwrite, strong) UIPanGestureRecognizer *peekedPanGR;
 
 @property (nonatomic, assign) BOOL dropLayersWhenPulledRight;
 

@@ -24,6 +24,8 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 @property (nonatomic) BOOL userInteractionEnabled;
 @property (nonatomic, readonly) UIViewController *topSheetContentViewController;
 @property (nonatomic, readonly, strong) SheetHistoryManager *historyManager;
+@property (nonatomic, readwrite, strong) UIPanGestureRecognizer *panGR;
+@property (nonatomic, readwrite, strong) UIPanGestureRecognizer *peekedPanGR;
 
 - (id)initWithRootViewController:(UIViewController *)rootViewController configuration:(SheetNavigationConfigBlock)configuration;
 - (id)initWithRootViewController:(UIViewController *)rootViewController peekedViewController:(UIViewController *)peekedViewController configuration:(SheetNavigationConfigBlock)configuration;
