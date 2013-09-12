@@ -192,10 +192,8 @@ block(); \
     CGRect contentFrame = CGRectZero;
     contentFrame.origin = CGPointMake(0.0, 0.0);
     
-    CGRect borderFrame = CGRectZero;
     const CGFloat borderSpacing = 0.0;
     
-    borderFrame = CGRectMake(0,0,CGRectGetWidth(self.view.bounds),CGRectGetHeight(self.view.bounds));
     contentFrame = CGRectMake(borderSpacing,
                               borderSpacing,
                               CGRectGetWidth(self.view.bounds)-(2*borderSpacing),
@@ -393,7 +391,7 @@ block(); \
         [self hideView:self.coverView withDuration:[SheetLayoutModel animateOffDuration] withDelay:0.0];
         return;
     }
-    float coverOpacity = kCoverOpacity*(1-percentUnstacked);
+    
     _coverView.alpha = kCoverOpacity*(1-percentUnstacked);
     if (self.leftNavButtonItem) {
         [self.view insertSubview:self.coverView belowSubview:self.leftNavButtonItem];
