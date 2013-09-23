@@ -212,14 +212,28 @@ __strong static SheetLayoutModel *_sharedInstance;
 }
 
 - (CGPoint)initialPositionForNavItem:(SheetNavigationItem *)navItem {
+    
+    static float yOffset = 0.0;
+    if (yOffset == 0.0) {
+        yOffset = [SheetLayoutModel yOffset];
+    }
+    
     CGFloat initX = 0.0;
     // offset from right
     if (navItem.offset == 1) {
         initX = (CGRectGetWidth(self.controller.view.bounds) - navItem.width);
-        return CGPointMake(initX, 0.0);
+        return CGPointMake(initX, yOffset);
     }
     // else offset from left
-    return CGPointMake([self initX:navItem], 0);
+    return CGPointMake([self initX:navItem], yOffset);
+}
+
++ (CGFloat)yOffset {
+#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_6_0
+    return 20.0;
+#else
+    return 0.0;
+#endif
 }
 
 - (CGFloat)initX:(SheetNavigationItem *)navItem {

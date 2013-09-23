@@ -55,6 +55,8 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 /* number of sheets with content in memory */
 - (NSUInteger)inflatedCount;
 
+- (CGRect)contentFrame;
+
 @end
 
 @protocol SheetNavigationControllerDelegate <NSObject>

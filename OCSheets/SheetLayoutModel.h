@@ -80,5 +80,6 @@ typedef enum {
 + (NSTimeInterval)animateOnDuration;
 + (NSTimeInterval)animateOffDuration;
 + (BOOL)shouldShowLeftNavItem:(SheetNavigationItem *)navItem;
++ (CGFloat)yOffset;
 
 @end
