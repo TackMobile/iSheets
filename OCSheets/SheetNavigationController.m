@@ -441,7 +441,8 @@ typedef enum {
 - (CGRect)contentFrame {
 #if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_6_0
     float yOffset = [SheetLayoutModel yOffset];
-    return CGRectMake(0.0, yOffset, self.view.frameWidth, self.view.frameHeight - yOffset);
+    CGRect frame = [SheetLayoutModel getScreenBoundsForCurrentOrientation];
+    return CGRectMake(0.0, yOffset, frame.size.width, frame.size.height - yOffset);
 #else
     return self.view.bounds;
 #endif
