@@ -673,16 +673,14 @@ typedef enum {
     
     newSheetController.view.frame = offscreenFrame;
     contentViewController.view.frameWidth = navItem.width;
-    contentViewController.view.frameHeight = self.view.frameHeight;
-    
-    
+
     #if __IPHONE_OS_VERSION_MAX_ALLOWED <= __IPHONE_6_0
         CGSize statusBarSize = [[UIApplication sharedApplication] statusBarFrame].size;
         float statusBarHeight = MIN(statusBarSize.width, statusBarSize.height);
         contentViewController.view.frameHeight = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.height - statusBarHeight;
     #else
         float statusBarHeight = self.statusBarBG.frameHeight;
-        contentViewController.view.frameHeight = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.height;;
+        contentViewController.view.frameHeight = [self contentFrame].size.height;
     #endif
     
     [newSheetController.view setNeedsLayout];
