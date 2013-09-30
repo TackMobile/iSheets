@@ -31,6 +31,9 @@
     NSMutableDictionary *archiveDict = [[NSMutableDictionary alloc] initWithObjectsAndKeys:sheetController.sheetNavigationItem,SheetNavigationItemKey,NSStringFromClass([sheetController.contentViewController class]),SheetClassKey,nil];
     if ([sheetController.contentViewController respondsToSelector:@selector(encodeRestorableState)]) {
         NSMutableDictionary *archiveDictForContent = [sheetController.contentViewController performSelector:@selector(encodeRestorableState)];
+        if (archiveDictForContent.allKeys.count == 0) {
+            NSLog(@"Warning: archive dict supplied by %@ has no data",NSStringFromClass([sheetController.contentViewController class]));
+        }
         [archiveDict addEntriesFromDictionary:archiveDictForContent];
     }
     
