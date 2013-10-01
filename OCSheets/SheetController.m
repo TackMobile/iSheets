@@ -17,6 +17,7 @@
 #define DEFAULT_MENU_WIDTH      200.0
 #define DROPPED_BG_COLOR        [UIColor clearColor]
 #define SAVED_IMAGE_VIEW        80
+#define COVER_VIEW              90
 #define DEBUG_DROPPED_SHEETS    NO
 
 #define DELAYED_BLOCK(block,delay) dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delay * NSEC_PER_SEC)); \
@@ -79,6 +80,17 @@ block(); \
         _contentViewController = nil;
     };
     
+    
+    UIView *snapshot = [self.contentViewController.view snapshotViewAfterScreenUpdates:NO];
+    
+    
+    [snapshot addSubview:_coverView];
+    _coverView = nil;
+    [self addShadow:snapshot];
+    snapshot.frame = self.contentView.frame;
+    snapshot.tag = SAVED_IMAGE_VIEW;
+    [self.view addSubview:snapshot];
+    
     // TODO: move this into basic sheet OR hook sheetcontroller into
     // willGetStacked and sheetDidGetStacked
     if (DEBUG_DROPPED_SHEETS) {
@@ -88,18 +100,13 @@ block(); \
     }
     dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
     dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
-        UIImageView *savedImage = [self snapshotView];
-        savedImage.frame = self.contentView.frame;
-        savedImage.tag = SAVED_IMAGE_VIEW;
-        savedImage.alpha = 0.0;
-        [self.view addSubview:savedImage];
-        
+
         [UIView animateWithDuration:0.3
                               delay:0
                             options: UIViewAnimationOptionCurveLinear
                          animations:^{
                              self.contentViewController.view.alpha = 0.0;
-                             savedImage.alpha = 1.0;
+                             snapshot.alpha = 1.0;
                          }
                          completion:^(BOOL finished) {
                              if (finished) {
@@ -109,23 +116,6 @@ block(); \
     });
     
     self.view.backgroundColor = DROPPED_BG_COLOR;
-}
-
-- (UIImageView *)snapshotView
-{
-    UIGraphicsBeginImageContextWithOptions(self.contentView.bounds.size,YES,0.0f); //screenshot
-    CGContextRef context = UIGraphicsGetCurrentContext();
-    
-    [self.contentView.layer renderInContext:context];
-    UIImage *viewImage = UIGraphicsGetImageFromCurrentImageContext();
-    UIGraphicsEndImageContext();
-    
-    UIImageView *snapshot = [[UIImageView alloc] initWithImage:viewImage];
-    if (self.sheetNavigationItem.displayShadow) {
-        [self addShadow:snapshot];
-    }
-    
-    return snapshot;
 }
 
 - (void)addShadow:(UIView *)view {
@@ -138,16 +128,7 @@ block(); \
 
 - (void)setContentViewController:(UIViewController *)contentViewController {
     if (_contentViewController != contentViewController) {
-        
-        [[self.view viewWithTag:SAVED_IMAGE_VIEW] removeFromSuperview];
-        [UIView animateWithDuration:0.5
-                         animations:^{
-                             [[self.view viewWithTag:SAVED_IMAGE_VIEW] setAlpha:0.0];
-                         }
-                         completion:^(BOOL finished){
-                             [[self.view viewWithTag:SAVED_IMAGE_VIEW] removeFromSuperview];
-                         }];
-        
+  
         _contentViewController = contentViewController;
         
         [self.contentViewController willMoveToParentViewController:self];
@@ -157,6 +138,20 @@ block(); \
         self.contentView = self.contentViewController.view;
         [self.view addSubview:self.contentView];
         [self.view addSubview:self.leftNavButtonItem];
+        [self.view addSubview:[self.view viewWithTag:SAVED_IMAGE_VIEW]];
+        
+        UIView *oldCoverView = [[self.view viewWithTag:SAVED_IMAGE_VIEW] viewWithTag:COVER_VIEW];
+        [self.view addSubview:oldCoverView];
+        
+        [UIView animateWithDuration:0.5
+                         animations:^{
+                             //[[self.view viewWithTag:SAVED_IMAGE_VIEW] setAlpha:0.0];
+                         }
+                         completion:^(BOOL finished){
+                             //[[self.view viewWithTag:SAVED_IMAGE_VIEW] removeFromSuperview];
+                             //[oldCoverView removeFromSuperview];
+                             //[self prepareCoverViewForNewSheetWithCurrentAlpha:YES];
+                         }];
         
         _isRestored = YES;
         self.view.backgroundColor = [UIColor whiteColor];
@@ -353,27 +348,22 @@ block(); \
     }
 }
 
-- (void)rasterizeAndSnapshot {
-    if (self.sheetNavigationItem.offset == 2) {
-        UIImageView *snapshot = [self snapshotView];
-        snapshot.tag = 120;
-        [self.view insertSubview:snapshot belowSubview:self.coverView];
-        [self.view.layer setShouldRasterize:YES];
-        //NSLog(@"did turn ON rasterization for %@",NSStringFromClass([self.sheetNavigationItem.sheetController.contentViewController class]));
-    }
-}
-
-- (void)unrasterizeAndUnsnapshot {
-    [[self.view viewWithTag:120] removeFromSuperview];
-    [self.view.layer setShouldRasterize:NO];
-    ///NSLog(@"did turn OFF rasterization for %@",NSStringFromClass([self.sheetNavigationItem.sheetController.contentViewController class]));
-}
 
 #pragma mark Sheet stack page
 
 - (void)sheetWillBeUnstacked {
     if ([self.contentViewController respondsToSelector:@selector(sheetWillBeUnstacked)]) {
         [(id<SheetStackPage>)self.contentViewController sheetWillBeUnstacked];
+    }
+    
+    if (_isRestored) {
+        
+        UIView *oldCoverView = [self.view viewWithTag:COVER_VIEW];
+        [oldCoverView removeFromSuperview];
+        //self.coverView.alpha = kCoverOpacity;
+        //[self prepareCoverViewForNewSheetWithCurrentAlpha:YES];
+        
+        
     }
 }
 
@@ -389,8 +379,23 @@ block(); \
 
 - (void)sheetBeingUnstacked:(CGFloat)percentUnstacked {
     _percentDragged = percentUnstacked;
-    if (percentUnstacked == 1.0 && self.coverView.alpha == kCoverOpacity) {
+    
+    if (percentUnstacked == 1.0 && _isRestored) {
+        self.coverView.alpha = kCoverOpacity;
+        [self.view addSubview:self.coverView];
+        [UIView animateWithDuration:0.5
+                         animations:^{
+                             [[self.view viewWithTag:SAVED_IMAGE_VIEW] setAlpha:0.0];
+                         }
+                         completion:^(BOOL finished){
+                             [[self.view viewWithTag:SAVED_IMAGE_VIEW] removeFromSuperview];
+                             
+                         }];
+    }
+    
+    if (percentUnstacked == 1.0 && _coverView.alpha == kCoverOpacity) {
         [self hideView:self.coverView withDuration:[SheetLayoutModel animateOffDuration] withDelay:0.0];
+        
         return;
     }
     
@@ -417,6 +422,12 @@ block(); \
     if ([self.leftNavButtonItem isKindOfClass:[UIButton class]]) {
         [(UIButton *)self.leftNavButtonItem setHighlighted:NO];
     }
+    
+    if (_isRestored) {
+        [[self.view viewWithTag:SAVED_IMAGE_VIEW] removeFromSuperview];
+    }
+    
+    _isRestored = NO;
 }
 
 - (void)sheetWillBeStacked {
@@ -608,9 +619,9 @@ block(); \
     
     if (!_coverView) {
         _coverView = [[UIView alloc] initWithFrame:self.view.bounds];
+        _coverView.tag = COVER_VIEW;
         _coverView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     }
-    
     
     return _coverView;
 }
