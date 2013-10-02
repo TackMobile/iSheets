@@ -307,6 +307,7 @@ typedef enum {
                                  animations:^{
                                      CGRect frameForPeeked = [self peekedFrameForSheetController:self.peekedSheetController];
                                      self.peekedSheetController.view.frame = frameForPeeked;
+                                    
                                   }
                                  completion:nil];
                 
@@ -1054,15 +1055,13 @@ typedef enum {
         BOOL isNotDraggable = ![self sheetShouldPan:vc.contentViewController];
         BOOL isNonInteractive = [self isNonInteractiveSheet:vc.contentViewController];
         BOOL isNotVisible = navItem.offset > 2;
-        BOOL isStackedFullscreen = (navItem.layoutType == kSheetLayoutFullScreen || navItem.isFullscreened) && navItem.offset > 1;
-        if (isNotDraggable || isNonInteractive || isNotVisible || isStackedFullscreen) {
+        if (isNotDraggable || isNonInteractive || isNotVisible || [self navItemShouldNOTSnapToSheetAbove:navItem]) {
             return;
         }
         
         if (last == nil) {
             last = [self sheetControllerAtIndex:index-1];
             NSAssert(last != nil, @"we should have a last nav item");
-            //NSAssert(last.sheetNavigationItem.offset == navItem.offset+1, @"should be one back");
         }
         
         SheetNavigationItem *lastNavItem = last.sheetNavigationItem;
@@ -1160,6 +1159,11 @@ typedef enum {
     }];
 }
 
+- (BOOL)navItemShouldNOTSnapToSheetAbove:(SheetNavigationItem *)navItem {
+    BOOL shouldSnap = (navItem.layoutType == kSheetLayoutFullScreen || navItem.isFullscreened || navItem.layoutType == kSheetLayoutFullAvailable) && navItem.offset > 1;
+    return shouldSnap;
+}
+
 - (void)moveViewControllersXTranslation:(CGFloat)xTranslationGesture velocity:(float)velocity
 {
     // ref to sheet above, if any
@@ -1180,8 +1184,7 @@ typedef enum {
         SheetNavigationItem *meNavItem = me.sheetNavigationItem;
         
         BOOL shouldPan = [self sheetShouldPan:me.contentViewController];
-        BOOL stackedFullscreen = (meNavItem.layoutType == kSheetLayoutFullScreen || meNavItem.isFullscreened) && meNavItem.offset > 1;
-        if (!shouldPan || stackedFullscreen) {
+        if (!shouldPan || [self navItemShouldNOTSnapToSheetAbove:meNavItem]) {
             continue;
         }
         
@@ -1786,6 +1789,7 @@ typedef enum {
             [self moveViewControllersXTranslation:xTranslation velocity:[gestureRecognizer velocityInView:self.view].x];
             
             const SheetNavigationItem *navItem = startVc.sheetNavigationItem;
+            
             CGFloat percComplete;
             if (navItem.offset == 1) {
                 CGFloat initX = navItem.initialViewPosition.x;
