@@ -1529,6 +1529,7 @@ typedef enum {
             CGPoint correctedPoint = [[self topSheetController].view convertPoint:pointInView fromView:self.view];
             BOOL touchInsideNavButton = [navButtonView pointInside:correctedPoint withEvent:nil];
             
+            touchInsideNavButton = CGRectContainsPoint([self topSheetController].view.frame, correctedPoint) ? NO : touchInsideNavButton;
             // check if is peeked sheet nav item
             UIView *peekedNavButtonView = [[self peekedSheetController] leftNavButtonItem];
             correctedPoint = [[self peekedSheetController].view convertPoint:pointInView fromView:self.view];
@@ -1541,9 +1542,19 @@ typedef enum {
             if (touchInsideNavButton) {
                 endGesture();
                 if ([navButtonView isKindOfClass:[UIButton class]]) {
-                    // if outside bounds of sheet controller view
-                    // call the button's touch up inside handler
-                    [(UIButton *)navButtonView sendActionsForControlEvents: UIControlEventTouchUpInside];
+                    
+                    // allow sheet to respond, if not then call default touch up inside
+                    if ([[[self topSheetController] contentViewController] respondsToSelector:@selector(sheetNavItemTapped)]) {
+                        [(id<SheetStackPage>)[[self topSheetController] contentViewController] sheetNavItemTapped];
+                    } else {
+                        // if outside bounds of sheet controller view
+                        // call the button's touch up inside handler
+                        if (navButtonView.userInteractionEnabled) {
+                            [(UIButton *)navButtonView sendActionsForControlEvents: UIControlEventTouchUpInside];
+                        }
+                    }
+                    
+                    
                 }
                 break;
             } else if (touchInsidePeekedNavButton) {

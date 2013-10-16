@@ -96,6 +96,8 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 
 #pragma mark - Appearance callbacks for first stacked-on sheet
 
+- (void)sheetNavItemTapped;
+
 /**
  Top sheet will be covered (will have offset 2)
  */
