@@ -34,7 +34,7 @@ typedef enum {
     BOOL _willExpandedPeeked;
     BOOL _willDismissTopSheet;
     BOOL _willPopToRootSheet;
-    
+
     CGRect peekedFrame;
 }
 
@@ -618,6 +618,10 @@ typedef enum {
               maximumWidth:(BOOL)maxWidth
                   animated:(BOOL)animated
              configuration:(void (^)(SheetNavigationItem *item))configuration {
+    
+    if ([[SheetLayoutModel sharedInstance] stackState] == kSheetStackStateAdding) {
+        return;
+    }
     
     SheetController *newSheetController = [[SheetController alloc] initWithContentViewController:contentViewController maximumWidth:maxWidth];
     SheetController *parentLayerController = [self sheetControllerOf:anchorViewController];
@@ -1519,20 +1523,32 @@ typedef enum {
             self.firstTouchedView = touchedView;
             
             CGPoint pointInView = [gestureRecognizer locationInView:gestureRecognizer.view];
+
+            // check if is top sheet nav item
             UIView *navButtonView = [[self topSheetController] leftNavButtonItem];
             CGPoint correctedPoint = [[self topSheetController].view convertPoint:pointInView fromView:self.view];
             BOOL touchInsideNavButton = [navButtonView pointInside:correctedPoint withEvent:nil];
-            if (touchInsideNavButton) {
-                
+            
+            // check if is peeked sheet nav item
+            UIView *peekedNavButtonView = [[self peekedSheetController] leftNavButtonItem];
+            correctedPoint = [[self peekedSheetController].view convertPoint:pointInView fromView:self.view];
+            BOOL touchInsidePeekedNavButton = [peekedNavButtonView pointInside:correctedPoint withEvent:nil];
+            
+            void(^endGesture)(void) = ^{
                 [gestureRecognizer setEnabled:NO];
                 [gestureRecognizer setEnabled:YES];
-                    
+            };
+            if (touchInsideNavButton) {
+                endGesture();
                 if ([navButtonView isKindOfClass:[UIButton class]]) {
                     // if outside bounds of sheet controller view
                     // call the button's touch up inside handler
                     [(UIButton *)navButtonView sendActionsForControlEvents: UIControlEventTouchUpInside];
                 }
-                
+                break;
+            } else if (touchInsidePeekedNavButton) {
+                endGesture();
+                [self expandPeekedSheet:YES];
                 break;
             }
             
