@@ -1424,6 +1424,10 @@ typedef enum {
     [self.peekedSheetController.view removeFromSuperview];
     [self.peekedSheetController removeFromParentViewController];
     [self addChildViewController:self.peekedSheetController];
+    
+    if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(prepareContents)]) {
+        [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController prepareContents];
+    }
 
     if ([self.peekedSheetController.contentViewController respondsToSelector:@selector(willPeekOnTopOfSheet:)]) {
         [(id<SheetStackPeeking>)self.peekedSheetController.contentViewController willPeekOnTopOfSheet:topSheet];

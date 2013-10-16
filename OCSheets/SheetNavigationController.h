@@ -184,6 +184,8 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
  */
 - (void)willPeekOnTopOfSheet:(UIViewController *)topSheet;
 
+- (void)prepareContents;
+
 /**
  Sheet did enter/exit peeked state
  This is where we add a transparent view on top of a peeked sheet's
