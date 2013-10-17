@@ -1378,6 +1378,7 @@ typedef enum {
     }
     
     SheetNavigationItem *oldNavItem = peekedSheetController.sheetNavigationItem;
+    oldNavItem.expandedPeekedSheet = YES;
 
     if ([self.delegate respondsToSelector:@selector(sheetNavigationController:movingViewController:percentMoved:)]) {
         [self.delegate sheetNavigationController:self movingViewController:self.firstTouchedController percentMoved:1.0];
@@ -1513,33 +1514,49 @@ typedef enum {
     return controllerContentIsPeekedSheet && !isExpandedPeekedSheet;
 }
 
+- (BOOL)hasModalOverlayView {
+    return !_panGR.enabled && !_peekedPanGR.enabled;
+}
+
+- (BOOL)shouldOpenPeekedSheetWithTouchOnNavItem:(CGPoint)correctedPoint {
+    UIView *peekedNavItem = [[self peekedSheetController] leftNavButtonItem];
+    BOOL peekedSheetExpanded = [self peekedSheetController].sheetNavigationItem.expandedPeekedSheet;
+    BOOL isValidTouch = [peekedNavItem pointInside:correctedPoint withEvent:nil];
+    return isValidTouch && !peekedSheetExpanded;
+}
+
 - (void)handleTapGesture:(UIPanGestureRecognizer *)gestureRecognizer {
     
     switch (gestureRecognizer.state) {
             
         case UIGestureRecognizerStateEnded: {
-
-            UIView *touchedView = [gestureRecognizer.view hitTest:[gestureRecognizer locationInView:gestureRecognizer.view] withEvent:nil];
-            self.firstTouchedView = touchedView;
-            
-            CGPoint pointInView = [gestureRecognizer locationInView:gestureRecognizer.view];
-
-            // check if is top sheet nav item
-            UIView *navButtonView = [[self topSheetController] leftNavButtonItem];
-            CGPoint correctedPoint = [[self topSheetController].view convertPoint:pointInView fromView:self.view];
-            BOOL touchInsideNavButton = [navButtonView pointInside:correctedPoint withEvent:nil];
-            
-            touchInsideNavButton = CGRectContainsPoint([self topSheetController].view.frame, correctedPoint) ? NO : touchInsideNavButton;
-            // check if is peeked sheet nav item
-            UIView *peekedNavButtonView = [[self peekedSheetController] leftNavButtonItem];
-            correctedPoint = [[self peekedSheetController].view convertPoint:pointInView fromView:self.view];
-            BOOL touchInsidePeekedNavButton = [peekedNavButtonView pointInside:correctedPoint withEvent:nil];
             
             void(^endGesture)(void) = ^{
                 [gestureRecognizer setEnabled:NO];
                 [gestureRecognizer setEnabled:YES];
             };
-            if (touchInsideNavButton) {
+
+            if ([[SheetLayoutModel sharedInstance] stackState] == kSheetStackStateAdding || [self hasModalOverlayView]) {
+                endGesture();
+            }
+            
+            CGPoint pointInView = [gestureRecognizer locationInView:gestureRecognizer.view];
+            UIView *touchedView = [gestureRecognizer.view hitTest:[gestureRecognizer locationInView:gestureRecognizer.view] withEvent:nil];
+            self.firstTouchedView = touchedView;
+            
+            // check if is top sheet nav item
+            UIView *navButtonView = [[self topSheetController] leftNavButtonItem];
+            //CGPoint correctedPoint = [navButtonView.superview convertPoint:pointInView fromView:self.view];
+            if ([touchedView isEqual:navButtonView]) {
+                NSLog(@"yeeeeeup");
+            }
+            BOOL touchInsideNavButton = navButtonView != nil && [navButtonView pointInside:pointInView withEvent:nil] ? YES : NO;
+            
+            // check if is peeked sheet nav item
+            CGPoint correctedPoint = [gestureRecognizer.view convertPoint:pointInView toView:[self.peekedSheetController view]];
+            BOOL touchInsidePeekedNavButton = [self shouldOpenPeekedSheetWithTouchOnNavItem:correctedPoint];
+            
+            if (touchInsideNavButton && !touchInsidePeekedNavButton) {
                 endGesture();
                 if ([navButtonView isKindOfClass:[UIButton class]]) {
                     
@@ -1554,16 +1571,10 @@ typedef enum {
                         }
                     }
                     
-                    
                 }
                 break;
-            } else if (touchInsidePeekedNavButton) {
-                endGesture();
-                [self expandPeekedSheet:YES];
-                break;
-            }
-            
-            if ([self peekedSheetTouched:touchedView]){
+                
+            } else if ([self peekedSheetTouched:touchedView] || touchInsidePeekedNavButton){
                 self.firstStackedController = [self firstStackedOnSheetController];
                 if (self.firstStackedController == nil) {
                     self.firstStackedController = [self.sheetViewControllers objectAtIndex:0];
@@ -1572,6 +1583,7 @@ typedef enum {
                 [self.firstStackedController animateInCoverView];
                 [self expandPeekedSheet:YES];
                 break;
+                
             } else {
                 for (SheetController *controller in [self.sheetViewControllers reverseObjectEnumerator]) {
                     
@@ -1589,22 +1601,23 @@ typedef enum {
                         } 
                     }
                 }
-            }
-            
-            if (self.firstTouchedController) {
                 
-                if ([self.delegate respondsToSelector:@selector(sheetNavigationController:willMoveController:)]) {
-                    [self.delegate sheetNavigationController:self willMoveController:self.firstTouchedController];
+                if (self.firstTouchedController) {
+                    
+                    if ([self.delegate respondsToSelector:@selector(sheetNavigationController:willMoveController:)]) {
+                        [self.delegate sheetNavigationController:self willMoveController:self.firstTouchedController];
+                    }
+                    if (![[self.sheetViewControllers lastObject] isEqual:[self sheetControllerOf:self.firstTouchedController]]) {
+                        [self popViewControllerAnimated:YES];
+                    }
                 }
-                if (![[self.sheetViewControllers lastObject] isEqual:[self sheetControllerOf:self.firstTouchedController]]) {
-                    [self popViewControllerAnimated:YES];
-                }
+                
+                self.firstTouchedView = nil;
+                self.firstTouchedController = nil;
+                
+                break;
+
             }
-            
-            self.firstTouchedView = nil;
-            self.firstTouchedController = nil;
-            
-            break;
         }
             
         default:
