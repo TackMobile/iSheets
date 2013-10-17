@@ -39,6 +39,8 @@ typedef enum {
 }
 
 @property (nonatomic, strong) UITapGestureRecognizer            *tapGR;
+@property (nonatomic, readwrite, strong) UIPanGestureRecognizer *panGR;
+@property (nonatomic, readwrite, strong) UIPanGestureRecognizer *peekedPanGR;
 
 @property (nonatomic, assign) BOOL dropLayersWhenPulledRight;
 
@@ -1514,10 +1516,6 @@ typedef enum {
     return controllerContentIsPeekedSheet && !isExpandedPeekedSheet;
 }
 
-- (BOOL)hasModalOverlayView {
-    return !_panGR.enabled && !_peekedPanGR.enabled;
-}
-
 - (void)setHasModalViewController:(BOOL)hasModalViewController {
     _hasModalViewController = hasModalViewController;
     [self.panGR setEnabled:!_hasModalViewController];
@@ -1543,7 +1541,7 @@ typedef enum {
                 [gestureRecognizer setEnabled:YES];
             };
 
-            if ([[SheetLayoutModel sharedInstance] stackState] == kSheetStackStateAdding || [self hasModalOverlayView]) {
+            if ([[SheetLayoutModel sharedInstance] stackState] == kSheetStackStateAdding || self.hasModalViewController) {
                 endGesture();
             }
             
