@@ -1518,11 +1518,18 @@ typedef enum {
     return !_panGR.enabled && !_peekedPanGR.enabled;
 }
 
+- (void)setHasModalViewController:(BOOL)hasModalViewController {
+    _hasModalViewController = hasModalViewController;
+    [self.panGR setEnabled:!_hasModalViewController];
+    [self.peekedPanGR setEnabled:!_hasModalViewController];
+    [self.tapGR setEnabled:!_hasModalViewController];
+}
+
 - (BOOL)shouldOpenPeekedSheetWithTouchOnNavItem:(CGPoint)correctedPoint {
     UIView *peekedNavItem = [[self peekedSheetController] leftNavButtonItem];
     BOOL peekedSheetExpanded = [self peekedSheetController].sheetNavigationItem.expandedPeekedSheet;
-    BOOL isValidTouch = [peekedNavItem pointInside:correctedPoint withEvent:nil];
-    return isValidTouch && !peekedSheetExpanded;
+    BOOL isValidTouch = [peekedNavItem pointInside:correctedPoint withEvent:nil] && !peekedSheetExpanded;
+    return isValidTouch;
 }
 
 - (void)handleTapGesture:(UIPanGestureRecognizer *)gestureRecognizer {
@@ -1547,9 +1554,7 @@ typedef enum {
             // check if is top sheet nav item
             UIView *navButtonView = [[self topSheetController] leftNavButtonItem];
             //CGPoint correctedPoint = [navButtonView.superview convertPoint:pointInView fromView:self.view];
-            if ([touchedView isEqual:navButtonView]) {
-                NSLog(@"yeeeeeup");
-            }
+            
             BOOL touchInsideNavButton = navButtonView != nil && [navButtonView pointInside:pointInView withEvent:nil] ? YES : NO;
             
             // check if is peeked sheet nav item

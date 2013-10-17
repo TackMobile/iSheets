@@ -26,6 +26,7 @@ typedef void(^SheetNavigationConfigBlock)(SheetNavigationItem *item);
 @property (nonatomic, readonly, strong) SheetHistoryManager *historyManager;
 @property (nonatomic, readwrite, strong) UIPanGestureRecognizer *panGR;
 @property (nonatomic, readwrite, strong) UIPanGestureRecognizer *peekedPanGR;
+@property (nonatomic, assign) BOOL hasModalViewController;
 
 - (id)initWithRootViewController:(UIViewController *)rootViewController configuration:(SheetNavigationConfigBlock)configuration;
 - (id)initWithRootViewController:(UIViewController *)rootViewController peekedViewController:(UIViewController *)peekedViewController configuration:(SheetNavigationConfigBlock)configuration;
