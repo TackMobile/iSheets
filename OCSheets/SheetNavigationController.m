@@ -1527,7 +1527,8 @@ typedef enum {
     UIView *peekedNavItem = [[self peekedSheetController] leftNavButtonItem];
     BOOL peekedSheetExpanded = [self peekedSheetController].sheetNavigationItem.expandedPeekedSheet;
     BOOL isValidTouch = [peekedNavItem pointInside:correctedPoint withEvent:nil] && !peekedSheetExpanded;
-    return isValidTouch;
+    BOOL wantsPeekedSheet = wantsDefaultPeekedSheet(self.topSheetContentViewController);
+    return isValidTouch && wantsPeekedSheet;
 }
 
 - (void)handleTapGesture:(UIPanGestureRecognizer *)gestureRecognizer {
