@@ -56,7 +56,7 @@ typedef enum {
 @property (strong, nonatomic) UIView                            *statusBarBG;
 
 @property (strong, nonatomic) UIButton *peekedSheetAccessibilityView;
-@property (strong, nonatomic) UIView *gutterAccessibilityView;
+@property (strong, nonatomic) UIButton *gutterAccessibilityView;
 
 @end
 
@@ -283,31 +283,9 @@ typedef enum {
         [self layoutSheetController:vc];
     }];
     
+    [self layoutGutterAccessibilityView];
+    
     [self layoutPeekedViewControllers];
-}
-
-- (UIButton *)peekedSheetAccessibilityView {
-    CGRect frame = self.peekedSheetController.view.frame;
-    if (_peekedSheetAccessibilityView == nil) {
-        if (self.peekedSheetController != nil) {
-            _peekedSheetAccessibilityView = [UIButton buttonWithType:UIButtonTypeCustom];
-            _peekedSheetAccessibilityView.backgroundColor = [UIColor clearColor];
-            _peekedSheetAccessibilityView.layer.borderColor = [UIColor redColor].CGColor;
-            _peekedSheetAccessibilityView.layer.borderWidth = 2.0;
-            [_peekedSheetAccessibilityView addTarget:self action:@selector(peekedSheetAccessibilityTouched) forControlEvents:UIControlEventTouchUpInside];
-            _peekedSheetAccessibilityView.accessibilityLabel = @"Peeked sheet button";
-            _peekedSheetAccessibilityView.accessibilityHint = @"Double tap this button to open the peeked sheet";
-            [self.view addSubview:_peekedSheetAccessibilityView];
-        }
-    }
-    return _peekedSheetAccessibilityView;
-}
-
-- (UIView *)gutterAccessibilityView {
-    if (_gutterAccessibilityView == nil) {
-        //
-    }
-    return _gutterAccessibilityView;
 }
 
 - (void)setSheetFullscreen:(BOOL)fullscreen completion:(void(^)())completion {
@@ -350,27 +328,7 @@ typedef enum {
         }
     }
     
-    if (UIAccessibilityIsVoiceOverRunning()) {
-        // if peeked sheet, and it's not expanded, accessibility-ize it
-        if (self.peekedSheetController != nil) {
-            if (!self.peekedSheetController.sheetNavigationItem.expandedPeekedSheet) {
-                CGRect frame = self.peekedSheetController.view.frame;
-                self.peekedSheetAccessibilityView.frame = frame;
-                self.peekedSheetAccessibilityView.userInteractionEnabled = YES;
-                [_peekedSheetAccessibilityView setIsAccessibilityElement:YES];
-                [self.view addSubview:self.peekedSheetAccessibilityView];
-                
-            } else {
-                self.peekedSheetAccessibilityView.userInteractionEnabled = NO;
-                [self.peekedSheetAccessibilityView setIsAccessibilityElement:NO];
-                self.peekedSheetAccessibilityView.frameX = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
-            }
-        }
-    }
-}
-
-- (void)peekedSheetAccessibilityTouched {
-    [self expandPeekedSheet:YES];
+    [self layoutPeekedAccessibilityView];
 }
 
 - (BOOL)shouldLayoutPeekedSheet {
@@ -2121,6 +2079,7 @@ typedef enum {
     
     self.firstStackedController = nil;
     [[SheetLayoutModel sharedInstance] setStackState:kSheetStackStateDefault];
+    [self layoutGutterAccessibilityView];
 }
 
 - (void)willRemoveSheet {
@@ -2149,6 +2108,7 @@ typedef enum {
     
     self.firstStackedController = nil;
     [[SheetLayoutModel sharedInstance] setStackState:kSheetStackStateDefault];
+    [self layoutGutterAccessibilityView];
 }
 
 #pragma mark History management
@@ -2228,5 +2188,103 @@ typedef enum {
     return inflatedViewControllers.count;
 }
 
+#pragma mark Accessibility
+
+- (void)layoutPeekedAccessibilityView {
+    if (UIAccessibilityIsVoiceOverRunning()) {
+        // if peeked sheet, and it's not expanded, accessibility-ize it
+        if (self.peekedSheetController != nil) {
+            if (!self.peekedSheetController.sheetNavigationItem.expandedPeekedSheet) {
+                CGRect frame = self.peekedSheetController.view.frame;
+                self.peekedSheetAccessibilityView.frame = frame;
+                self.peekedSheetAccessibilityView.userInteractionEnabled = YES;
+                [_peekedSheetAccessibilityView setIsAccessibilityElement:YES];
+                [self.view addSubview:self.peekedSheetAccessibilityView];
+                
+            } else {
+                self.peekedSheetAccessibilityView.userInteractionEnabled = NO;
+                [self.peekedSheetAccessibilityView setIsAccessibilityElement:NO];
+                self.peekedSheetAccessibilityView.frameX = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
+            }
+        }
+    }
+}
+
+- (void)layoutGutterAccessibilityView {
+    
+    __weak __block SheetNavigationController *weakSelf = self;
+    void(^disableGutterAccessibility)(void) = ^{
+        weakSelf.gutterAccessibilityView.userInteractionEnabled = NO;
+        [weakSelf.gutterAccessibilityView setIsAccessibilityElement:NO];
+        weakSelf.gutterAccessibilityView.frameX = _gutterAccessibilityView.frameWidth*-1.0;
+    };
+    
+    if (UIAccessibilityIsVoiceOverRunning()) {
+        SheetNavigationItem *navItem = self.topSheetContentViewController.sheetNavigationItem;
+        BOOL hasGutter = navItem.layoutType != kSheetLayoutFullScreen && !navItem.isFullscreened;
+        if (self.sheetViewControllers.count>1 && hasGutter) {
+            self.gutterAccessibilityView.userInteractionEnabled = YES;
+            [_gutterAccessibilityView setIsAccessibilityElement:YES];
+            [self.view addSubview:self.gutterAccessibilityView];
+            
+            CGRect topControllerFrame = [self topSheetController].view.frame;
+            CGRect navControllerFrame = [SheetLayoutModel getScreenBoundsForCurrentOrientation];
+            CGRect startingRect = navControllerFrame;
+            CGRect slice, remainder;
+            CGRectDivide (startingRect, &slice, &remainder, topControllerFrame.origin.x, CGRectMinXEdge);
+            
+            if (!CGRectIsEmpty(slice) && !CGRectIsNull(slice)) {
+                _gutterAccessibilityView.frame = slice;
+            }
+            
+        } else {
+            disableGutterAccessibility();
+        }
+    } else {
+        // what happens if they disable voiceover and come right back?
+    }
+    
+}
+
+- (UIButton *)peekedSheetAccessibilityView {
+    CGRect frame = self.peekedSheetController.view.frame;
+    if (_peekedSheetAccessibilityView == nil) {
+        if (self.peekedSheetController != nil) {
+            _peekedSheetAccessibilityView = [UIButton buttonWithType:UIButtonTypeCustom];
+            _peekedSheetAccessibilityView.backgroundColor = [UIColor clearColor];
+            //            _peekedSheetAccessibilityView.layer.borderColor = [UIColor redColor].CGColor;
+            //            _peekedSheetAccessibilityView.layer.borderWidth = 2.0;
+            [_peekedSheetAccessibilityView addTarget:self action:@selector(peekedSheetAccessibilityTouched) forControlEvents:UIControlEventTouchUpInside];
+            _peekedSheetAccessibilityView.accessibilityLabel = @"Peeked sheet button";
+            _peekedSheetAccessibilityView.accessibilityHint = @"Double tap this button to open the peeked sheet";
+            [self.view addSubview:_peekedSheetAccessibilityView];
+        }
+    }
+    return _peekedSheetAccessibilityView;
+}
+
+- (UIView *)gutterAccessibilityView {
+    if (_gutterAccessibilityView == nil) {
+        if (self.peekedSheetController != nil) {
+            _gutterAccessibilityView = [UIButton buttonWithType:UIButtonTypeCustom];
+            _gutterAccessibilityView.backgroundColor = [UIColor clearColor];
+            //            _gutterAccessibilityView.layer.borderColor = [UIColor redColor].CGColor;
+            //            _gutterAccessibilityView.layer.borderWidth = 2.0;
+            [_gutterAccessibilityView addTarget:self action:@selector(gutterAccessibilityViewTouched) forControlEvents:UIControlEventTouchUpInside];
+            _gutterAccessibilityView.accessibilityLabel = @"Gutter sheet button";
+            _gutterAccessibilityView.accessibilityHint = @"Double tap this button to pop the top sheet off";
+            [self.view addSubview:_gutterAccessibilityView];
+        }
+    }
+    return _gutterAccessibilityView;
+}
+
+- (void)peekedSheetAccessibilityTouched {
+    [self expandPeekedSheet:YES];
+}
+
+- (void)gutterAccessibilityViewTouched {
+    [self popViewControllerAnimated:YES];
+}
 
 @end
