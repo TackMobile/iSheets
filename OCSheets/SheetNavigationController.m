@@ -55,6 +55,9 @@ typedef enum {
 @property (nonatomic, strong) NSMutableArray                    *peekedViewControllers;
 @property (strong, nonatomic) UIView                            *statusBarBG;
 
+@property (strong, nonatomic) UIButton *peekedSheetAccessibilityView;
+@property (strong, nonatomic) UIView *gutterAccessibilityView;
+
 @end
 
 @implementation SheetNavigationController
@@ -283,6 +286,30 @@ typedef enum {
     [self layoutPeekedViewControllers];
 }
 
+- (UIButton *)peekedSheetAccessibilityView {
+    CGRect frame = self.peekedSheetController.view.frame;
+    if (_peekedSheetAccessibilityView == nil) {
+        if (self.peekedSheetController != nil) {
+            _peekedSheetAccessibilityView = [UIButton buttonWithType:UIButtonTypeCustom];
+            _peekedSheetAccessibilityView.backgroundColor = [UIColor clearColor];
+            _peekedSheetAccessibilityView.layer.borderColor = [UIColor redColor].CGColor;
+            _peekedSheetAccessibilityView.layer.borderWidth = 2.0;
+            [_peekedSheetAccessibilityView addTarget:self action:@selector(peekedSheetAccessibilityTouched) forControlEvents:UIControlEventTouchUpInside];
+            _peekedSheetAccessibilityView.accessibilityLabel = @"Peeked sheet button";
+            _peekedSheetAccessibilityView.accessibilityHint = @"Double tap this button to open the peeked sheet";
+            [self.view addSubview:_peekedSheetAccessibilityView];
+        }
+    }
+    return _peekedSheetAccessibilityView;
+}
+
+- (UIView *)gutterAccessibilityView {
+    if (_gutterAccessibilityView == nil) {
+        //
+    }
+    return _gutterAccessibilityView;
+}
+
 - (void)setSheetFullscreen:(BOOL)fullscreen completion:(void(^)())completion {
     SheetController *topController = [self sheetControllerOf:self.topSheetContentViewController];
     SheetNavigationItem *navItem = self.topSheetContentViewController.sheetNavigationItem;
@@ -322,6 +349,28 @@ typedef enum {
             }
         }
     }
+    
+    if (UIAccessibilityIsVoiceOverRunning()) {
+        // if peeked sheet, and it's not expanded, accessibility-ize it
+        if (self.peekedSheetController != nil) {
+            if (!self.peekedSheetController.sheetNavigationItem.expandedPeekedSheet) {
+                CGRect frame = self.peekedSheetController.view.frame;
+                self.peekedSheetAccessibilityView.frame = frame;
+                self.peekedSheetAccessibilityView.userInteractionEnabled = YES;
+                [_peekedSheetAccessibilityView setIsAccessibilityElement:YES];
+                [self.view addSubview:self.peekedSheetAccessibilityView];
+                
+            } else {
+                self.peekedSheetAccessibilityView.userInteractionEnabled = NO;
+                [self.peekedSheetAccessibilityView setIsAccessibilityElement:NO];
+                self.peekedSheetAccessibilityView.frameX = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
+            }
+        }
+    }
+}
+
+- (void)peekedSheetAccessibilityTouched {
+    [self expandPeekedSheet:YES];
 }
 
 - (BOOL)shouldLayoutPeekedSheet {
@@ -1373,6 +1422,9 @@ typedef enum {
 #pragma mark Peeked view controllers
 
 - (void)expandPeekedSheet:(BOOL)animated {
+    if (self.peekedSheetController.sheetNavigationItem.expandedPeekedSheet) {
+        return;
+    }
     SheetController *peekedSheetController = self.peekedSheetController;
     
     if ([peekedSheetController respondsToSelector:@selector(isPeeking:onTopOfSheet:)]) {
