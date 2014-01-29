@@ -1562,9 +1562,9 @@ typedef enum {
             
             // check if is top sheet nav item
             UIView *navButtonView = [[self topSheetController] leftNavButtonItem];
-            //CGPoint correctedPoint = [navButtonView.superview convertPoint:pointInView fromView:self.view];
             
-            BOOL touchInsideNavButton = navButtonView != nil && [navButtonView pointInside:pointInView withEvent:nil] ? YES : NO;
+            CGPoint correctedNavPoint = [navButtonView convertPoint:pointInView fromView:self.view];
+            BOOL touchInsideNavButton = navButtonView != nil && [navButtonView pointInside:correctedNavPoint withEvent:nil] ? YES : NO;
             
             // check if is peeked sheet nav item
             CGPoint correctedPoint = [gestureRecognizer.view convertPoint:pointInView toView:[self.peekedSheetController view]];
