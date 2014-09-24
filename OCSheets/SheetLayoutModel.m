@@ -333,9 +333,21 @@ __strong static SheetLayoutModel *_sharedInstance;
 }
 
 + (CGRect)getScreenBoundsForOrientation:(UIInterfaceOrientation)orientation {
-    UIScreen *screen = [UIScreen mainScreen];
-    CGRect fullScreenRect = screen.bounds; //implicitly in Portrait orientation.
     
+    UIScreen *screen = [UIScreen mainScreen];
+    
+    // Starting in iOS 8.0, UIScreen objects return bounds pre-rotated to match the current orientation.
+    // Previous versions were always in portrait.
+    CGRect fullScreenRect = screen.bounds;
+    
+    CGFloat iOSVersion = [UIDevice currentDevice].systemVersion.floatValue;
+    
+    //If we are on iOS 8.0+ then we do not need to manipulate the rect.
+    if ([UIDevice currentDevice].systemVersion.floatValue > 8.0) {
+        return fullScreenRect;
+    }
+
+    // Rotate the frame to work for landscape.
     if (UIInterfaceOrientationIsLandscape(orientation))
     {
         CGRect temp = CGRectMake(0, 0, 0, 0);
