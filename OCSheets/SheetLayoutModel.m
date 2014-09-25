@@ -343,7 +343,7 @@ __strong static SheetLayoutModel *_sharedInstance;
     CGFloat iOSVersion = [UIDevice currentDevice].systemVersion.floatValue;
     
     //If we are on iOS 8.0+ then we do not need to manipulate the rect.
-    if ([UIDevice currentDevice].systemVersion.floatValue > 8.0) {
+    if (iOSVersion >= 8.0) {
         return fullScreenRect;
     }
 
