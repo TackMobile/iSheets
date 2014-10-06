@@ -51,7 +51,7 @@ block(); \
         SheetLayoutType layoutType = [SheetLayoutModel layoutTypeForSheetController:self];
         self.sheetNavigationItem = [[SheetNavigationItem alloc] initWithType:layoutType];
         self.sheetNavigationItem.sheetController = self;
-        self.sheetNavigationItem.initialViewPosition = CGPointMake(0.0, [SheetLayoutModel yOffset]);
+        self.sheetNavigationItem.initialViewPosition = CGPointZero;
         self.sheetNavigationItem.currentViewPosition = self.sheetNavigationItem.initialViewPosition;
         self.sheetNavigationItem.nextItemDistance = kSheetNextItemDefaultDistance;
         self.maximumWidth = maxWidth;

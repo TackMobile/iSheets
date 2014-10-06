@@ -18,7 +18,6 @@
 - (void)peekSheet:(UIViewController *)vc animated:(BOOL)animated;
 - (void)setPeekedHidden:(BOOL)hidden;
 - (float)availableContentWidth;
-- (float)availableContentWidthForOrientation:(UIInterfaceOrientation)orientation;
 - (CGFloat)widthForSheetPosition:(NSUInteger)position navItem:(SheetNavigationItem *)navItem;
 - (void)setPeekedHidden:(BOOL)hidden disallowingFuturePeek:(BOOL)peekDisallowed;
 

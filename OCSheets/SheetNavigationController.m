@@ -53,7 +53,6 @@ typedef enum {
 @property (nonatomic, weak) UIViewController                    *firstTouchedController;
 @property (nonatomic, weak) SheetController                     *firstStackedController;
 @property (nonatomic, strong) NSMutableArray                    *peekedViewControllers;
-@property (strong, nonatomic) UIView                            *statusBarBG;
 
 @property (strong, nonatomic) UIButton *peekedSheetAccessibilityView;
 @property (strong, nonatomic) UIButton *gutterAccessibilityView;
@@ -105,6 +104,7 @@ typedef enum {
 }
 
 - (id)initWithRootViewController:(UIViewController *)rootViewController peekedViewController:(UIViewController *)peekedViewController configuration:(SheetNavigationConfigBlock)configuration  {
+
     self = [self initWithRootViewController:rootViewController configuration:configuration];
     if (self) {
         if (peekedViewController) {
@@ -117,7 +117,7 @@ typedef enum {
             
             CGRect frame = self.peekedSheetController.view.frame;
             frame.origin.x = [self overallWidth];
-            frame.origin.y = [SheetLayoutModel yOffset];
+            frame.origin.y = 0.0f;
             frame.size.width = [[SheetLayoutModel sharedInstance] desiredWidthForContent:peekedViewController navItem:navItem];
             frame.size.height = [self overallHeight];
             
@@ -169,17 +169,9 @@ typedef enum {
 - (void)loadView {
     self.view = [[UIView alloc] init];
     self.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    
-#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_6_0
-    CGFloat width = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
-    self.statusBarBG = [[UIView alloc] initWithFrame:CGRectMake(0.0, 0.0, width, 20.0)];
-    self.statusBarBG.backgroundColor = [UIColor blackColor];
-    self.statusBarBG.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    [self.view addSubview:self.statusBarBG];
-    
+
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
-#endif
-    
+
     for (SheetController *sheetController in self.sheetViewControllers) {
         
         float width = [[SheetLayoutModel sharedInstance] widthForNavItem:sheetController.sheetNavigationItem];
@@ -358,7 +350,7 @@ typedef enum {
     int offset = navItem.offset;
     
     f.origin = navItem.currentViewPosition;
-    f.size.height = CGRectGetHeight(self.view.bounds) - [SheetLayoutModel yOffset];
+    f.size.height = CGRectGetHeight(self.view.bounds);
     
     // sheet controller frame (scf) width is always sheet nav controller's frame (sncf)
     // width - distance from sncf origin x to sheet controller's nav item's initialViewPosition (the gutter, show as /*-*/ below).
@@ -423,7 +415,7 @@ typedef enum {
     
     BOOL shouldShow = [self shouldShowDefaultPeeked];
     
-    CGFloat width = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
+    CGFloat width = [self overallWidth];
     CGFloat dWidth = [[SheetLayoutModel sharedInstance] desiredWidthForContent:sheetController.contentViewController navItem:sheetController.sheetNavigationItem];
     if (shouldShow) {
         width -= peekWidth;
@@ -431,46 +423,40 @@ typedef enum {
     }
     self.peekedSheetController.leftNavButtonItem.hidden = !shouldShow;
     return CGRectMake(width,
-                      [SheetLayoutModel yOffset],
+                      0.0f,
                       dWidth,
                       [self overallHeight]);
 }
 
 - (CGFloat)overallWidth {
-    return CGRectGetWidth(self.view.bounds) > 0 ? CGRectGetWidth(self.view.bounds) : [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
+    return CGRectGetWidth(self.view.bounds);
 }
 
 - (CGFloat)overallHeight {
-    return CGRectGetHeight(self.view.bounds) > 0 ? CGRectGetHeight(self.view.bounds) : [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.height;
+    return CGRectGetHeight(self.view.bounds);
 }
 
 - (CGRect)onscreenFrameForNavItem:(SheetNavigationItem *)navItem {
     CGRect frame = CGRectMake(navItem.currentViewPosition.x,
                               navItem.currentViewPosition.y,
                               navItem.width,
-                              [self overallHeight]-[SheetLayoutModel yOffset]);
+                              [self overallHeight]);
     return frame;
 }
 
 - (CGRect)contentFrame {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_6_0
-    float yOffset = [SheetLayoutModel yOffset];
-    CGRect frame = [SheetLayoutModel getScreenBoundsForCurrentOrientation];
-    return CGRectMake(0.0, yOffset, frame.size.width, frame.size.height - yOffset);
-#else
     return self.view.bounds;
-#endif
 }
 
 - (CGRect)offscreenFrameForNavItem:(SheetNavigationItem *)navItem withOnscreenFrame:(CGRect)onscreenFrame {
     CGRect frame = CGRectZero;
-    CGFloat offScreenX = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
+    CGFloat offScreenX = [self overallWidth];
     if (navItem.expandedPeekedSheet) {
         // offset it left to match initial x of peeked sheet
         offScreenX -= [self getPeekedWidth:navItem.sheetController.contentViewController];
     }
     frame = CGRectMake(MAX(offScreenX, CGRectGetMinX(onscreenFrame)),
-                       [SheetLayoutModel yOffset],
+                       0.0f,
                        CGRectGetWidth(onscreenFrame),
                        CGRectGetHeight(onscreenFrame));
     return frame;
@@ -549,7 +535,7 @@ typedef enum {
     }
     
     CGRect goAwayFrame = CGRectMake(xLoc,
-                                    [SheetLayoutModel yOffset],
+                                    0.0f,
                                     CGRectGetWidth(vc.view.frame),
                                     CGRectGetHeight(vc.view.frame));
     
@@ -692,15 +678,8 @@ typedef enum {
     newSheetController.view.frame = offscreenFrame;
     contentViewController.view.frameWidth = navItem.width;
 
-    #if __IPHONE_OS_VERSION_MAX_ALLOWED <= __IPHONE_6_0
-        CGSize statusBarSize = [[UIApplication sharedApplication] statusBarFrame].size;
-        float statusBarHeight = MIN(statusBarSize.width, statusBarSize.height);
-        contentViewController.view.frameHeight = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.height - statusBarHeight;
-    #else
-        float statusBarHeight = self.statusBarBG.frameHeight;
         contentViewController.view.frameHeight = [self contentFrame].size.height;
-    #endif
-    
+
     [newSheetController.view setNeedsLayout];
     [newSheetController.contentViewController.view setNeedsLayout];
     [self.sheetViewControllers addObject:newSheetController];
@@ -2204,7 +2183,7 @@ typedef enum {
             } else {
                 self.peekedSheetAccessibilityView.userInteractionEnabled = NO;
                 [self.peekedSheetAccessibilityView setIsAccessibilityElement:NO];
-                self.peekedSheetAccessibilityView.frameX = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
+                self.peekedSheetAccessibilityView.frameX = [self overallWidth];
             }
         }
     }
@@ -2228,7 +2207,7 @@ typedef enum {
             [self.view addSubview:self.gutterAccessibilityView];
             
             CGRect topControllerFrame = [self topSheetController].view.frame;
-            CGRect navControllerFrame = [SheetLayoutModel getScreenBoundsForCurrentOrientation];
+            CGRect navControllerFrame = self.view.bounds;
             CGRect startingRect = navControllerFrame;
             CGRect slice, remainder;
             CGRectDivide (startingRect, &slice, &remainder, topControllerFrame.origin.x, CGRectMinXEdge);

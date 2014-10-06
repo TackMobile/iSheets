@@ -189,34 +189,18 @@ __strong static SheetLayoutModel *_sharedInstance;
     return kSheetNextItemDefaultDistance;
 }
 
-- (CGFloat)availableWidthForOffset:(CGFloat)offset orientation:(UIInterfaceOrientation)orientation {
-    CGFloat width = [SheetLayoutModel getScreenBoundsForOrientation:orientation].size.width - offset;
-    return floorf(width);
-}
-
 - (CGFloat)availableWidthForOffset:(CGFloat)offset {
     CGFloat width = [self navControllerWidth] - offset;
-    if (width <= 0.0) {
-        return [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
-    }
     return floorf(width);
 }
 
 - (CGFloat)navControllerWidth {
-    CGFloat screenWidth = [SheetLayoutModel getScreenBoundsForCurrentOrientation].size.width;
-    CGFloat navControllerWidth = self.controller.view.bounds.size.width > 0 ? self.controller.view.bounds.size.width : screenWidth;
-    if (navControllerWidth < screenWidth) {
-        navControllerWidth = screenWidth;
-    }
-    return navControllerWidth;
+    return self.controller.view.bounds.size.width;
 }
 
 - (CGPoint)initialPositionForNavItem:(SheetNavigationItem *)navItem {
     
     static float yOffset = 0.0;
-    if (yOffset == 0.0) {
-        yOffset = [SheetLayoutModel yOffset];
-    }
     
     CGFloat initX = 0.0;
     // offset from right
@@ -226,14 +210,6 @@ __strong static SheetLayoutModel *_sharedInstance;
     }
     // else offset from left
     return CGPointMake([self initX:navItem], yOffset);
-}
-
-+ (CGFloat)yOffset {
-#if __IPHONE_OS_VERSION_MAX_ALLOWED > __IPHONE_6_0
-    return 20.0;
-#else
-    return 0.0;
-#endif
 }
 
 - (CGFloat)initX:(SheetNavigationItem *)navItem {
@@ -325,38 +301,6 @@ __strong static SheetLayoutModel *_sharedInstance;
     }
     
     return sheetLayoutType;
-}
-
-+ (CGRect)getScreenBoundsForCurrentOrientation {
-    UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
-    return [SheetLayoutModel getScreenBoundsForOrientation:orientation];
-}
-
-+ (CGRect)getScreenBoundsForOrientation:(UIInterfaceOrientation)orientation {
-    
-    UIScreen *screen = [UIScreen mainScreen];
-    
-    // Starting in iOS 8.0, UIScreen objects return bounds pre-rotated to match the current orientation.
-    // Previous versions were always in portrait.
-    CGRect fullScreenRect = screen.bounds;
-    
-    CGFloat iOSVersion = [UIDevice currentDevice].systemVersion.floatValue;
-    
-    //If we are on iOS 8.0+ then we do not need to manipulate the rect.
-    if (iOSVersion >= 8.0) {
-        return fullScreenRect;
-    }
-
-    // Rotate the frame to work for landscape.
-    if (UIInterfaceOrientationIsLandscape(orientation))
-    {
-        CGRect temp = CGRectMake(0, 0, 0, 0);
-        temp.size.width = fullScreenRect.size.height;
-        temp.size.height = fullScreenRect.size.width;
-        fullScreenRect = temp;
-    }
-    
-    return fullScreenRect;
 }
 
 @end
