@@ -16,7 +16,6 @@
 #import <QuartzCore/QuartzCore.h>
 
 
-
 #define SHEET_REMOVAL_ANIMATION_OPTION          UIViewAnimationOptionCurveLinear
 #define SHEET_ADDING_ANIMATION_OPTION           UIViewAnimationOptionCurveEaseOut
 
@@ -1617,6 +1616,33 @@ typedef enum {
             break;
     }
 }
+
+- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id <UIViewControllerTransitionCoordinator>)coordinator {
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    if (coordinator) {
+        __weak __block SheetNavigationController *weakSelf = self;
+        [coordinator animateAlongsideTransition:^(id <UIViewControllerTransitionCoordinatorContext> context) {
+            [weakSelf doLayout];
+        } completion:nil];
+    } else {
+        [self doLayout];
+    }
+
+
+}
+
+- (CGSize)sizeForChildContentContainer:(id <UIContentContainer>)container withParentContainerSize:(CGSize)parentSize {
+    if ([self.sheetViewControllers containsObject:container]) {
+        return parentSize;
+    }
+    if ([self.peekedViewControllers containsObject:container] || self.peekedSheetController == container) {
+        SheetController *sheetController = (SheetController*)container;
+        CGFloat dWidth = [[SheetLayoutModel sharedInstance] desiredWidthForContent:sheetController.contentViewController navItem:sheetController.sheetNavigationItem];
+        return CGSizeMake(dWidth, parentSize.height);
+    }
+    return [super sizeForChildContentContainer:container withParentContainerSize:parentSize];
+}
+
 
 - (void)handlePeekedPanGesture:(UIPanGestureRecognizer *)gestureRecognizer {
     

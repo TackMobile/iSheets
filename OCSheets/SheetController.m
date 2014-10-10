@@ -185,30 +185,13 @@ block(); \
     if (self.leftNavButtonItem) {
         [self positionLeftNavButton];
     }
-    
-    CGRect contentFrame = CGRectZero;
-    contentFrame.origin = CGPointMake(0.0, 0.0);
-    
-    const CGFloat borderSpacing = 0.0;
-    
-    contentFrame = CGRectMake(borderSpacing,
-                              borderSpacing,
-                              CGRectGetWidth(self.view.bounds)-(2*borderSpacing),
-                              CGRectGetHeight(self.view.bounds)-(2*borderSpacing));
-    
+
+    CGSize parentSize = self.view.bounds.size;
+    CGRect contentFrame = [self contentFrameForParentSize:parentSize];;
     SheetNavigationItem *navItem = self.sheetNavigationItem;
-    
-    CGFloat desiredWidth = [[SheetLayoutModel sharedInstance] desiredWidthForContent:self.contentViewController navItem:navItem];
-    if (desiredWidth == 0.0) { // sheet subclass didn't specify anything
-        desiredWidth = navItem.width;
-    }
-    
-    if (desiredWidth == 0.0) {
-        contentFrame.size.width = 100.0; // arbitrary
-    } else {
-        contentFrame.size.width = desiredWidth;
-    }
-    
+
+
+
     if (navItem.offset == 1 && _percentDragged == 0.0) {
         self.coverView.alpha = 0.0;
     }
@@ -246,6 +229,30 @@ block(); \
     }
 }
 
+- (CGRect)contentFrameForParentSize:(CGSize)parentSize {
+    CGRect contentFrame = CGRectZero;
+    SheetNavigationItem * navItem = self.sheetNavigationItem;
+    contentFrame.origin = CGPointMake(0.0, 0.0);
+
+    const CGFloat borderSpacing = 0.0;
+
+    contentFrame = CGRectMake(borderSpacing,
+                              borderSpacing,
+                              parentSize.width  - ( 2*borderSpacing ),
+                              parentSize.height - ( 2*borderSpacing ));
+    CGFloat desiredWidth = [[SheetLayoutModel sharedInstance] desiredWidthForContent:self.contentViewController navItem:navItem];
+    if (desiredWidth == 0.0) { // sheet subclass didn't specify anything
+        desiredWidth = navItem.width;
+    }
+
+    if (desiredWidth == 0.0) {
+        contentFrame.size.width = 100.0; // arbitrary
+    } else {
+        contentFrame.size.width = desiredWidth;
+    }
+    return contentFrame;
+}
+
 #pragma mark - UIViewController interface methods
 
 - (void)loadView
@@ -278,6 +285,14 @@ block(); \
             self.sheetNavigationItem.leftButtonView = [(id<SheetStackPage>)self.contentViewController leftButtonViewForTopSheet];
         }
     }
+}
+
+- (CGSize)sizeForChildContentContainer:(id <UIContentContainer>)container withParentContainerSize:(CGSize)parentSize {
+    if (container == self.contentViewController) {
+        CGRect containerFrame = [self contentFrameForParentSize:parentSize];
+        return containerFrame.size;
+    }
+    return [super sizeForChildContentContainer:container withParentContainerSize:parentSize];
 }
 
 - (UIView *)leftNavButtonItem {
