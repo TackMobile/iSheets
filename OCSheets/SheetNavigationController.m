@@ -1632,13 +1632,13 @@ typedef enum {
 }
 
 - (CGSize)sizeForChildContentContainer:(id <UIContentContainer>)container withParentContainerSize:(CGSize)parentSize {
-    if ([self.sheetViewControllers containsObject:container]) {
-        return parentSize;
-    }
     if ([self.peekedViewControllers containsObject:container] || self.peekedSheetController == container) {
         SheetController *sheetController = (SheetController*)container;
         CGFloat dWidth = [[SheetLayoutModel sharedInstance] desiredWidthForContent:sheetController.contentViewController navItem:sheetController.sheetNavigationItem];
         return CGSizeMake(dWidth, parentSize.height);
+    }
+    if ([self.sheetViewControllers containsObject:container]) {
+        return parentSize;
     }
     return [super sizeForChildContentContainer:container withParentContainerSize:parentSize];
 }
