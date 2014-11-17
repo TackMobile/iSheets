@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name     = 'OCSheets'
-  s.version  = '0.1.8'
+  s.version  = '0.1.9'
   s.license  = 'Modified BSD'
   s.summary  = 'Layered navigation controller for hierarchical iPad apps.'
   s.homepage = 'https://github.com/TackMobile/iSheets'
